@@ -1,0 +1,9 @@
+0
+800x400
+SPRITE : [0, 0, 800, 400] 0 true
+SPRITE : [100, 100, 200, 100] 0 true
+SPRITE : [100, 100, 200, 100] 1 false outline
+TEXT   : [200, 150, 0, 0] 5 true
+SPRITE : [120, 100, 50, 50] 0 true
+SPRITE : [120, 100, 50, 50] 1 false outline
+TEXT   : [130, 80, 0, 0] 2 true
