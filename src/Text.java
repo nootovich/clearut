@@ -2,7 +2,13 @@ import java.awt.*;
 
 public class Text implements Element {
 
-    private int x, y, w, h, priority, textSize; // TODO: Prob make width and height actually matter
+    private int     x;
+    private int     y;
+    // TODO: Prob make width and height actually matter
+    private int     w;
+    private int     h;
+    private int     priority;
+    private int     textSize;
     private boolean visible = true;
     private String  text;
     private Color   color;
@@ -14,6 +20,10 @@ public class Text implements Element {
         this.priority = priority;
         this.text     = text;
         this.color    = color;
+    }
+
+    public boolean update() {
+        return false;
     }
 
     public void draw(Graphics2D g) {

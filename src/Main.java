@@ -1,39 +1,27 @@
-import java.awt.*;
-
 public class Main {
 
-    public static void main(String[] args) {
-
-
+    public static void main(String[] args) throws InterruptedException {
         Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, Global.COLOR_SPACE_CADET);
 
         // TODO!!!!: make layers store not only elements but also buttons
         // TODO!!!!: and buttons themselves should store their elements
         layer("UI");
         layer("a").addElement(new Text(130, 80, 50, 2, "Test", Global.COLOR_VANILLA));
-        Button a          = new Button(120, 100, 50, 50, "a");
-        Button testButton = new Button(100, 100, 200, 100, "UI", "Sample text");
+
+        Button a          = new Button(0, 0, Global.WINDOW_WIDTH, 120, "a", "b", 2);
+        Button testButton = new Button(100, 100, 200, 100, "UI", "mainButtonOfExistence", 1, "Sample text");
 
         IO.saveInfo(); // TODO: remove after testing
 
         //noinspection InfiniteLoopStatement
         while (true) {
 
-            a.update();
-            testButton.update(); // TODO: make a general update system
+            Global.MOUSE.update();
             Global.CANVAS.repaint();
+            Thread.sleep(20);
 
-            try {
-                Thread.sleep(20);
-
-                { // TODO: remove
-                    Point mousePos = Global.CANVAS.getMousePosition();
-                    if (mousePos != null) Global.mousePos = mousePos;
-                }
-
-            } catch (NullPointerException | InterruptedException ignored) {
-                System.out.println("aboba");
-            }
+            if (Global.LOG)
+                System.out.println("Mouse - " + Global.MOUSE.getX() + ":" + Global.MOUSE.getY() + "\n" + "\n");
         }
     }
 

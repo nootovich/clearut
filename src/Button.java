@@ -1,35 +1,87 @@
 import java.awt.*;
 import java.util.ArrayList;
 
-public class Button { // TODO: maybe make Button implement Element?
+// TODO: think of a better way to construct buttons
+public class Button implements Element {
 
-    private final Sprite mainSprite, outlineSprite; // TODO: remove
     private final ArrayList<Element> elements = new ArrayList<>();
-    private       Text               text;
+    private       String             name;
+    private       int                x;
+    private       int                y;
+    private       int                w;
+    private       int                h;
+    private       int                priority;
+    private       boolean            visible  = true;
 
-    public Button(int x, int y, int w, int h, String layerName) {
-        this.mainSprite = new Sprite(x, y, w, h, 0, Global.COLOR_COOL_GRAY);
-        Global.WINDOW.getLayer(layerName).addElement(mainSprite);
-
-        this.outlineSprite = new Sprite(x, y, w, h, 1, Global.COLOR_VANILLA);
-        this.outlineSprite.setVisibility(false);
-        this.outlineSprite.setOutline(true);
-        Global.WINDOW.getLayer(layerName).addElement(outlineSprite);
+    public Button(int x, int y, int w, int h, String layerName, String name, int priority) {
+        Sprite body    = new Sprite(x, y, w, h, 0, Global.COLOR_COOL_GRAY);
+        Sprite outline = new Sprite(x, y, w, h, 1, Global.COLOR_VANILLA);
+        // TODO: make Sprite have different types (prob using enum but maybe different classes)
+        outline.setOutline(true);
+        addElement(body);
+        addElement(outline);
+        this.x        = x;
+        this.y        = y;
+        this.w        = w;
+        this.h        = h;
+        this.name     = name;
+        this.priority = priority;
+        Global.WINDOW.getLayer(layerName).addElement(this);
     }
 
-    public Button(int x, int y, int w, int h, String layerName, String text) {
-        this.mainSprite = new Sprite(x, y, w, h, 0, Global.COLOR_MELON);
-        Global.WINDOW.getLayer(layerName).addElement(mainSprite);
+    public Button(int x, int y, int w, int h, String layerName, String name, int priority, String textContent) { //
+        Sprite body    = new Sprite(x, y, w, h, 0, Global.COLOR_COOL_GRAY);
+        Sprite outline = new Sprite(x, y, w, h, 1, Global.COLOR_VANILLA);
+        Text   text    = new Text(body.getCenter().x, body.getCenter().y, 16, 5, textContent, Global.COLOR_RED_MUNSELL);
+        // TODO: make Sprite have different types (prob using enum but maybe different classes)
+        outline.setOutline(true);
+        addElement(body);
+        addElement(outline);
+        addElement(text);
+        this.x        = x;
+        this.y        = y;
+        this.w        = w;
+        this.h        = h;
+        this.name     = name;
+        this.priority = priority;
+        Global.WINDOW.getLayer(layerName).addElement(this);
+    }
 
-        this.outlineSprite = new Sprite(x, y, w, h, 1, Global.COLOR_VANILLA);
-        this.outlineSprite.setVisibility(false);
-        this.outlineSprite.setOutline(true);
-        Global.WINDOW.getLayer(layerName).addElement(outlineSprite);
+    public boolean update() {
+        if (Global.LOG)
+            System.out.println("\tupdate button " + name);
 
-        Point center = mainSprite.getCenter();
-        System.out.println(mainSprite.getX());
-        this.text = new Text(center.x, center.y, 16, 5, text, Global.COLOR_RED_MUNSELL);
-        Global.WINDOW.getLayer(layerName).addElement(this.text);
+        int     mx             = Global.MOUSE.getX();
+        int     my             = Global.MOUSE.getY();
+        int     sx             = getX();
+        int     sy             = getY();
+        int     sw             = getWidth();
+        int     sh             = getHeight();
+        boolean underMouse = (mx >= sx && mx <= sx + sw && my >= sy && my <= sy + sh);
+
+        if (underMouse && !Global.MOUSE.getLMBUsed() && Global.MOUSE.getLMB()) {
+            if (Global.LOG)
+                System.out.println("\t\tmouse clicked at " + name);
+
+            Global.MOUSE.setLMBUsed(true);
+            return true;
+        }
+
+        Element[] elmnts      = getElements();
+        boolean   interaction = false;
+
+        for (int i = elmnts.length - 1; i >= 0; i--)
+             interaction |= elmnts[i].update();
+
+        return interaction;
+    }
+
+    public void draw(Graphics2D g) {
+        if (Global.LOG)
+            System.out.println("\tdraw button " + priority + " : " + name);
+
+        for (Element element : elements)
+            element.draw(g);
     }
 
     public Element[] getElements() {
@@ -38,22 +90,84 @@ public class Button { // TODO: maybe make Button implement Element?
 
     public void addElement(Element element) {
         elements.add(element);
+        elements.sort(new ElementPriorityComparator());
     }
 
-    @SuppressWarnings("CommentedOutCode")
-    public void update() {
-        Point m  = Global.mousePos;
-        int   sx = mainSprite.getX(), sy = mainSprite.getY(), sw = mainSprite.getWidth(), sh = mainSprite.getHeight();
-        outlineSprite.setVisibility(m.x >= sx && m.x <= sx + sw && m.y >= sy && m.y <= sy + sh);
-
-        // TODO: add mouse buttons logic
-//        boolean lmb = GameOfLife.mouseKeys[0], result = false;
-//        if (!type) {
-//            if (lmb && !mouseLock) result = true;
-//        } else {
-//            result = lmb;
-//        }
-//        mouseLock = lmb;
-//        return result;
+    public int getX() {
+        return x;
     }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public int getWidth() {
+        return w;
+    }
+
+    public void setWidth(int w) {
+        this.w = w;
+    }
+
+    public int getHeight() {
+        return h;
+    }
+
+    public void setHeight(int h) {
+        this.h = h;
+    }
+
+    public Point getPos() {
+        return new Point(x, y);
+    }
+
+    public void setPos(Point pos) {
+        this.x = pos.x;
+        this.y = pos.y;
+    }
+
+    public Point getSize() {
+        return new Point(w, h);
+    }
+
+    public void setSize(Point size) {
+        this.w = size.x;
+        this.h = size.y;
+    }
+
+    public int getPriority() {
+        return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
+    }
+
+    public boolean getVisibility() {
+        return visible;
+    }
+
+    public void setVisibility(boolean bool) {
+        visible = bool;
+    }
+
+    public Color getColor() {
+        return null;
+    }
+
+    public void setColor(Color color) {
+    }
+
+    public Point getCenter() {
+        return new Point(x + (w >> 1), y + (h >> 1));
+    }
+
 }

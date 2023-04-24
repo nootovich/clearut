@@ -3,6 +3,8 @@ import java.util.Comparator;
 
 public interface Element {
 
+    boolean update();
+
     void draw(Graphics2D g);
 
     int getX();

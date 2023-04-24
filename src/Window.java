@@ -7,7 +7,6 @@ public class Window extends JFrame {
 
     ArrayList<UILayer> layers = new ArrayList<>();
 
-
     public Window(int width, int height, Color backgroundColor) {
 
         // init buffered image
@@ -21,6 +20,7 @@ public class Window extends JFrame {
         UILayer bg = new UILayer("BG", 0);
         bg.addElement(new Sprite(0, 0, width, height, 0, backgroundColor));
         addLayer(bg);
+
 
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
