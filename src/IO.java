@@ -30,9 +30,9 @@ public class IO {
         // go over all layers and elements
         for (UILayer layer : Global.WINDOW.getLayers())
             for (Element element : layer.getElements()) {
-                String elementInfo = "[%d, %d, %d, %d] %d %s".formatted(element.getX(), element.getY(), element.getWidth(), element.getHeight(), element.getPriority(), element.getVisibility());
+                String elementInfo = "[%d, %d, %d, %d] %d %s".formatted(element.getX(), element.getY(), element.getWidth(), element.getHeight(), element.getPriority(), element.isVisible());
                 try {
-                    if (((Sprite) element).getOutline())
+                    if (((Sprite) element).isOutline())
                         elementInfo += " outline";
                     elementInfo = "SPRITE : " + elementInfo;
                 } catch (Exception ignored) {
@@ -67,8 +67,8 @@ public class IO {
     }
 
     public static class Mouse extends MouseAdapter {
-        private int     x;
-        private int     y;
+        private int     x = -1;
+        private int     y = -1;
         private boolean LMB         = false;
         private boolean RMB         = false;
         private boolean LMBUsed     = false;

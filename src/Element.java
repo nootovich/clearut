@@ -35,7 +35,7 @@ public interface Element {
 
     void setPriority(int priority);
 
-    boolean getVisibility();
+    boolean isVisible();
 
     void setVisibility(boolean bool);
 

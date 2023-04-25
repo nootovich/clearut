@@ -92,7 +92,7 @@ public class Text implements Element {
         this.priority = priority;
     }
 
-    public boolean getVisibility() {
+    public boolean isVisible() {
         return visible;
     }
 

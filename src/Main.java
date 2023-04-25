@@ -11,8 +11,6 @@ public class Main {
         Button a          = new Button(0, 0, Global.WINDOW_WIDTH, 120, "a", "b", 2);
         Button testButton = new Button(100, 100, 200, 100, "UI", "mainButtonOfExistence", 1, "Sample text");
 
-        IO.saveInfo(); // TODO: remove after testing
-
         //noinspection InfiniteLoopStatement
         while (true) {
 
