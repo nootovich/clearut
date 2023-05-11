@@ -1,38 +1,39 @@
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.io.File;
 
-public class Text implements Element {
+public class Picture implements Element {
 
     private int     x;
     private int     y;
-    // TODO: Prob make width and height actually matter
     private int     w;
     private int     h;
     private int     priority;
-    private int     textSize;
     private boolean visible = true;
-    private String  text;
-    private Color   color;
+    private String  imageName;
+    private Image   image;
 
-    public Text(int x, int y, int size, int priority, String text, Color color) {
-        this.x        = x;
-        this.y        = y;
-        this.textSize = size;
-        this.priority = priority;
-        this.text     = text;
-        this.color    = color;
+    public Picture(int x, int y, int w, int h, int priority, String imageName) {
+        this.x         = x;
+        this.y         = y;
+        this.w         = w;
+        this.h         = h;
+        this.priority  = priority;
+        this.imageName = imageName;
+        try {
+            this.image = ImageIO.read(new File(Global.IMAGE_FOLDER.getAbsolutePath() + "\\" + imageName));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
+
 
     public boolean update() {
         return false;
     }
 
     public void draw(Graphics2D g) {
-        g.setColor(color);
-        g.setFont(new Font("Roboto Mono", Font.BOLD, textSize));
-        FontMetrics metrics = g.getFontMetrics();
-        int         tx      = x - (int) (metrics.stringWidth(text) / 2.0f);
-        int         ty      = y - (int) (metrics.getHeight() / 2.0f) + metrics.getAscent();
-        g.drawString(text, tx, ty);
+        g.drawImage(image, x, y, w, h, null);
     }
 
     public int getX() {
@@ -85,6 +86,10 @@ public class Text implements Element {
         this.h = size.y;
     }
 
+    public Point getCenter() {
+        return new Point(x + (w >> 1), y + (h >> 1));
+    }
+
     public int getPriority() {
         return priority;
     }
@@ -101,12 +106,22 @@ public class Text implements Element {
         visible = bool;
     }
 
+    public String getImageName() {
+        return imageName;
+    }
+    public Image getImage() {
+        return image;
+    }
+
+    public void setImage(Image image) throws Exception {
+        throw new Exception("TODO: not implemented");
+    }
+
     public Color getColor() {
-        return color;
+        return null;
     }
 
     public void setColor(Color color) {
-        this.color = color;
-    }
 
+    }
 }

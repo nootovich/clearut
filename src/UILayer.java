@@ -24,6 +24,8 @@ public class UILayer {
     }
 
     public void draw(Graphics2D g) {
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if (Global.LOG)
             System.out.println("draw layer " + priority + " : " + name);
 

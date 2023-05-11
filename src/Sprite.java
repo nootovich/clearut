@@ -22,7 +22,7 @@ public class Sprite implements Element {
 
     public boolean update() {
         if (Global.LOG) System.out.printf(
-                "\t\tupdate sprite %d : %s%s",
+                "\t\tupdate sprite %d : %s%s%n",
                 getPriority(),
                 isVisible() ? " visible" : "!visible",
                 isOutline() ? " : outline" : "");// $DEBUG

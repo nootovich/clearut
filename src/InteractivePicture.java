@@ -1,20 +1,19 @@
 import java.awt.*;
 
-public class InteractiveSprite extends Sprite {
+public class InteractivePicture extends Picture {
 
     private boolean highlighted = false;
 
-    public InteractiveSprite(int x, int y, int w, int h, int priority, Color color) {
-        super(x, y, w, h, priority, color);
+    public InteractivePicture(int x, int y, int w, int h, int priority, String imageName) {
+        super(x, y, w, h, priority, imageName);
     }
 
     @Override
     public boolean update() {
         if (Global.LOG) System.out.printf(
-                "\t\tupdate sprite %d : %s%s%s%n",
+                "\t\tupdate picture %d : %s%s",
                 super.getPriority(),
                 super.isVisible() ? " visible" : "!visible",
-                super.isOutline() ? " : outline" : "",
                 highlighted ? " : highlighted" : ""); // $DEBUG
 
         int mx = Global.MOUSE.getX(); // TODO: reuse from Button.update()
@@ -25,7 +24,17 @@ public class InteractiveSprite extends Sprite {
         int sh = getHeight();
         highlighted = (mx >= sx && mx <= sx + sw && my >= sy && my <= sy + sh);
 
-        if (Global.LOG && highlighted) System.out.println("\t\t\tmouse is currently inside this sprite"); // $DEBUG
+        if (Global.LOG && highlighted) System.out.println("\t\t\tmouse is currently inside picture " + super.getImageName()); //
+        // $DEBUG
+
+
+        if (highlighted && !Global.MOUSE.getLMBUsed() && Global.MOUSE.getLMB()) {
+
+            if (Global.LOG) {System.out.println("\t\tmouse clicked at " + super.getImageName());}
+
+            Global.MOUSE.setLMBUsed(true);
+            return true;
+        }
 
         return highlighted;
     }
@@ -35,43 +44,32 @@ public class InteractiveSprite extends Sprite {
         // TODO: move after visibility check after removing debug
         int     priority = super.getPriority();
         boolean visible  = super.isVisible();
-        boolean outline  = super.isOutline();
 
         if (Global.LOG) System.out.printf(
-                "\t\tdraw sprite %d : %s%s%s%n",
+                "\t\tdraw picture %d : %s%s%n",
                 priority,
                 visible ? " visible" : "!visible",
-                outline ? " : outline" : "",
                 highlighted ? " : " + "highlighted" : ""); // $DEBUG
 
         if (!visible) return;
 
-        int     x        = super.getX();
-        int     y        = super.getY();
-        int     w        = super.getWidth();
-        int     h        = super.getHeight();
-        int     s        = Global.STROKE_WIDTH;
-        Color   color    = super.getColor();
+        int x = super.getX();
+        int y = super.getY();
+        int w = super.getWidth();
+        int h = super.getHeight();
 
         // TODO: make this function use enumeration to identify the type of sprite and draw it appropriately
         // TODO: *everything after this line*
 
+        g.drawImage(super.getImage(), x, y, w, h, null);
+
         if (highlighted) {
             if (Global.LOG) System.out.println("\t\t\t\thighlighted"); // $DEBUG
-            g.setColor(outline ? Global.COLORS[8] : Global.COLORS[7]); // TODO: remove hardcoded colors
+            g.setColor(new Color(255, 255, 255, 42));
+            g.fillRect(x, y, w, h);
             highlighted = false;
         } else {
             if (Global.LOG) System.out.println("\t\t\t\t!highlighted"); // $DEBUG
-            g.setColor(color);
-        }
-
-        if (outline) {
-            if (Global.LOG) System.out.println("\t\t\toutline"); // $DEBUG
-            g.setStroke(new BasicStroke(s));
-            g.drawRect(x + s / 2, y + s / 2, w - s, h - s);
-        } else {
-            if (Global.LOG) System.out.println("\t\t\tsolid"); // $DEBUG
-            g.fillRect(x, y, w, h);
         }
     }
 }

@@ -14,8 +14,8 @@ public class Button implements Element {
     private       boolean            visible  = true;
 
     public Button(int x, int y, int w, int h, String layerName, String name, int priority) {
-        Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLOR_COOL_GRAY);
-        Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLOR_VANILLA);
+        Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
+        Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
         // TODO: make Sprite have different types (prob using enum but maybe different classes)
         outline.setOutline(true);
         addElement(body);
@@ -30,9 +30,9 @@ public class Button implements Element {
     }
 
     public Button(int x, int y, int w, int h, String layerName, String name, int priority, String textContent) { //
-        Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLOR_COOL_GRAY);
-        Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLOR_VANILLA);
-        Text   text    = new Text(body.getCenter().x, body.getCenter().y, 16, 5, textContent, Global.COLOR_RED_MUNSELL);
+        Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
+        Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
+        Text   text    = new Text(body.getCenter().x, body.getCenter().y, 14, 5, textContent, Global.COLORS[9]);
         // TODO: make Sprite have different types (prob using enum but maybe different classes)
         outline.setOutline(true);
         addElement(body);
