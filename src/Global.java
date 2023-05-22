@@ -5,7 +5,7 @@ public class Global {
     public static final int WINDOW_WIDTH  = 1000;
     public static final int WINDOW_HEIGHT = 600;
     public static final int STROKE_WIDTH  = 2;
-    public static final int INFO_VERSION  = 0;
+    public static final int INFO_VERSION  = 0; //TODO: rename 'info' to 'data'
     // e3f2fd,bbdefb,90caf9,64b5f6,42a5f5,2196f3,1e88e5,1976d2,1565c0,0d47a1
     // 012a4a,013a63,01497c,014f86,2a6f97,2c7da0,468faf,61a5c2,89c2d9,a9d6e5
 
@@ -34,4 +34,5 @@ public class Global {
 
     public static File IMAGE_FOLDER = new File("C:\\Users\\noot\\IdeaProjects\\clearut\\images");
     public static boolean LOG = false;
+    public static Menu spawnMenu; // TODO: temporary solution, remove!
 }

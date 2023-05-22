@@ -1,4 +1,5 @@
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 
 // TODO: think of a better way to construct buttons
@@ -26,7 +27,7 @@ public class Button implements Element {
         this.h        = h;
         this.name     = name;
         this.priority = priority;
-        Global.WINDOW.getLayer(layerName).addElement(this);
+        Global.WINDOW.getLayer(layerName).addElement(this); // TODO: remove
     }
 
     public Button(int x, int y, int w, int h, String layerName, String name, int priority, String textContent) { //
@@ -44,19 +45,19 @@ public class Button implements Element {
         this.h        = h;
         this.name     = name;
         this.priority = priority;
-        Global.WINDOW.getLayer(layerName).addElement(this);
+        Global.WINDOW.getLayer(layerName).addElement(this); // TODO: remove
     }
 
     public boolean update() {
         if (Global.LOG)
-            System.out.println("\tupdate button " + name);
+            System.out.println("\tupdate button " + getName());
 
-        int     mx             = Global.MOUSE.getX();
-        int     my             = Global.MOUSE.getY();
-        int     sx             = getX();
-        int     sy             = getY();
-        int     sw             = getWidth();
-        int     sh             = getHeight();
+        int     mx         = Global.MOUSE.getX();
+        int     my         = Global.MOUSE.getY();
+        int     sx         = getX();
+        int     sy         = getY();
+        int     sw         = getWidth();
+        int     sh         = getHeight();
         boolean underMouse = (mx >= sx && mx <= sx + sw && my >= sy && my <= sy + sh);
 
         if (underMouse && !Global.MOUSE.getLMBUsed() && Global.MOUSE.getLMB()) {
@@ -64,6 +65,11 @@ public class Button implements Element {
                 System.out.println("\t\tmouse clicked at " + name);
 
             Global.MOUSE.setLMBUsed(true);
+            try {
+                this.getClass().getMethod(getName()).invoke(this);
+            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
             return true;
         }
 
@@ -84,6 +90,34 @@ public class Button implements Element {
             element.draw(g);
     }
 
+    public void button0() {
+        System.out.println("button0 was pressed!");
+    }
+
+    public void button1() {
+        System.out.println("Hello world!");
+    }
+
+    public void button3() {
+        setX(getX() + 100);
+        System.out.println("button3 move right");
+    }
+
+    public void button5() {
+        Element[] elements = Global.WINDOW.getLayer("UISIDE").getElements();
+
+        for (Element element : elements) {
+            try {
+                Button button = (Button) element;
+                if (button.getName().equals("button3")) {
+                    button.setX(button.getX() - 50);
+                    System.out.println("button3 move left");
+                }
+            } catch (ClassCastException ignored) {
+            }
+        }
+    }
+
     public Element[] getElements() {
         return elements.toArray(new Element[0]);
     }
@@ -98,7 +132,11 @@ public class Button implements Element {
     }
 
     public void setX(int x) {
+        int change = x - this.x;
         this.x = x;
+        for (Element element : getElements()) {
+            element.setX(element.getX() + change);
+        }
     }
 
     public int getY() {
@@ -106,7 +144,11 @@ public class Button implements Element {
     }
 
     public void setY(int y) {
+        int change = y - this.y;
         this.y = y;
+        for (Element element : getElements()) {
+            element.setY(element.getY() + change);
+        }
     }
 
     public int getWidth() {
@@ -130,8 +172,14 @@ public class Button implements Element {
     }
 
     public void setPos(Point pos) {
+        int changeX = pos.x - this.x;
+        int changeY = pos.y - this.y;
         this.x = pos.x;
         this.y = pos.y;
+        for (Element element : getElements()) {
+            element.setX(element.getX() + changeX);
+            element.setY(element.getY() + changeY);
+        }
     }
 
     public Point getSize() {
@@ -149,6 +197,10 @@ public class Button implements Element {
 
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    public String getName() {
+        return this.name;
     }
 
     public boolean isVisible() {

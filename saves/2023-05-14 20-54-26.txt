@@ -1,0 +1,19 @@
+0
+1000x600@960x540
+$LAYER: name[BG] priority[0] elements_size[1];
+	OTHER: pos[0,0] size[1000,600] priority[0] visible[true]
+$LAYER: name[UISIDE] priority[1] elements_size[7];
+	OTHER: pos[0,0] size[117,600] priority[0] visible[true]
+	$BUTTON: name[button0] pos[21,21] size[75,75] priority[1] visible[true] elements_size[3]
+	$BUTTON: name[button1] pos[21,117] size[75,75] priority[2] visible[true] elements_size[3]
+	$BUTTON: name[button2] pos[21,214] size[75,75] priority[3] visible[true] elements_size[3]
+	$BUTTON: name[button3] pos[21,310] size[75,75] priority[4] visible[true] elements_size[3]
+	$BUTTON: name[button4] pos[21,407] size[75,75] priority[5] visible[true] elements_size[3]
+	$BUTTON: name[button5] pos[21,503] size[75,75] priority[6] visible[true] elements_size[3]
+$LAYER: name[PROFILE] priority[2] elements_size[2];
+	OTHER: pos[117,0] size[1000,117] priority[0] visible[true]
+	OTHER: pos[903,21] size[75,75] priority[1] visible[true]
+$LAYER: name[TEST_LAYER] priority[69] elements_size[3];
+	OTHER: pos[500,300] size[200,200] priority[0] visible[true]
+	OTHER: pos[520,400] size[50,25] priority[1] visible[true]
+	$BUTTON: name[s] pos[630,400] size[50,25] priority[2] visible[true] elements_size[2]

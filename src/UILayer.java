@@ -5,8 +5,8 @@ import java.util.Comparator;
 public class UILayer {
 
     private final String             name;
-    private final int                priority;
     private final ArrayList<Element> elements = new ArrayList<>();
+    private       int                priority;
 
     public UILayer(String name, int priority) {
         this.name     = name.toUpperCase();
@@ -27,7 +27,7 @@ public class UILayer {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         if (Global.LOG)
-            System.out.println("draw layer " + priority + " : " + name);
+            System.out.println("draw layer " + getPriority() + " : " + getName());
 
         for (Element element : elements)
             element.draw(g);
@@ -39,6 +39,10 @@ public class UILayer {
 
     public int getPriority() {
         return priority;
+    }
+
+    public void setPriority(int priority) {
+        this.priority = priority;
     }
 
     public Element[] getElements() {
