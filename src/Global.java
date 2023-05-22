@@ -2,8 +2,8 @@ import java.awt.*;
 import java.io.File;
 
 public class Global {
-    public static final int WINDOW_WIDTH  = 1000;
-    public static final int WINDOW_HEIGHT = 600;
+    public static final int WINDOW_WIDTH  = 600;
+    public static final int WINDOW_HEIGHT = 300;
     public static final int STROKE_WIDTH  = 2;
     public static final int INFO_VERSION  = 0; //TODO: rename 'info' to 'data'
     // e3f2fd,bbdefb,90caf9,64b5f6,42a5f5,2196f3,1e88e5,1976d2,1565c0,0d47a1

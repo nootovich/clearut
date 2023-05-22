@@ -10,7 +10,7 @@ public class Main {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(20);
+            Thread.sleep(50);
 
             if (Global.LOG)
                 System.out.println("Mouse - " + Global.MOUSE.getX() + ":" + Global.MOUSE.getY() + "\n" + "\n");

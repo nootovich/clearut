@@ -33,7 +33,7 @@ public class Button implements Element {
     public Button(int x, int y, int w, int h, String layerName, String name, int priority, String textContent) { //
         Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
         Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
-        Text   text    = new Text(body.getCenter().x, body.getCenter().y, 14, 5, textContent, Global.COLORS[9]);
+        Text   text    = new Text(body.getCenter().x, body.getCenter().y, 10, 5, textContent, Global.COLORS[9]);
         // TODO: make Sprite have different types (prob using enum but maybe different classes)
         outline.setOutline(true);
         addElement(body);
