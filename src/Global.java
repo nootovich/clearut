@@ -33,6 +33,6 @@ public class Global {
     public static IO.Mouse             MOUSE      = new IO.Mouse();
 
     public static File IMAGE_FOLDER = new File("C:\\Users\\noot\\IdeaProjects\\clearut\\images");
-    public static boolean LOG = false;
+    public static int  LOG          = 0;
     public static Menu spawnMenu; // TODO: temporary solution, remove!
 }

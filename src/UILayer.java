@@ -14,8 +14,9 @@ public class UILayer {
     }
 
     public boolean update() {
-        if (Global.LOG)
+        if (Global.LOG > 2) {
             System.out.println("update layer " + getName());
+        }
 
         for (int i = elements.size() - 1; i >= 0; i--)
             if (elements.get(i).update())
@@ -26,8 +27,9 @@ public class UILayer {
     public void draw(Graphics2D g) {
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        if (Global.LOG)
+        if (Global.LOG > 2) {
             System.out.println("draw layer " + getPriority() + " : " + getName());
+        }
 
         for (Element element : elements)
             element.draw(g);

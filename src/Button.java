@@ -1,225 +1,126 @@
-// import java.awt.*;
-// import java.lang.reflect.InvocationTargetException;
-// import java.util.ArrayList;
+import java.awt.*;
 
-// // TODO: think of a better way to construct buttons
-// public class Button implements Element {
+// TODO: think of a better way to construct buttons
+public class Button extends Element {
 
-//     private final ArrayList<Element> elements = new ArrayList<>();
-//     private       String             name;
-//     private       int                x;
-//     private       int                y;
-//     private       int                w;
-//     private       int                h;
-//     private       int                priority;
-//     private       boolean            visible  = true;
+    public Button(int x, int y, int w, int h, int z, String name) {
+//        Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
+//        Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
+        // TODO: make Sprite have different types (prob using enum but maybe different classes)
+//        outline.setOutline(true);
+//        addElement(body);
+//        addElement(outline);
+//        Global.WINDOW.getLayer(layerName).addElement(this); // TODO: remove
+        super(x, y, w, h, z, name);
+    }
 
-//     public Button(int x, int y, int w, int h, String layerName, String name, int priority) {
-//         Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
-//         Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
-//         // TODO: make Sprite have different types (prob using enum but maybe different classes)
-//         outline.setOutline(true);
-//         addElement(body);
-//         addElement(outline);
-//         this.x        = x;
-//         this.y        = y;
-//         this.w        = w;
-//         this.h        = h;
-//         this.name     = name;
-//         this.priority = priority;
-//         Global.WINDOW.getLayer(layerName).addElement(this); // TODO: remove
-//     }
+    public Button(int x, int y, int w, int h, int z, String name, String text) { //
+//        Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
+//        Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
+//        Text   text    = new Text(body.getCenter().x, body.getCenter().y, 10, 5, textContent, Global.COLORS[9]);
+        // TODO: make Sprite have different types (prob using enum but maybe different classes)
+//        outline.setOutline(true);
+//        addElement(body);
+//        addElement(outline);
+//        addElement(text);
+//        Global.WINDOW.getLayer(layerName).addElement(this); // TODO: remove
+        this(x, y, w, h, z, name);
+    }
 
-//     public Button(int x, int y, int w, int h, String layerName, String name, int priority, String textContent) { //
-//         Sprite body    = new InteractiveSprite(x, y, w, h, 0, Global.COLORS[5]);
-//         Sprite outline = new InteractiveSprite(x, y, w, h, 1, Global.COLORS[6]);
-//         Text   text    = new Text(body.getCenter().x, body.getCenter().y, 10, 5, textContent, Global.COLORS[9]);
-//         // TODO: make Sprite have different types (prob using enum but maybe different classes)
-//         outline.setOutline(true);
-//         addElement(body);
-//         addElement(outline);
-//         addElement(text);
-//         this.x        = x;
-//         this.y        = y;
-//         this.w        = w;
-//         this.h        = h;
-//         this.name     = name;
-//         this.priority = priority;
-//         Global.WINDOW.getLayer(layerName).addElement(this); // TODO: remove
-//     }
+    @Override
+    public boolean update() {
+        if (Global.LOG > 1) {
+            System.out.println("\tupdate button " + getName());
+        }
 
-//     public boolean update() {
-//         if (Global.LOG)
-//             System.out.println("\tupdate button " + getName());
+        // TODO: put everything below into a separate function of Element class
+        int     mx         = Global.MOUSE.getX();
+        int     my         = Global.MOUSE.getY();
+        int     sx         = getX();
+        int     sy         = getY();
+        int     sw         = getWidth();
+        int     sh         = getHeight();
+        boolean underMouse = (mx >= sx && mx <= sx + sw && my >= sy && my <= sy + sh);
 
-//         int     mx         = Global.MOUSE.getX();
-//         int     my         = Global.MOUSE.getY();
-//         int     sx         = getX();
-//         int     sy         = getY();
-//         int     sw         = getWidth();
-//         int     sh         = getHeight();
-//         boolean underMouse = (mx >= sx && mx <= sx + sw && my >= sy && my <= sy + sh);
+        if (underMouse && !Global.MOUSE.getLMBUsed() && Global.MOUSE.getLMB()) {
+            if (Global.LOG > 1) {
+                System.out.println("\t\tmouse clicked at " + getName());
+            }
 
-//         if (underMouse && !Global.MOUSE.getLMBUsed() && Global.MOUSE.getLMB()) {
-//             if (Global.LOG)
-//                 System.out.println("\t\tmouse clicked at " + name);
+            Global.MOUSE.setLMBUsed(true);
+//            try {
+//                this.getClass().getMethod(getName()).invoke(this);
+//            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+//                throw new RuntimeException(e);
+//            }
+            return true;
+        }
 
-//             Global.MOUSE.setLMBUsed(true);
-//             try {
-//                 this.getClass().getMethod(getName()).invoke(this);
-//             } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-//                 throw new RuntimeException(e);
-//             }
-//             return true;
-//         }
+        return updateChildren();
+    }
 
-//         Element[] elmnts      = getElements();
-//         boolean   interaction = false;
+    @Override
+    public void draw(Graphics2D g2d) {
+//        if (Global.LOG)
+//            System.out.println("\tdraw button " + priority + " : " + name);
 
-//         for (int i = elmnts.length - 1; i >= 0; i--)
-//              interaction |= elmnts[i].update();
+        drawChildren(g2d);
+    }
 
-//         return interaction;
-//     }
+    public void button0() {
+        System.out.println("button0 was pressed!");
+    }
 
-//     public void draw(Graphics2D g) {
-//         if (Global.LOG)
-//             System.out.println("\tdraw button " + priority + " : " + name);
+    public void button1() {
+        System.out.println("Hello world!");
+    }
 
-//         for (Element element : elements)
-//             element.draw(g);
-//     }
+    public void button3() {
+        setX(getX() + 100);
+        System.out.println("button3 move right");
+    }
 
-//     public void button0() {
-//         System.out.println("button0 was pressed!");
-//     }
+    public void button5() {
+        Element[] elements = Global.WINDOW.getLayer("UISIDE").getElements();
 
-//     public void button1() {
-//         System.out.println("Hello world!");
-//     }
+        for (Element element : elements) {
+            try {
+                Button button = (Button) element;
+                if (button.getName().equals("button3")) {
+                    button.setX(button.getX() - 50);
+                    System.out.println("button3 move left");
+                }
+            } catch (ClassCastException ignored) {
+            }
+        }
+    }
 
-//     public void button3() {
-//         setX(getX() + 100);
-//         System.out.println("button3 move right");
-//     }
+//    public Point getPos() {
+//        return new Point(x, y);
+//    }
+//
+//    public void setPos(Point pos) {
+//        int changeX = pos.x - this.x;
+//        int changeY = pos.y - this.y;
+//        this.x = pos.x;
+//        this.y = pos.y;
+//        for (Element element : getElements()) {
+//            element.setX(element.getX() + changeX);
+//            element.setY(element.getY() + changeY);
+//        }
+//    }
+//
+//    public Point getSize() {
+//        return new Point(w, h);
+//    }
+//
+//    public void setSize(Point size) {
+//        this.w = size.x;
+//        this.h = size.y;
+//    }
+//
+//    public Point getCenter() {
+//        return new Point(x + (w >> 1), y + (h >> 1));
+//    }
 
-//     public void button5() {
-//         Element[] elements = Global.WINDOW.getLayer("UISIDE").getElements();
-
-//         for (Element element : elements) {
-//             try {
-//                 Button button = (Button) element;
-//                 if (button.getName().equals("button3")) {
-//                     button.setX(button.getX() - 50);
-//                     System.out.println("button3 move left");
-//                 }
-//             } catch (ClassCastException ignored) {
-//             }
-//         }
-//     }
-
-//     public Element[] getElements() {
-//         return elements.toArray(new Element[0]);
-//     }
-
-//     public void addElement(Element element) {
-//         elements.add(element);
-//         elements.sort(new ElementPriorityComparator());
-//     }
-
-//     public int getX() {
-//         return x;
-//     }
-
-//     public void setX(int x) {
-//         int change = x - this.x;
-//         this.x = x;
-//         for (Element element : getElements()) {
-//             element.setX(element.getX() + change);
-//         }
-//     }
-
-//     public int getY() {
-//         return y;
-//     }
-
-//     public void setY(int y) {
-//         int change = y - this.y;
-//         this.y = y;
-//         for (Element element : getElements()) {
-//             element.setY(element.getY() + change);
-//         }
-//     }
-
-//     public int getWidth() {
-//         return w;
-//     }
-
-//     public void setWidth(int w) {
-//         this.w = w;
-//     }
-
-//     public int getHeight() {
-//         return h;
-//     }
-
-//     public void setHeight(int h) {
-//         this.h = h;
-//     }
-
-//     public Point getPos() {
-//         return new Point(x, y);
-//     }
-
-//     public void setPos(Point pos) {
-//         int changeX = pos.x - this.x;
-//         int changeY = pos.y - this.y;
-//         this.x = pos.x;
-//         this.y = pos.y;
-//         for (Element element : getElements()) {
-//             element.setX(element.getX() + changeX);
-//             element.setY(element.getY() + changeY);
-//         }
-//     }
-
-//     public Point getSize() {
-//         return new Point(w, h);
-//     }
-
-//     public void setSize(Point size) {
-//         this.w = size.x;
-//         this.h = size.y;
-//     }
-
-//     public int getPriority() {
-//         return priority;
-//     }
-
-//     public void setPriority(int priority) {
-//         this.priority = priority;
-//     }
-
-//     public String getName() {
-//         return this.name;
-//     }
-
-//     public boolean isVisible() {
-//         return visible;
-//     }
-
-//     public void setVisibility(boolean bool) {
-//         visible = bool;
-//     }
-
-//     public Color getColor() {
-//         return null;
-//     }
-
-//     public void setColor(Color color) {
-//     }
-
-//     public Point getCenter() {
-//         return new Point(x + (w >> 1), y + (h >> 1));
-//     }
-
-// }
+}

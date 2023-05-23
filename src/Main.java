@@ -10,10 +10,10 @@ public class Main {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(2000);
+            Thread.sleep(50);
 
-            if (Global.LOG)
-                System.out.println("Mouse - " + Global.MOUSE.getX() + ":" + Global.MOUSE.getY() + "\n" + "\n");
+//            if (Global.LOG)
+//                System.out.println("Mouse - " + Global.MOUSE.getX() + ":" + Global.MOUSE.getY() + "\n" + "\n");
         }
     }
 
@@ -34,62 +34,71 @@ public class Main {
 //     }
 
     private static void initTesting() {
-        layer("UI").addElement(new Sprite(0, 0, 200, 100, 1, Global.COLORS[4]));
-		// layer("a").addElement(new Text(130, 80, 50, 2, "Test", Global.COLORS[3]));
+        Sprite sample_sprite  = new Sprite(50, 50, 200, 100, 1, Global.COLORS[4]);
+        Sprite sample_sprite2 = new Sprite(450, 50, 100, 200, 2, Global.COLORS[5], "biba");
+        Button sample_button  = new Button(450, 50, 100, 200, 3, "sample");
+
+        sample_sprite2.setHoveredColor(Global.COLORS[6]);
+        sample_sprite2.setActiveColor(Global.COLORS[9]);
+        sample_button.addChild(sample_sprite2);
+
+        layer("UI").addElement(sample_sprite);
+        layer("UI").addElement(sample_button);
+        // layer("a").addElement(new Text(130, 80, 50, 2, "Test", Global.COLORS[3]));
         // Button a          = new Button(0, 0, Global.WINDOW_WIDTH, 120, "a", "b", 2);
         // Button testButton = new Button(100, 100, 200, 100, "UI", "mainButtonOfExistence", 1, "Sample text");
     }
 
-  //   private static void initGame() {
-  //       int   GW          = Global.WINDOW_WIDTH;
-  //       int   GH          = Global.WINDOW_HEIGHT;
-  //       float offset      = GH / 28.0f;
-  //       float button_size = GH / 8.0f;
-  //       Sprite sideBG = new Sprite(0,
-  //                                  0,
-  //                                  (int) (button_size + offset * 2),
-  //                                  GH,
-  //                                  0,
-  //                                  Global.COLORS[2]);
-  //       layer("UISIDE").addElement(sideBG);
+//   private static void initGame() {
+//       int   GW          = Global.WINDOW_WIDTH;
+//       int   GH          = Global.WINDOW_HEIGHT;
+//       float offset      = GH / 28.0f;
+//       float button_size = GH / 8.0f;
+//       Sprite sideBG = new Sprite(0,
+//                                  0,
+//                                  (int) (button_size + offset * 2),
+//                                  GH,
+//                                  0,
+//                                  Global.COLORS[2]);
+//       layer("UISIDE").addElement(sideBG);
 
-  //       for (int i = 0; i < 6; i++) {
-  //           new Button((int) offset,
-  //                      (int) (offset + (button_size + offset) * i),
-  //                      (int) button_size,
-  //                      (int) button_size,
-  //                      "UISIDE",
-  //                      "button" + i,
-  //                      i + 1,
-  //                      "BUTTON" + i); // TODO: add a proper way to create buttons
-  //       }
+//       for (int i = 0; i < 6; i++) {
+//           new Button((int) offset,
+//                      (int) (offset + (button_size + offset) * i),
+//                      (int) button_size,
+//                      (int) button_size,
+//                      "UISIDE",
+//                      "button" + i,
+//                      i + 1,
+//                      "BUTTON" + i); // TODO: add a proper way to create buttons
+//       }
 
-  //       Sprite profileBG = new Sprite((int) (button_size + offset * 2),
-  //                                     0,
-  //                                     GW,
-  //                                     (int) (button_size + offset * 2),
-  //                                     0,
-  //                                     Global.COLORS[1]);
-  //       layer("PROFILE").addElement(profileBG);
+//       Sprite profileBG = new Sprite((int) (button_size + offset * 2),
+//                                     0,
+//                                     GW,
+//                                     (int) (button_size + offset * 2),
+//                                     0,
+//                                     Global.COLORS[1]);
+//       layer("PROFILE").addElement(profileBG);
 
-  //       InteractivePicture profilePic = new InteractivePicture((int) (GW - button_size - offset),
-  //                                                              (int) offset,
-  //                                                              (int) (button_size),
-  //                                                              (int) (button_size),
-  //                                                              1,
-  //                                                              "ipolitta.jpg");
-  //       layer("PROFILE").addElement(profilePic);
+//       InteractivePicture profilePic = new InteractivePicture((int) (GW - button_size - offset),
+//                                                              (int) offset,
+//                                                              (int) (button_size),
+//                                                              (int) (button_size),
+//                                                              1,
+//                                                              "ipolitta.jpg");
+//       layer("PROFILE").addElement(profilePic);
 
-  //       Menu test_menu = new Menu(Global.WINDOW_WIDTH >> 1,
-  //                                 Global.WINDOW_HEIGHT >> 1,
-  //                                 Global.STROKE_WIDTH >> 2,
-  //                                 Global.WINDOW_HEIGHT >> 2,
-  //                                 69,
-  //                                 "test");
-  //       test_menu.addSprite(0, 0, 200, 200, 0, Global.COLORS[3]);
-  //       test_menu.addInteractiveSprite(20, 100, 50, 25, 1, Global.COLORS[6]);
-  //       test_menu.addButton(130, 100, 50, 25, 2, "s", "S");
-  //   }
+//       Menu test_menu = new Menu(Global.WINDOW_WIDTH >> 1,
+//                                 Global.WINDOW_HEIGHT >> 1,
+//                                 Global.STROKE_WIDTH >> 2,
+//                                 Global.WINDOW_HEIGHT >> 2,
+//                                 69,
+//                                 "test");
+//       test_menu.addSprite(0, 0, 200, 200, 0, Global.COLORS[3]);
+//       test_menu.addInteractiveSprite(20, 100, 50, 25, 1, Global.COLORS[6]);
+//       test_menu.addButton(130, 100, 50, 25, 2, "s", "S");
+//   }
 
     private static UILayer layer(String name) {
         // TODO: where this thing should be?

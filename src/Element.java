@@ -3,119 +3,174 @@ import java.util.Comparator;
 
 public class Element {
 
-	int[] dimensions 	  = new int[5]; // x y z w h
-	boolean visible 	  = true;
-	boolean hovered 	  = false;
-	String name 		  = "";
-	Element[] children = null;
+    int[]     dimensions = new int[5]; // x y z w h
+    boolean   visible    = true;
+    boolean   hovered    = false;// TODO: maybe combine states into one variable?
+    boolean   active     = false;// TODO: maybe combine states into one variable?
+    String    name       = "";
+    Element[] children   = null;
 
-	Element(int x, int y, int z, int w, int h) {
-		this.dimensions[0] = (int) x;
-		this.dimensions[1] = (int) x;
-		this.dimensions[2] = (int) x;
-		this.dimensions[3] = (int) x;
-		this.dimensions[4] = (int) x;
-	}
-	
-	Element(int x, int y, int z, int w, int h, String name) {
-		this.dimensions[0] = (int) x;
-		this.dimensions[1] = (int) x;
-		this.dimensions[2] = (int) x;
-		this.dimensions[3] = (int) x;
-		this.dimensions[4] = (int) x;
-		this.name = name;
-	}
+    Element(int x, int y, int w, int h, int z) {
+        this.dimensions[0] = x;
+        this.dimensions[1] = y;
+        this.dimensions[2] = z;
+        this.dimensions[3] = w;
+        this.dimensions[4] = h;
+    }
 
-	public boolean update() {
-		return false;
-	}
+    Element(int x, int y, int w, int h, int z, String name) {
+        this(x, y, w, h, z);
+        this.name = name;
+    }
 
-	public void draw(Graphics2D g) {
-		return;
-	}
-	
-	public int getX() {
-		return dimensions[0];
-	}
-	
-	public int getY() {
-		return dimensions[1];
-	}
-	
-	public int getZ() {
-		return dimensions[2];
-	}
-	
-	public int getWidth() {
-		return dimensions[3];
-	}
-	
-	public int getHeight() {
-		return dimensions[4];
-	}
+    public boolean update() {
+        // TODO: make this function accept a boolean
+        //     as a flag that another element has already been activated
+        return false;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public void draw(Graphics2D g2d) {
+        return;
+    }
 
-	public Element[] getChildren() {
-		return children;
-	}
-	
-	public boolean isVisible() {
-		return visible;
-	}
-	
-	public boolean isHovered() {
-		return hovered;
-	}
-	
-	public void setX(int x) {
-		dimensions[0] = x;
-	}
-	
-	public void setY(int y) {
-		dimensions[1] = y;
-	}
-	
-	public void setZ(int z) {
-		dimensions[2] = z;
-	}
-	
-	public void setWidth(int w) {
-		dimensions[3] = w;
-	}
-	
-	public void setHeight(int h) {
-		dimensions[4] = h;
-	}
+    public boolean updateChildren() {
+        boolean result = false;
 
-	public void setVisibility(boolean visible) {
-		this.visible = visible;
-	}
-	
-	public void setHovered(boolean hovered) {
-		this.hovered = hovered;
-	}
+        Element[] descendants = getChildren();
+        for (int i = descendants.length - 1; i >= 0; i--) {
+            result |= descendants[i].update();
+        }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+        return result;
+    }
 
-	public void addChild(Element child) {
-		// TODO: implement
-		// maybe make this function return boolean to signify if it was successful or not
-	}
+    public void drawChildren(Graphics2D g2d) {
+        for (Element e : getChildren()) {
+            e.draw(g2d);
+        }
+    }
 
-	public void removeChild(int index) {
-		// TODO: implement
-		// maybe make this function return boolean to signify if it was successful or not
-	}
+    public int getX() {
+        return dimensions[0];
+    }
 
-	public void removeChild(String name) {
-		// TODO: implement
-		// maybe make this function return boolean to signify if it was successful or not
-	}
+    public void setX(int x) {
+        int change = x - getX();
+        dimensions[0] = x;
+        for (Element e : getChildren()) {
+            e.setX(e.getX() + change);
+        } // TODO: refactor after adding addX() function
+    }
+
+    public int getY() {
+        return dimensions[1];
+    }
+
+    public void setY(int y) {
+        int change = y - getY();
+        dimensions[1] = y;
+        for (Element e : getChildren()) {
+            e.setY(e.getY() + change);
+        } // TODO: refactor after adding addY() function
+    }
+
+    public int getZ() {
+        return dimensions[2];
+    }
+
+    public void setZ(int z) {
+        dimensions[2] = z;
+    }
+
+    public int getWidth() {
+        return dimensions[3];
+    }
+
+    public void setWidth(int w) {
+        dimensions[3] = w;
+    }
+
+    public int getHeight() {
+        return dimensions[4];
+    }
+
+    public void setHeight(int h) {
+        dimensions[4] = h;
+    }
+
+    public int getCenterX() {
+        return getX() + (getWidth() >> 1);
+    }
+
+    public int getCenterY() {
+        return getY() + (getHeight() >> 1);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisibility(boolean visible) {
+        this.visible = visible;
+    }
+
+    public boolean isHovered() {
+        return hovered;
+    }
+
+    public void setHovered(boolean hovered) {
+        this.hovered = hovered;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public Element[] getChildren() {
+        return children;
+    }
+
+    public void addChild(Element child) {
+
+        if (children == null) {
+            children    = new Element[1];
+            children[0] = child;
+            return;
+        }
+
+        Element[] old_array = getChildren();
+        children                      = new Element[children.length + 1];
+        children[children.length - 1] = child;
+        for (int i = 0; i < old_array.length; i++) {
+            children[i] = old_array[i];
+        }
+
+        // TODO: maybe make this function return boolean to signify if it was successful or not
+    }
+
+    public void removeChild(int index) {
+        // TODO: implement
+        // maybe make this function return boolean to signify if it was successful or not
+    }
+
+    public void removeChild(String name) {
+        // TODO: implement
+        // maybe make this function return boolean to signify if it was successful or not
+    }
+
+
 }
 
 class ElementPriorityComparator implements Comparator<Element> {
