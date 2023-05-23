@@ -1,127 +1,79 @@
 import java.awt.*;
+import static java.lang.String.format;
 
-public class Sprite implements Element {
-
-    private int     x;
-    private int     y;
-    private int     w;
-    private int     h;
-    private int     priority;
-    private boolean visible = true;
+public class Sprite extends Element {
+	
     private boolean outline = false; // TODO: rework Sprite types
     private Color   color; // TODO: add colors for highlighting and activating
 
     public Sprite(int x, int y, int w, int h, int priority, Color color) {
-        this.x        = x;
-        this.y        = y;
-        this.w        = w;
-        this.h        = h;
-        this.priority = priority;
-        this.color    = color;
+        super(x, y, priority, w, h);
+        this.color = color;
     }
 
     public boolean update() {
-        if (Global.LOG) System.out.printf(
-                "\t\tupdate sprite %d : %s%s%n",
-                getPriority(),
-                isVisible() ? " visible" : "!visible",
-                isOutline() ? " : outline" : "");// $DEBUG
+        // if (Global.LOG) System.out.printf(
+        //         "\t\tupdate sprite %d : %s%s%n",
+        //         getPriority(),
+        //         isVisible() ? " visible" : "!visible",
+        //         isOutline() ? " : outline" : "");// $DEBUG
         return false;
     }
 
+	@Override
     public void draw(Graphics2D g) {
-        if (Global.LOG) System.out.printf(
-                "\t\tdraw sprite %d : %s%s%n",
-                getPriority(),
-                isVisible() ? " visible" : "!visible",
-                isOutline() ? " : outline" : ""); // $DEBUG
+		System.out.println(format(
+			"drawing sprite: %dx%d %dx%d", getX(), getY(), getWidth(), getHeight()
+		)); // TODO: figure out why dis no work :(
+		
+        // if (Global.LOG) System.out.printf(
+        //         "\t\tdraw sprite %d : %s%s%n",
+        //         getPriority(),
+        //         isVisible() ? " visible" : "!visible",
+        //         isOutline() ? " : outline" : ""); // $DEBUG
 
-        if (!visible) return;
+        if (!isVisible()) return;
 
         // TODO: make this function use enumeration to identify the type of sprite and draw it appropriately
         // TODO: *everything after this line*
 
         g.setColor(color);
-        if (outline) {
-            if (Global.LOG) System.out.println("\t\t\toutline"); // $DEBUG
-            int s = Global.STROKE_WIDTH;
-            g.setStroke(new BasicStroke(s));
-            g.drawRect(x + s / 2, y + s / 2, w - s, h - s);
-        } else {
-            if (Global.LOG) System.out.println("\t\t\tsolid"); // $DEBUG
-            g.fillRect(x, y, w, h);
-        }
+        // if (outline) {
+        //     if (Global.LOG) System.out.println("\t\t\toutline"); // $DEBUG
+        //     int s = Global.STROKE_WIDTH;
+        //     g.setStroke(new BasicStroke(s));
+        //     g.drawRect(x + s / 2, y + s / 2, w - s, h - s);
+        // } else {
+        //     if (Global.LOG) System.out.println("\t\t\tsolid"); // $DEBUG
+        //     g.fillRect(x, y, w, h);
+        // }
+
+		// TEMPORARY
+		g.fillRect(getX(), getY(), getWidth(), getHeight());
+		// END OF TEMPORARY
     }
 
-    public int getX() {
-        return x;
-    }
+    // public Point getPos() {
+    //     return new Point(x, y);
+    // }
 
-    public void setX(int x) {
-        this.x = x;
-    }
+    // public void setPos(Point pos) {
+    //     this.x = pos.x;
+    //     this.y = pos.y;
+    // }
 
-    public int getY() {
-        return y;
-    }
+    // public Point getSize() {
+    //     return new Point(w, h);
+    // }
 
-    public void setY(int y) {
-        this.y = y;
-    }
+    // public void setSize(Point size) {
+    //     this.w = size.x;
+    //     this.h = size.y;
+    // }
 
-    public int getWidth() {
-        return w;
-    }
-
-    public void setWidth(int w) {
-        this.w = w;
-    }
-
-    public int getHeight() {
-        return h;
-    }
-
-    public void setHeight(int h) {
-        this.h = h;
-    }
-
-    public Point getPos() {
-        return new Point(x, y);
-    }
-
-    public void setPos(Point pos) {
-        this.x = pos.x;
-        this.y = pos.y;
-    }
-
-    public Point getSize() {
-        return new Point(w, h);
-    }
-
-    public void setSize(Point size) {
-        this.w = size.x;
-        this.h = size.y;
-    }
-
-    public Point getCenter() {
-        return new Point(x + (w >> 1), y + (h >> 1));
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisibility(boolean bool) {
-        visible = bool;
-    }
+    // public Point getCenter() {
+    //     return new Point(x + (w >> 1), y + (h >> 1));
+    // }
 
     public Color getColor() {
         return color;

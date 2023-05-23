@@ -1,53 +1,127 @@
 import java.awt.*;
 import java.util.Comparator;
 
-public interface Element {
+public class Element {
 
-    boolean update();
+	int[] dimensions 	  = new int[5]; // x y z w h
+	boolean visible 	  = true;
+	boolean hovered 	  = false;
+	String name 		  = "";
+	Element[] children = null;
 
-    void draw(Graphics2D g);
+	Element(int x, int y, int z, int w, int h) {
+		this.dimensions[0] = (int) x;
+		this.dimensions[1] = (int) x;
+		this.dimensions[2] = (int) x;
+		this.dimensions[3] = (int) x;
+		this.dimensions[4] = (int) x;
+	}
+	
+	Element(int x, int y, int z, int w, int h, String name) {
+		this.dimensions[0] = (int) x;
+		this.dimensions[1] = (int) x;
+		this.dimensions[2] = (int) x;
+		this.dimensions[3] = (int) x;
+		this.dimensions[4] = (int) x;
+		this.name = name;
+	}
 
-    int getX();
+	public boolean update() {
+		return false;
+	}
 
-    void setX(int x);
+	public void draw(Graphics2D g) {
+		return;
+	}
+	
+	public int getX() {
+		return dimensions[0];
+	}
+	
+	public int getY() {
+		return dimensions[1];
+	}
+	
+	public int getZ() {
+		return dimensions[2];
+	}
+	
+	public int getWidth() {
+		return dimensions[3];
+	}
+	
+	public int getHeight() {
+		return dimensions[4];
+	}
 
-    int getY();
+	public String getName() {
+		return name;
+	}
 
-    void setY(int y);
+	public Element[] getChildren() {
+		return children;
+	}
+	
+	public boolean isVisible() {
+		return visible;
+	}
+	
+	public boolean isHovered() {
+		return hovered;
+	}
+	
+	public void setX(int x) {
+		dimensions[0] = x;
+	}
+	
+	public void setY(int y) {
+		dimensions[1] = y;
+	}
+	
+	public void setZ(int z) {
+		dimensions[2] = z;
+	}
+	
+	public void setWidth(int w) {
+		dimensions[3] = w;
+	}
+	
+	public void setHeight(int h) {
+		dimensions[4] = h;
+	}
 
-    int getWidth();
+	public void setVisibility(boolean visible) {
+		this.visible = visible;
+	}
+	
+	public void setHovered(boolean hovered) {
+		this.hovered = hovered;
+	}
 
-    void setWidth(int w);
+	public void setName(String name) {
+		this.name = name;
+	}
 
-    int getHeight();
+	public void addChild(Element child) {
+		// TODO: implement
+		// maybe make this function return boolean to signify if it was successful or not
+	}
 
-    void setHeight(int h);
+	public void removeChild(int index) {
+		// TODO: implement
+		// maybe make this function return boolean to signify if it was successful or not
+	}
 
-    Point getPos();
-
-    void setPos(Point pos);
-
-    Point getSize();
-
-    void setSize(Point size);
-
-    int getPriority();
-
-    void setPriority(int priority);
-
-    boolean isVisible();
-
-    void setVisibility(boolean bool);
-
-    Color getColor();
-
-    void setColor(Color color);
+	public void removeChild(String name) {
+		// TODO: implement
+		// maybe make this function return boolean to signify if it was successful or not
+	}
 }
 
 class ElementPriorityComparator implements Comparator<Element> {
     @Override
     public int compare(Element a, Element b) {
-        return Integer.compare(a.getPriority(), b.getPriority());
+        return Integer.compare(a.getZ(), b.getZ());
     }
 }
 
@@ -62,7 +136,7 @@ class ElementPriorityComparator implements Comparator<Element> {
 // add name attribute to every element
 
 // GeneralElement
-// pos(x, y, z) size(w, h) visibile(bool) highlighted(bool) name(String) children(Element[])
+// pos(x, y, z) size(w, h) visibile(bool) hovered(bool) name(String) children(Element[])
 
 // Sprite
 // +color(Color)
