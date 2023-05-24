@@ -15,51 +15,6 @@ public class Sprite extends Element {
         setColors(color, color, color);
     }
 
-    public boolean update() {
-        if (Global.LOG > 1) System.out.printf(
-                "\t\tupdate sprite - z:%d x:%d y:%d w:%d h:%d %s '%s'%n",
-                getZ(), getX(), getY(), getWidth(), getHeight(), getName(),
-                isVisible() ? " visible" : "!visible");// $DEBUG
-
-        // TODO: put everything below into a separate function of Element class
-        int mx = Global.MOUSE.getX();
-        int my = Global.MOUSE.getY();
-        int sx = getX();
-        int sy = getY();
-        int sw = getWidth();
-        int sh = getHeight();
-
-        setHovered(mx >= sx && mx <= sx + sw && my >= sy && my <= sy + sh);
-        if (isHovered()) {
-            if (Global.LOG > 0) {
-                System.out.println("\t\tmouse hovered over " + getName());
-            }
-            if (!Global.MOUSE.getLMBUsed() && Global.MOUSE.getLMB()) {
-                if (Global.LOG > 0) {
-                    System.out.println("\t\tmouse clicked at " + getName());
-                }
-
-                setActive(true);
-                Global.MOUSE.setLMBUsed(true);
-//            try {
-//                this.getClass().getMethod(getName()).invoke(this);
-//            } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-//                throw new RuntimeException(e);
-//            }
-                return true;
-            } else {
-                setActive(false);
-            }
-        } else {
-            if (Global.LOG > 0) {
-                System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
-            }
-        }
-
-
-        return false;
-    }
-
     @Override
     public void draw(Graphics2D g2d) {
         if (Global.LOG > 2) {

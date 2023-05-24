@@ -5,33 +5,24 @@ import java.util.ArrayList;
 
 public class Window extends JFrame {
 
-    ArrayList<UILayer> layers = new ArrayList<>();
+    ArrayList<UILayer> layers = new ArrayList<>(); // TODO: turn into a regular array
 
-    public Window(int width, int height, Color backgroundColor) {
-
-        // init buffered image
+    public Window(int width, int height) {
         Global.IMAGE = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        // init canvas
         Global.CANVAS = new DoubleBufferedCanvas(width, height);
         add(Global.CANVAS);
-
-        // init bg
-        UILayer bg = new UILayer("BG", 0);
-        bg.addElement(new Sprite(0, 0, width, height, 0, backgroundColor));
-        addLayer(bg);
-
-
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
         pack();
     }
 
     public UILayer getLayer(String name) {
-        for (UILayer layer : layers)
-            if (layer.getName().equals(name.toUpperCase()))
+        for (UILayer layer : layers) {
+            if (layer.getName().equals(name.toUpperCase())) {
                 return layer;
+			}
+		}
         return null;
     }
 
@@ -44,14 +35,19 @@ public class Window extends JFrame {
         layers.sort(new LayerPriorityComparator());
     }
 
-    public void addLayer(String name, int priority) {
-        layers.add(new UILayer(name, priority));
+    public void addLayer(String name, int z) {
+        layers.add(new UILayer(name, z));
         layers.sort(new LayerPriorityComparator());
     }
 
     public void addLayerToTop(String name) {
-        int maxPriority = layers.get(layers.size() - 1).getPriority();
-        layers.add(new UILayer(name, maxPriority + 1));
+		if (layers.size() == 0) {
+			layers.add(new UILayer(name, 0));
+			return;
+		}
+		
+        int maxZ = layers.get(layers.size() - 1).getZ();
+        layers.add(new UILayer(name, maxZ + 1));
         layers.sort(new LayerPriorityComparator());
     }
 

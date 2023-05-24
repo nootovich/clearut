@@ -5,8 +5,8 @@ public class Element {
 
     int[]     dimensions = new int[5]; // x y z w h
     boolean   visible    = true;
-    boolean   hovered    = false;// TODO: maybe combine states into one variable?
-    boolean   active     = false;// TODO: maybe combine states into one variable?
+    boolean   hovered    = false; // TODO: maybe combine states into one variable?
+    boolean   active     = false; // TODO: maybe combine states into one variable?
     String    name       = "";
     Element[] children   = null;
 
@@ -25,8 +25,43 @@ public class Element {
 
     public boolean update() {
         // TODO: make this function accept a boolean
-        //     as a flag that another element has already been activated
-        return false;
+        //     as a flag that another element has already been activated?
+        boolean lmb 	= Global.MOUSE.getLMB();
+		boolean lmbUsed = Global.MOUSE.getLMBUsed();
+        int mx = Global.MOUSE.getX();
+        int my = Global.MOUSE.getY();
+        int ex = getX();
+        int ey = getY();
+        int ew = getWidth();
+        int eh = getHeight();
+		String en = getName(); // TODO: rename to ename
+		
+        if (Global.LOG > 1) {
+			System.out.printf("\t\tupdate element - z:%d x:%d y:%d w:%d h:%d %s '%s'%n",
+                			  getZ(), ex, ey, ew, eh, en, isVisible() ? " visible" : "!visible");
+		} // $DEBUG
+
+        setHovered(mx >= ex && mx <= ex + ew && my >= ey && my <= ey + eh);
+        if (isHovered()) {
+            if (Global.LOG > 0) {
+                System.out.printf("\tmouse hovered over %s, lmb: %b(%b)%n", en, lmb, lmbUsed);
+            } // $DEBUG
+			
+            if (!lmbUsed && lmb) {
+                if (Global.LOG > 0) {
+                    System.out.println("\tmouse clicked at " + en);
+                } // $DEBUG
+
+                setActive(true);
+                Global.MOUSE.setLMBUsed(true);
+                return true;
+            } else if (!lmb) {
+                setActive(false);
+            }
+        } else if (Global.LOG > 1) {
+            System.out.printf("mouse not hovered on %s - x:%d y:%d lmb: %b(%b)%n", en, mx, my, lmb, lmbUsed);
+		} // $DEBUG
+        return updateChildren();
     }
 
     public void draw(Graphics2D g2d) {
@@ -34,18 +69,20 @@ public class Element {
     }
 
     public boolean updateChildren() {
+		// TODO: make Element and Button extend some intermediary class with this function
+		if (getChildren() == null) return false;
+		
         boolean result = false;
-
         Element[] descendants = getChildren();
         for (int i = descendants.length - 1; i >= 0; i--) {
             result |= descendants[i].update();
         }
-
         return result;
     }
 
     public void drawChildren(Graphics2D g2d) {
-        for (Element e : getChildren()) {
+ 		// TODO: make Element and Button extend some intermediary class with this function
+       for (Element e : getChildren()) {
             e.draw(g2d);
         }
     }
@@ -139,18 +176,20 @@ public class Element {
     }
 
     public Element[] getChildren() {
+		// TODO: make Element and Button extend some intermediary class with this function
         return children;
     }
 
     public void addChild(Element child) {
+		// TODO: make Element and Button extend some intermediary class with this function
 
-        if (children == null) {
+        if (getChildren() == null) {
             children    = new Element[1];
             children[0] = child;
             return;
         }
 
-        Element[] old_array = getChildren();
+        Element[] old_array 		  = getChildren();
         children                      = new Element[children.length + 1];
         children[children.length - 1] = child;
         for (int i = 0; i < old_array.length; i++) {
@@ -161,16 +200,16 @@ public class Element {
     }
 
     public void removeChild(int index) {
+		// TODO: make Element and Button extend some intermediary class with this function
         // TODO: implement
         // maybe make this function return boolean to signify if it was successful or not
     }
 
     public void removeChild(String name) {
+		// TODO: make Element and Button extend some intermediary class with this function
         // TODO: implement
         // maybe make this function return boolean to signify if it was successful or not
     }
-
-
 }
 
 class ElementPriorityComparator implements Comparator<Element> {
@@ -191,13 +230,13 @@ class ElementPriorityComparator implements Comparator<Element> {
 // add name attribute to every element
 
 // GeneralElement
-// pos(x, y, z) size(w, h) visibile(bool) hovered(bool) name(String) children(Element[])
+// pos(x, y, z) size(w, h) visibile(bool) hovered(bool) active(bool) name(String) children(Element[])
 
 // Sprite
-// +color(Color)
+// +colors(Color[])
 
 // Text
-// +text(String) +color(Color)
+// +text(String) +colors(Color[])
 
 // Picture
 // +image(Image)

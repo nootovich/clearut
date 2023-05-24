@@ -1,8 +1,9 @@
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, Global.COLORS[0]);
-
+        Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
+		layer("BG").addElement(new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS[0], "bg"));
+		
         initTesting();
 
         //noinspection InfiniteLoopStatement
@@ -10,10 +11,11 @@ public class Main {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(50);
+            Thread.sleep(2000);
 
-//            if (Global.LOG)
-//                System.out.println("Mouse - " + Global.MOUSE.getX() + ":" + Global.MOUSE.getY() + "\n" + "\n");
+			if (Global.LOG > 1) {
+                System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
+            } // $DEBUG
         }
     }
 
@@ -34,19 +36,18 @@ public class Main {
 //     }
 
     private static void initTesting() {
-        Sprite sample_sprite  = new Sprite(50, 50, 200, 100, 1, Global.COLORS[4]);
-        Sprite sample_sprite2 = new Sprite(450, 50, 100, 200, 2, Global.COLORS[5], "biba");
-        Button sample_button  = new Button(450, 50, 100, 200, 3, "sample");
+        Sprite sample_sprite  = new Sprite(50, 50, 200, 100, 1, Global.COLORS[4], "sprite1");
+        Sprite sample_sprite2 = new Sprite(450, 50, 100, 200, 2, Global.COLORS[5], "button_sprite");
+        Button sample_button  = new Button("sample", "button1");
+		Text   sample_text	  = new Text(500, 150, 4, 11, "Sample text", Global.COLOR_RED_MUNSELL);
 
         sample_sprite2.setHoveredColor(Global.COLORS[6]);
         sample_sprite2.setActiveColor(Global.COLORS[9]);
         sample_button.addChild(sample_sprite2);
-
+		sample_button.addChild(sample_text);
+		
         layer("UI").addElement(sample_sprite);
-        layer("UI").addElement(sample_button);
-        // layer("a").addElement(new Text(130, 80, 50, 2, "Test", Global.COLORS[3]));
-        // Button a          = new Button(0, 0, Global.WINDOW_WIDTH, 120, "a", "b", 2);
-        // Button testButton = new Button(100, 100, 200, 100, "UI", "mainButtonOfExistence", 1, "Sample text");
+        layer("UI").addButton(sample_button);
     }
 
 //   private static void initGame() {
@@ -103,6 +104,7 @@ public class Main {
     private static UILayer layer(String name) {
         // TODO: where this thing should be?
         // MEGA TODO: prob rework or remove this. Good idea tho
+		// GIGA TODO: this thing is amazing. DO NOT TOUCHA MA SPAGET
         UILayer layer = Global.WINDOW.getLayer(name);
         if (layer != null)
             return layer;
