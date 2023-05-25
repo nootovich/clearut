@@ -4,14 +4,14 @@ public class Main {
         Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
 		layer("BG").addElement(new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS[0], "bg"));
 		
-        initTesting();
+        initSpawnMenuTesting();
 
         //noinspection InfiniteLoopStatement
         while (true) {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(2000);
+            Thread.sleep(500);
 
 			if (Global.LOG > 1) {
                 System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
@@ -25,29 +25,36 @@ public class Main {
 //         System.exit(0);
 //     }
 
-//     private static void initSpawnMenuTesting() {
-//         Global.spawnMenu = new Menu(0, 0, 0, 0, 1000, "SPAWN_MENU");
-//         String[][] buttonDefinitions = {{"DumpInfoToConsole","Dump info to Console"}, {"2","2"},{"3","3"}};
-//         // TODO: this function is unfinished
-//         //for (int i = 0; i < ) // this is for adding buttons in a loop
-// //        Global.spawnMenu.addButton(0, 0, 200, 40, 1001, );
-// //        Global.spawnMenu.addButton(0, 20, 100, 20, 1001, "2", "2");
-// //        Global.spawnMenu.addButton(0, 40, 100, 20, 1001, "3", "3");
-//     }
+    private static void initSpawnMenuTesting() {
+        Menu testMenu = new Menu(50, 50, 200, 120, 2, "SPAWN_MENU");
+		layer("UI").addElement(testMenu); // TODO: continue from here (this function seemingly does nothing)
+		
+        String[][] buttonDefinitions = {{"DumpInfoToConsole","Dump info to Console"}, {"2","2"},{"3","3"}};
+        for (int i = 0; i < buttonDefinitions.length; i++) {
+			Sprite button = new Sprite(50, 50 + i * 30, 200, 25, 2, Global.COLORS[3], "sprite" + i);
+			Text   text	  = new Text(150, 65 + i * 30, 12, 4, buttonDefinitions[i][1], Global.COLOR_VANILLA);
+			
+			button.setAction(buttonDefinitions[i][0]);
+			button.addChild(text);
+
+			testMenu.addChild(button);
+		} 
+    }
 
     private static void initTesting() {
         Sprite sample_sprite  = new Sprite(50, 50, 200, 100, 1, Global.COLORS[4], "sprite1");
-        Sprite sample_sprite2 = new Sprite(450, 50, 100, 200, 2, Global.COLORS[5], "button_sprite");
-        Button sample_button  = new Button("sample", "button1");
-		Text   sample_text	  = new Text(500, 150, 4, 11, "Sample text", Global.COLOR_RED_MUNSELL);
+        Sprite sample_sprite2 = new Sprite(450, 50, 100, 200, 2, Global.COLORS[5], "button_sprite", "button1");
+		Text   sample_text	  = new Text(500, 150, 11, 4, "Sample text", Global.COLOR_RED_MUNSELL);
 
+		sample_sprite.setHoveredColor(Global.COLOR_VANILLA);
+		sample_sprite.setActiveColor(Global.COLOR_MELON);
+		
+		sample_sprite2.addChild(sample_text);
         sample_sprite2.setHoveredColor(Global.COLORS[6]);
         sample_sprite2.setActiveColor(Global.COLORS[9]);
-        sample_button.addChild(sample_sprite2);
-		sample_button.addChild(sample_text);
 		
         layer("UI").addElement(sample_sprite);
-        layer("UI").addButton(sample_button);
+        layer("UI").addElement(sample_sprite2);
     }
 
 //   private static void initGame() {

@@ -6,7 +6,6 @@ public class UILayer {
 
     private final String             name;
     private final ArrayList<Element> elements = new ArrayList<>(); // TODO: turn into a regular array
-	private final ArrayList<Button>  buttons  = new ArrayList<>(); // TODO: this is a temporary solution
     private       int                z;
 
     public UILayer(String name, int z) {
@@ -19,13 +18,6 @@ public class UILayer {
             System.out.println("update layer " + getName());
         } // $DEBUG
 
-		// TODO: this is temporary
-        for (int i = buttons.size() - 1; i >= 0; i--) {
-            if (buttons.get(i).update()) {
-                return true;
-			}
-		}
-		
         for (int i = elements.size() - 1; i >= 0; i--) {
             if (elements.get(i).update()) {
                 return true;
@@ -42,11 +34,6 @@ public class UILayer {
             System.out.println("draw layer " + getZ() + " : " + getName());
         } // $DEBUG
 
-		// TODO: this is temporary
-        for (Button button : buttons) {
-            button.draw(g);
-		}
-		
         for (Element element : elements) {
             element.draw(g);
 		}
@@ -73,10 +60,6 @@ public class UILayer {
         elements.sort(new ElementPriorityComparator());
     }
 	
-    public void addButton(Button button) {
-        buttons.add(button);
-        // elements.sort(new ElementPriorityComparator());
-    }
 }
 
 class LayerPriorityComparator implements Comparator<UILayer> {

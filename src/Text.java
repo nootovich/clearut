@@ -7,7 +7,7 @@ public class Text extends Element {
     private String  text;
     private Color   color;
 
-    public Text(int x, int y, int z, int size, String text, Color color) {
+    public Text(int x, int y, int size, int z, String text, Color color) {
 		super(x, y, 0, 0, z);
         this.textSize = size;
         this.text     = text;

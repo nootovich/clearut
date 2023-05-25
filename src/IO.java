@@ -102,9 +102,9 @@ public class IO {
         private int     y           = -1;
         private boolean LMB         = false;
         private boolean RMB         = false;
-        private boolean LMBUsed     = false;
-        private boolean RMBUsed     = false;
-        private boolean doubleClick = false; // TODO: getter/setter
+        private boolean LMBUsed     = false; // TODO: would be nice to rename to something better
+        private boolean RMBUsed     = false; // TODO: would be nice to rename to something better
+        private boolean doubleClick = false; // TODO: getter/setter (or maybe remove?)
 
         public void update() {
             try {
@@ -135,8 +135,8 @@ public class IO {
             }
             LMB &= e.getButton() != MouseEvent.BUTTON1;
             RMB &= e.getButton() != MouseEvent.BUTTON3;
-            LMBUsed &= e.getButton() != MouseEvent.BUTTON1;
-            RMBUsed &= e.getButton() != MouseEvent.BUTTON3;
+            LMBUsed &= e.getButton() != MouseEvent.BUTTON1; // TODO: schedule for update in the next frame
+            RMBUsed &= e.getButton() != MouseEvent.BUTTON3; // TODO: schedule for update in the next frame
             doubleClick = false;
         }
 
@@ -155,6 +155,14 @@ public class IO {
 //             return new Point(this.x, this.y);
 //         }
 
+		public boolean isRisingEdge() {
+			return LMB && !LMBUsed;
+		}
+	
+		public boolean isFallingEdge() {
+			return !LMB && LMBUsed;
+		}
+		
         public int getX() {
             return x;
         }

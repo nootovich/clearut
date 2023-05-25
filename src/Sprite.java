@@ -15,6 +15,11 @@ public class Sprite extends Element {
         setColors(color, color, color);
     }
 
+    public Sprite(int x, int y, int w, int h, int z, Color color, String name, String action) {
+        super(x, y, w, h, z, name, action);
+        setColors(color, color, color);
+    }
+
     @Override
     public void draw(Graphics2D g2d) {
         if (Global.LOG > 2) {
@@ -39,7 +44,6 @@ public class Sprite extends Element {
             g2d.setColor(getIdleColor());
         }
 
-
         // if (outline) {
         //     if (Global.LOG) System.out.println("\t\t\toutline"); // $DEBUG
         //     int s = Global.STROKE_WIDTH;
@@ -50,9 +54,22 @@ public class Sprite extends Element {
         //     g.fillRect(x, y, w, h);
         // }
 
-        // TEMPORARY
+		int i = 0;
+		Element[] descendants = getChildren();
+		for (Element d : descendants) { // draw children with lower z order first
+			if (d.getZ() > getZ()) break;
+			d.draw(g2d);
+		}
+
+		// TEMPORARY
         g2d.fillRect(getX(), getY(), getWidth(), getHeight());
-        // END OF TEMPORARY
+		// END OF TEMPORARY
+        
+		for (Element d : descendants) { // draw children with higher z order next
+			if (d.getZ() > getZ()) {
+				d.draw(g2d);
+			}
+		}
     }
 
     // public Point getPos() {

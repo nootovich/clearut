@@ -31,8 +31,8 @@ public class Global {
     public static DoubleBufferedCanvas CANVAS;
     public static Image                IMAGE;
     public static IO.Mouse             MOUSE      = new IO.Mouse();
+	public static Actions			   ACTIONS	  = new Actions();
 
     public static File IMAGE_FOLDER = new File("C:\\Users\\noot\\IdeaProjects\\clearut\\images");
     public static int  LOG          = 0;
-    public static Menu spawnMenu; // TODO: temporary solution, remove!
 }

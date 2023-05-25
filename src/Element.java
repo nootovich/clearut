@@ -8,7 +8,8 @@ public class Element {
     boolean   hovered    = false; // TODO: maybe combine states into one variable?
     boolean   active     = false; // TODO: maybe combine states into one variable?
     String    name       = "";
-    Element[] children   = null;
+	String 	  action	 = "";
+    Element[] children   = new Element[0];
 
     Element(int x, int y, int w, int h, int z) {
         this.dimensions[0] = x;
@@ -23,18 +24,25 @@ public class Element {
         this.name = name;
     }
 
+    Element(int x, int y, int w, int h, int z, String name, String action) {
+        this(x, y, w, h, z, name);
+        this.action = action;
+    }
+
     public boolean update() {
         // TODO: make this function accept a boolean
         //     as a flag that another element has already been activated?
         boolean lmb 	= Global.MOUSE.getLMB();
-		boolean lmbUsed = Global.MOUSE.getLMBUsed();
+		boolean lmbUsed = Global.MOUSE.getLMBUsed(); // $DEBUG
+		boolean LMBRisingEdge  = Global.MOUSE.isRisingEdge();
+		boolean LMBFallingEdge = Global.MOUSE.isFallingEdge();
         int mx = Global.MOUSE.getX();
         int my = Global.MOUSE.getY();
         int ex = getX();
         int ey = getY();
         int ew = getWidth();
         int eh = getHeight();
-		String en = getName(); // TODO: rename to ename
+		String en = getName(); // $DEBUG
 		
         if (Global.LOG > 1) {
 			System.out.printf("\t\tupdate element - z:%d x:%d y:%d w:%d h:%d %s '%s'%n",
@@ -42,34 +50,29 @@ public class Element {
 		} // $DEBUG
 
         setHovered(mx >= ex && mx <= ex + ew && my >= ey && my <= ey + eh);
+		setActive(isHovered() && lmb);
         if (isHovered()) {
             if (Global.LOG > 0) {
                 System.out.printf("\tmouse hovered over %s, lmb: %b(%b)%n", en, lmb, lmbUsed);
             } // $DEBUG
 			
-            if (!lmbUsed && lmb) {
+            if (LMBRisingEdge) {
                 if (Global.LOG > 0) {
                     System.out.println("\tmouse clicked at " + en);
                 } // $DEBUG
 
-                setActive(true);
-                Global.MOUSE.setLMBUsed(true);
-                return true;
-            } else if (!lmb) {
-                setActive(false);
-            }
+				Global.MOUSE.setLMBUsed(true);	// TODO: these are redundant (used for the same things)
+                return true;					// TODO: these are redundant (used for the same things)
+            } else if (LMBFallingEdge) {
+				Global.ACTIONS.invoke(action);
+			}
         } else if (Global.LOG > 1) {
-            System.out.printf("mouse not hovered on %s - x:%d y:%d lmb: %b(%b)%n", en, mx, my, lmb, lmbUsed);
+           	System.out.printf("mouse not hovered on %s - x:%d y:%d lmb: %b(%b)%n", en, mx, my, lmb, lmbUsed);
 		} // $DEBUG
-        return updateChildren();
-    }
-
-    public void draw(Graphics2D g2d) {
-        return;
+		return updateChildren();
     }
 
     public boolean updateChildren() {
-		// TODO: make Element and Button extend some intermediary class with this function
 		if (getChildren() == null) return false;
 		
         boolean result = false;
@@ -80,11 +83,39 @@ public class Element {
         return result;
     }
 
+    public void draw(Graphics2D g2d) {
+        return;
+    }
+
     public void drawChildren(Graphics2D g2d) {
- 		// TODO: make Element and Button extend some intermediary class with this function
        for (Element e : getChildren()) {
             e.draw(g2d);
         }
+    }
+
+    public Element[] getChildren() {
+		return children;
+    }
+
+    public void addChild(Element child) {
+        Element[] old_array 		  = getChildren();
+        children                      = new Element[children.length + 1];
+        children[children.length - 1] = child;
+        for (int i = 0; i < old_array.length; i++) {
+            children[i] = old_array[i];
+        }
+
+        // TODO: maybe make this function return boolean to signify if it was successful or not
+    }
+
+    public void removeChild(int index) {
+        // TODO: implement
+        // maybe make this function return boolean to signify if it was successful or not
+    }
+
+    public void removeChild(String name) {
+        // TODO: implement
+        // maybe make this function return boolean to signify if it was successful or not
     }
 
     public int getX() {
@@ -151,64 +182,36 @@ public class Element {
         this.name = name;
     }
 
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(String action) {
+        this.action = action;
+    }
+
     public boolean isVisible() {
         return visible;
     }
 
-    public void setVisibility(boolean visible) {
-        this.visible = visible;
+    public void setVisibility(boolean bool) {
+        this.visible = bool;
     }
 
     public boolean isHovered() {
         return hovered;
     }
 
-    public void setHovered(boolean hovered) {
-        this.hovered = hovered;
+    public void setHovered(boolean bool) {
+        this.hovered = bool;
     }
 
     public boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public Element[] getChildren() {
-		// TODO: make Element and Button extend some intermediary class with this function
-        return children;
-    }
-
-    public void addChild(Element child) {
-		// TODO: make Element and Button extend some intermediary class with this function
-
-        if (getChildren() == null) {
-            children    = new Element[1];
-            children[0] = child;
-            return;
-        }
-
-        Element[] old_array 		  = getChildren();
-        children                      = new Element[children.length + 1];
-        children[children.length - 1] = child;
-        for (int i = 0; i < old_array.length; i++) {
-            children[i] = old_array[i];
-        }
-
-        // TODO: maybe make this function return boolean to signify if it was successful or not
-    }
-
-    public void removeChild(int index) {
-		// TODO: make Element and Button extend some intermediary class with this function
-        // TODO: implement
-        // maybe make this function return boolean to signify if it was successful or not
-    }
-
-    public void removeChild(String name) {
-		// TODO: make Element and Button extend some intermediary class with this function
-        // TODO: implement
-        // maybe make this function return boolean to signify if it was successful or not
+    public void setActive(boolean bool) {
+        this.active = bool;
     }
 }
 
