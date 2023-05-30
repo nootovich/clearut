@@ -1,27 +1,15 @@
 import javax.swing.*;
-import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Window extends JFrame {
 
-    ArrayList<UILayer> layers = new ArrayList<>();
+    UILayer[] layers = new UILayer[0];
 
-    public Window(int width, int height, Color backgroundColor) {
-
-        // init buffered image
-        Global.IMAGE = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-
-        // init canvas
+    public Window(int width, int height) {
+        Global.IMAGE  = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Global.CANVAS = new DoubleBufferedCanvas(width, height);
         add(Global.CANVAS);
-
-        // init bg
-        UILayer bg = new UILayer("BG", 0);
-        bg.addElement(new Sprite(0, 0, width, height, 0, backgroundColor));
-        addLayer(bg);
-
-
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
@@ -29,30 +17,30 @@ public class Window extends JFrame {
     }
 
     public UILayer getLayer(String name) {
-        for (UILayer layer : layers)
-            if (layer.getName().equals(name.toUpperCase()))
+        for (UILayer layer : layers) {
+            if (layer.getName().equals(name.toUpperCase())) {
                 return layer;
+            }
+        }
         return null;
     }
 
     public UILayer[] getLayers() {
-        return layers.toArray(new UILayer[0]);
+        return layers;
     }
 
     public void addLayer(UILayer layer) {
-        layers.add(layer);
-        layers.sort(new LayerPriorityComparator());
-    }
+        Element[] old_array = getLayers();
+        layers                    = new UILayer[layers.length + 1];
+        layers[layers.length - 1] = layer;
+        System.arraycopy(old_array, 0, layers, 0, old_array.length);
 
-    public void addLayer(String name, int priority) {
-        layers.add(new UILayer(name, priority));
-        layers.sort(new LayerPriorityComparator());
+        Arrays.sort(layers, new LayerPriorityComparator());
     }
 
     public void addLayerToTop(String name) {
-        int maxPriority = layers.get(layers.size() - 1).getPriority();
-        layers.add(new UILayer(name, maxPriority + 1));
-        layers.sort(new LayerPriorityComparator());
+        int newZ = layers.length == 0 ? 0 : layers[layers.length - 1].getZ();
+        addLayer(new UILayer(name, newZ));
     }
 
 }

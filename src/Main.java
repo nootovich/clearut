@@ -1,19 +1,21 @@
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, Global.COLORS[0]);
+        Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
+        layer("BG").addChild(new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS[0], "bg"));
 
-        initSpawnMenuTesting();
+        initSaveTesting();
 
         //noinspection InfiniteLoopStatement
         while (true) {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(20);
+            Thread.sleep(50);
 
-            if (Global.LOG)
-                System.out.println("Mouse - " + Global.MOUSE.getX() + ":" + Global.MOUSE.getY() + "\n" + "\n");
+            if (Global.LOG > 1) {
+                System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
+            } // $DEBUG
         }
     }
 
@@ -24,20 +26,48 @@ public class Main {
     }
 
     private static void initSpawnMenuTesting() {
-        Global.spawnMenu = new Menu(0, 0, 0, 0, 1000, "SPAWN_MENU");
-        String[][] buttonDefinitions = {{"DumpInfoToConsole","Dump info to Console"}, {"2","2"},{"3","3"}};
-        // TODO: this function is unfinished
-        //for (int i = 0; i < ) TODO: this is for adding buttons in a loop
-//        Global.spawnMenu.addButton(0, 0, 200, 40, 1001, );
-//        Global.spawnMenu.addButton(0, 20, 100, 20, 1001, "2", "2");
-//        Global.spawnMenu.addButton(0, 40, 100, 20, 1001, "3", "3");
+        Menu testMenu = new Menu(50, 50, 200, 70, 2, "SPAWN_MENU");
+        layer("UI").addChild(testMenu);
+
+        int        buttonW           = 250;
+        int        buttonH           = 75;
+        String[][] buttonDefinitions = {{"dumpInfoToConsole", "Dump info to Console"}, {"2", "2"}, {"3", "3"}};
+
+        for (int i = 0; i < buttonDefinitions.length; i++) {
+            Sprite button = new Sprite(100, 50 + i * (buttonH + 5), buttonW, buttonH, 2);
+            button.setColors(Global.COLORS[4], Global.COLORS[5], Global.COLORS[6]);
+            button.setType(Sprite.SpriteType.ROUNDED);
+            button.setAction(buttonDefinitions[i][0]);
+            button.setName("sprite" + i);
+
+            Outline outline = new Outline(button, 2);
+            outline.setColors(Global.COLORS[2], Global.COLORS[1], Global.COLORS[4]);
+            outline.setParent(button);
+
+            Text text = new Text(100 + (buttonW >> 1), 50 + (buttonH >> 1) + i * (buttonH + 5), 12, 4);
+            text.setText(buttonDefinitions[i][1]);
+            text.setColor(Global.COLOR_VANILLA);
+            text.setParent(button);
+
+            testMenu.addChild(button);
+//            layer("UI").addElement(button);
+        }
     }
 
     private static void initTesting() {
-        layer("UI");
-        layer("a").addElement(new Text(130, 80, 50, 2, "Test", Global.COLORS[3]));
-        Button a          = new Button(0, 0, Global.WINDOW_WIDTH, 120, "a", "b", 2);
-        Button testButton = new Button(100, 100, 200, 100, "UI", "mainButtonOfExistence", 1, "Sample text");
+        Sprite sample_sprite  = new Sprite(50, 50, 200, 100, 1, Global.COLORS[4], "sprite1");
+        Sprite sample_sprite2 = new Sprite(450, 50, 100, 200, 2, Global.COLORS[5], "button_sprite", "button1");
+        Text   sample_text    = new Text(500, 150, 11, 4, "Sample text", Global.COLOR_RED_MUNSELL);
+
+        sample_sprite.setHoveredColor(Global.COLOR_VANILLA);
+        sample_sprite.setActiveColor(Global.COLOR_MELON);
+
+        sample_sprite2.addChild(sample_text);
+        sample_sprite2.setHoveredColor(Global.COLORS[6]);
+        sample_sprite2.setActiveColor(Global.COLORS[9]);
+
+        layer("UI").addChild(sample_sprite);
+        layer("UI").addChild(sample_sprite2);
     }
 
     private static void initGame() {
@@ -45,55 +75,37 @@ public class Main {
         int   GH          = Global.WINDOW_HEIGHT;
         float offset      = GH / 28.0f;
         float button_size = GH / 8.0f;
-        Sprite sideBG = new Sprite(0,
-                                   0,
-                                   (int) (button_size + offset * 2),
-                                   GH,
-                                   0,
-                                   Global.COLORS[2]);
-        layer("UISIDE").addElement(sideBG);
+
+        Sprite sideBG = new Sprite(0, 0, (int) (button_size + offset * 2), GH, 0, Global.COLORS[2]);
+        layer("UISIDE").addChild(sideBG);
 
         for (int i = 0; i < 6; i++) {
-            new Button((int) offset,
-                       (int) (offset + (button_size + offset) * i),
-                       (int) button_size,
-                       (int) button_size,
-                       "UISIDE",
-                       "button" + i,
-                       i + 1,
-                       "BUTTON" + i); // TODO: add a proper way to create buttons
+            int    bx     = (int) offset;
+            int    by     = (int) (offset + (button_size + offset) * i);
+            int    bs     = (int) button_size;
+            Sprite button = new Sprite(bx, by, bs, bs, 1);
+            button.setColors(Global.COLORS[4], Global.COLORS[5], Global.COLORS[6]);
+            button.setAction("button" + i);
+            button.setName("button" + i);
+            layer("UISIDE").addChild(button);
         }
 
-        Sprite profileBG = new Sprite((int) (button_size + offset * 2),
-                                      0,
-                                      GW,
-                                      (int) (button_size + offset * 2),
-                                      0,
-                                      Global.COLORS[1]);
-        layer("PROFILE").addElement(profileBG);
+        int    pxh       = (int) (button_size + offset * 2);
+        Sprite profileBG = new Sprite(pxh, 0, GW, pxh, 0, Global.COLORS[1]);
+        layer("PROFILE").addChild(profileBG);
 
-        InteractivePicture profilePic = new InteractivePicture((int) (GW - button_size - offset),
-                                                               (int) offset,
-                                                               (int) (button_size),
-                                                               (int) (button_size),
-                                                               1,
-                                                               "ipolitta.jpg");
-        layer("PROFILE").addElement(profilePic);
+        int     px         = (int) (GW - button_size - offset);
+        int     py         = (int) offset;
+        int     ps         = (int) (button_size);
+        Picture profilePic = new Picture(px, py, ps, ps, 1, Global.IMAGE_FOLDER + "ipolitta.jpg");
+        layer("PROFILE").addChild(profilePic);
 
-        Menu test_menu = new Menu(Global.WINDOW_WIDTH >> 1,
-                                  Global.WINDOW_HEIGHT >> 1,
-                                  Global.STROKE_WIDTH >> 2,
-                                  Global.WINDOW_HEIGHT >> 2,
-                                  69,
-                                  "test");
-        test_menu.addSprite(0, 0, 200, 200, 0, Global.COLORS[3]);
-        test_menu.addInteractiveSprite(20, 100, 50, 25, 1, Global.COLORS[6]);
-        test_menu.addButton(130, 100, 50, 25, 2, "s", "S");
     }
 
     private static UILayer layer(String name) {
         // TODO: where this thing should be?
         // MEGA TODO: prob rework or remove this. Good idea tho
+        // GIGA TODO: this thing is amazing. DO NOT TOUCHA MA SPAGET
         UILayer layer = Global.WINDOW.getLayer(name);
         if (layer != null)
             return layer;

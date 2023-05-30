@@ -1,3 +1,13 @@
+target/
 out/
 .idea/
+.settings/
+.breakpoints
+.classpath
+.replit
+.project
 clearut.iml
+pom.xml
+replit.nix
+*.class
+/saves/*

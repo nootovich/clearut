@@ -1,141 +1,124 @@
 import java.awt.*;
 
-public class Sprite implements Element {
+public class Sprite extends Element {
 
-    private int     x;
-    private int     y;
-    private int     w;
-    private int     h;
-    private int     priority;
-    private boolean visible = true;
-    private boolean outline = false; // TODO: rework Sprite types
-    private Color   color; // TODO: add colors for highlighting and activating
+    private int        additional = 0;
+    private SpriteType type       = SpriteType.RECTANGLE;
+    private Color[]    colors     = new Color[3];
 
-    public Sprite(int x, int y, int w, int h, int priority, Color color) {
-        this.x        = x;
-        this.y        = y;
-        this.w        = w;
-        this.h        = h;
-        this.priority = priority;
-        this.color    = color;
+    public Sprite(int x, int y, int w, int h, int z) {
+        super(x, y, w, h, z);
     }
 
-    public boolean update() {
-        if (Global.LOG) System.out.printf(
-                "\t\tupdate sprite %d : %s%s%n",
-                getPriority(),
-                isVisible() ? " visible" : "!visible",
-                isOutline() ? " : outline" : "");// $DEBUG
-        return false;
+    public Sprite(int x, int y, int w, int h, int z, Color color) {
+        super(x, y, w, h, z);
+        setColors(color, color, color);
     }
 
-    public void draw(Graphics2D g) {
-        if (Global.LOG) System.out.printf(
-                "\t\tdraw sprite %d : %s%s%n",
-                getPriority(),
-                isVisible() ? " visible" : "!visible",
-                isOutline() ? " : outline" : ""); // $DEBUG
+    public Sprite(int x, int y, int w, int h, int z, Color color, String name) {
+        super(x, y, w, h, z, name);
+        setColors(color, color, color);
+    }
 
-        if (!visible) return;
+    public Sprite(int x, int y, int w, int h, int z, Color color, String name, String action) {
+        super(x, y, w, h, z, name, action);
+        setColors(color, color, color);
+    }
 
-        // TODO: make this function use enumeration to identify the type of sprite and draw it appropriately
-        // TODO: *everything after this line*
+    @Override
+    public void draw(Graphics2D g2d) {
+        int sx  = getX();
+        int sy  = getY();
+        int sz  = getZ();
+        int sw  = getWidth();
+        int sh  = getHeight();
+        int add = getAdditional();
 
-        g.setColor(color);
-        if (outline) {
-            if (Global.LOG) System.out.println("\t\t\toutline"); // $DEBUG
-            int s = Global.STROKE_WIDTH;
-            g.setStroke(new BasicStroke(s));
-            g.drawRect(x + s / 2, y + s / 2, w - s, h - s);
-        } else {
-            if (Global.LOG) System.out.println("\t\t\tsolid"); // $DEBUG
-            g.fillRect(x, y, w, h);
+        if (Global.LOG > 2) {
+            System.out.printf(
+                    "\t\tdraw sprite '%s': x:%d, y:%d, z:%d, w:%d, h:%d, : %s%n",
+                    getName(), sx, sy, sz, sw, sh,
+                    isVisible() ? " visible" : "!visible"); // $DEBUG
+        }
+
+        if (!isVisible()) return;
+
+        // draw children with lower z order first
+        int       i           = 0;
+        Element[] descendants = getChildren();
+        for (; i < descendants.length; i++) {
+            if (descendants[i].getZ() > sz) break;
+            descendants[i].draw(g2d);
+        }
+
+        // draw sprite
+        g2d.setColor(getColorBasedOnState());
+        switch (getType()) {
+            case RECTANGLE -> g2d.fillRect(sx, sy, sw, sh);
+            case ROUNDED -> g2d.fillRoundRect(sx, sy, sw, sh, add, add);
+        }
+
+        // draw children with higher z order next
+        for (; i < descendants.length; i++) {
+            descendants[i].draw(g2d);
         }
     }
 
-    public int getX() {
-        return x;
+    public int getAdditional() {
+        return additional;
     }
 
-    public void setX(int x) {
-        this.x = x;
+    public void setAdditional(int additional) {
+        this.additional = additional;
     }
 
-    public int getY() {
-        return y;
+    public SpriteType getType() {
+        return type;
     }
 
-    public void setY(int y) {
-        this.y = y;
+    public void setType(SpriteType type) {
+        this.type = type;
     }
 
-    public int getWidth() {
-        return w;
+    public Color[] getColors() {
+        return colors;
     }
 
-    public void setWidth(int w) {
-        this.w = w;
+    public Color getIdleColor() {
+        return colors[0];
     }
 
-    public int getHeight() {
-        return h;
+    public void setIdleColor(Color color) {
+        colors[0] = color;
     }
 
-    public void setHeight(int h) {
-        this.h = h;
+    public Color getHoveredColor() {
+        return colors[1];
     }
 
-    public Point getPos() {
-        return new Point(x, y);
+    public void setHoveredColor(Color color) {
+        colors[1] = color;
     }
 
-    public void setPos(Point pos) {
-        this.x = pos.x;
-        this.y = pos.y;
+    public Color getActiveColor() {
+        return colors[2];
     }
 
-    public Point getSize() {
-        return new Point(w, h);
+    public void setActiveColor(Color color) {
+        colors[2] = color;
     }
 
-    public void setSize(Point size) {
-        this.w = size.x;
-        this.h = size.y;
+    public void setColors(Color idleColor, Color hoveredColor, Color activeColor) {
+        colors = new Color[]{idleColor, hoveredColor, activeColor};
     }
 
-    public Point getCenter() {
-        return new Point(x + (w >> 1), y + (h >> 1));
+    private Color getColorBasedOnState() {
+        if (isActive()) return getActiveColor();
+        if (isHovered()) return getHoveredColor();
+        return getIdleColor();
     }
 
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisibility(boolean bool) {
-        visible = bool;
-    }
-
-    public Color getColor() {
-        return color;
-    }
-
-    public void setColor(Color color) {
-        this.color = color;
-    }
-
-    public boolean isOutline() {
-        return outline;
-    }
-
-    public void setOutline(boolean bool) {
-        outline = bool;
+    public enum SpriteType {
+        RECTANGLE, ROUNDED;
     }
 }

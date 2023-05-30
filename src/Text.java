@@ -1,104 +1,49 @@
 import java.awt.*;
 
-public class Text implements Element {
+public class Text extends Element {
 
-    private int     x;
-    private int     y;
     // TODO: Prob make width and height actually matter
-    private int     w;
-    private int     h;
-    private int     priority;
-    private int     textSize;
-    private boolean visible = true;
-    private String  text;
-    private Color   color;
+    // TODO: Automate textSize of Text and actually render Text based on its dimentions
+    private int    textSize;
+    private String text;
+    private Color  color;
 
-    public Text(int x, int y, int size, int priority, String text, Color color) {
-        this.x        = x;
-        this.y        = y;
+    public Text(int x, int y, int size, int z) {
+        super(x, y, 0, 0, z);
         this.textSize = size;
-        this.priority = priority;
-        this.text     = text;
-        this.color    = color;
     }
 
+    public Text(int x, int y, int size, int z, String text) {
+        this(x, y, size, z);
+        this.text = text;
+    }
+
+    public Text(int x, int y, int size, int z, String text, Color color) {
+        this(x, y, size, z, text);
+        this.color = color;
+    }
+
+    @Override
     public boolean update() {
         return false;
     }
 
-    public void draw(Graphics2D g) {
-        g.setColor(color);
-        g.setFont(new Font("Roboto Mono", Font.BOLD, textSize));
-        FontMetrics metrics = g.getFontMetrics();
-        int         tx      = x - (int) (metrics.stringWidth(text) / 2.0f);
-        int         ty      = y - (int) (metrics.getHeight() / 2.0f) + metrics.getAscent();
-        g.drawString(text, tx, ty);
+    @Override
+    public void draw(Graphics2D g2d) {
+        g2d.setColor(color);
+        g2d.setFont(new Font("Roboto Mono", Font.BOLD, textSize));
+        FontMetrics metrics = g2d.getFontMetrics();
+        int         tx      = getX() - (int) (metrics.stringWidth(text) / 2.0f);
+        int         ty      = getY() - (int) (metrics.getHeight() / 2.0f) + metrics.getAscent();
+        g2d.drawString(text, tx, ty);
     }
 
-    public int getX() {
-        return x;
+    public String getText() {
+        return text;
     }
 
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
-        return w;
-    }
-
-    public void setWidth(int w) {
-        this.w = w;
-    }
-
-    public int getHeight() {
-        return h;
-    }
-
-    public void setHeight(int h) {
-        this.h = h;
-    }
-
-    public Point getPos() {
-        return new Point(x, y);
-    }
-
-    public void setPos(Point pos) {
-        this.x = pos.x;
-        this.y = pos.y;
-    }
-
-    public Point getSize() {
-        return new Point(w, h);
-    }
-
-    public void setSize(Point size) {
-        this.w = size.x;
-        this.h = size.y;
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisibility(boolean bool) {
-        visible = bool;
+    public void setText(String text) {
+        this.text = text;
     }
 
     public Color getColor() {
@@ -108,5 +53,4 @@ public class Text implements Element {
     public void setColor(Color color) {
         this.color = color;
     }
-
 }

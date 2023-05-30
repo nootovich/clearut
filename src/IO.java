@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.BufferedWriter;
@@ -7,229 +9,258 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 
 import static java.lang.String.format;
 
 public class IO {
-    private static final String infoFileLocation = "./saves/";
 
     public static void saveInfo() {
 
         // DATA LAYOUT
-        // int - info version number
+        // int - savedata version number
         // int, int - screen size
         // available actions and objects and their states
         // history of unlocks
         // history of actions
         // TODO: figure it out in the process of development
 
-        // init info
-        ArrayList<Object> info = new ArrayList<>();
-        info.add("INFO_VERSION: " + Global.INFO_VERSION);
-        info.add(format(
-                "WINDOW: %dx%d@%dx%d",
-                Global.CANVAS.getWidth(),
-                Global.CANVAS.getHeight(),
-                Global.WINDOW.getX(),
-                Global.WINDOW.getY()));
+        // init savedata
+        StringBuilder savedata = new StringBuilder("SAVEDATA_VERSION: ").append(Global.SAVEDATA_VERSION);
+        savedata.append('\n').append(format(
+                "$WINDOW: x=%d y=%d w=%d h=%d",
+                Global.WINDOW.getX(), Global.WINDOW.getY(), Global.CANVAS.getWidth(), Global.CANVAS.getHeight()));
 
         UILayer[] layers = Global.WINDOW.getLayers();
         for (UILayer layer : layers) {
-            String layerInfo = format(
-                    "$LAYER: priority[%d] name[%s] elements_size[%d];",
-                    layer.getPriority(),
-                    layer.getName(),
-                    layer.getElements().length);
-            info.add(layerInfo);
-            Element[] elements = layer.getElements();
-            for (Element element : elements) { // TODO: extract this into a recursive function
-                String ElementInfo;
-                if (element.getClass() == Button.class) {
-                    Button button = (Button) element;
-                    ElementInfo = format(
-                            "\t$BUTTON: priority[%d] name[%s] pos[%d,%d] size[%d,%d] visible[%b] elements_size[%d]",
-                            button.getPriority(),
-                            button.getName(),
-                            button.getX(),
-                            button.getY(),
-                            button.getWidth(),
-                            button.getHeight(),
-                            button.isVisible(),
-                            button.getElements().length);
-                } else {
-                    ElementInfo = format(
-                            "\t$OTHER: priority[%d] type[%s] pos[%d,%d] size[%d,%d] visible[%b]",
-                            element.getPriority(),
-                            element.getClass(),
-                            element.getX(),
-                            element.getY(),
-                            element.getWidth(),
-                            element.getHeight(),
-                            element.isVisible());
+            Element[] descendants = layer.getChildren();
 
-                }
-                info.add(ElementInfo);
+            savedata.append('\n').append(format(
+                    "\t$LAYER: name=%s z=%d children_size=%d",
+                    layer.getName(), layer.getZ(), descendants.length));
+
+            for (Element descendant : descendants) {
+                savedata.append('\n').append(getDescendantData(descendant, 2));
             }
         }
 
-        // convert info to String
-        StringBuilder infoString = new StringBuilder();
-        for (Object infoLine : info)
-            infoString.append(infoLine.toString()).append("\n");
-
-        // save info to file
+        // save savedata to file
         try {
             String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
-            File   file        = new File(infoFileLocation + currentTime + ".txt");
+            File   file        = new File(Global.SAVEDATA_FOLDER + currentTime + ".txt");
             File   directory   = new File(file.getParent());
 
-            if (!directory.exists())
+            if (!directory.exists()) {
                 directory.mkdirs();
+            }
             file.createNewFile();
 
             FileWriter     writer       = new FileWriter(file.getAbsoluteFile());
             BufferedWriter bufferWriter = new BufferedWriter(writer);
 
-            bufferWriter.write(infoString.toString());
+            bufferWriter.write(savedata.toString());
             bufferWriter.close();
         } catch (IOException e) {
             System.out.println(e.getCause() + "\n" + e.getMessage());
         }
     }
 
+    private static String getDescendantData(Element e, int depth) {
+        Element[]     descendants = e.getChildren();
+        StringBuilder result      = new StringBuilder("\t".repeat(depth));
+        String data = format("$%s: name=%s x=%d y=%d w=%d h=%d z=%d action=%s state=%s%s%s children_size=%d",
+                             e.getClass(), e.getName(), e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getZ(), e.getAction(),
+                             e.isVisible() ? "v" : "", e.isHovered() ? "h" : "", e.isActive() ? "a" : "", descendants.length);
+        result.append(data);
+
+        for (Element descendant : descendants) {
+            result.append("\n").append(getDescendantData(descendant, depth + 1));
+        }
+
+        return result.toString();
+    }
+
     public static class Mouse extends MouseAdapter {
-        private int     x           = -1;
-        private int     y           = -1;
-        private boolean LMB         = false;
-        private boolean RMB         = false;
-        private boolean LMBUsed     = false;
-        private boolean RMBUsed     = false;
-        private boolean doubleClick = false; // TODO: getter/setter
+        private int     x       = -1;
+        private int     y       = -1;
+        private boolean LMB     = false;
+        private boolean RMB     = false;
+        private boolean LMBPrev = false;
+        private boolean RMBPrev = false;
+        private boolean LMBTemp = false;
+        private boolean RMBTemp = false;
 
         public void update() {
             try {
                 Point mousePos = Global.CANVAS.getMousePosition();
-                this.x = mousePos.x;
-                this.y = mousePos.y;
+                setX(mousePos.x);
+                setY(mousePos.y);
+
+                if (Global.LOG > 0) {
+                    System.out.printf("mousePos: %dx%d%n", getX(), getY());
+                } // $DEBUG
+
+                setLMBPrev(getLMB());
+                setRMBPrev(getRMB());
+
+                setLMB(getLMBTemp());
+                setRMB(getRMBTemp());
             } catch (NullPointerException ignored) {
             }
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
-            if (Global.LOG)
+            if (Global.LOG > 3) {
                 System.out.println(e);
-            LMB |= (e.getButton() == MouseEvent.BUTTON1);
-            RMB |= (e.getButton() == MouseEvent.BUTTON3);
-            if (e.getClickCount() > 1)
-                doubleClick = true;
+            } // $DEBUG
 
-            if (RMB) {
-                Global.spawnMenu.setPos(getPos());
+            setLMBTemp(getLMBTemp() | (e.getButton() == MouseEvent.BUTTON1));
+            setRMBTemp(getRMBTemp() | (e.getButton() == MouseEvent.BUTTON3));
+
+            if (getRMBTemp()) {
+                Element menu = Global.WINDOW.getLayer("UI").getChild("SPAWN_MENU");
+                if (menu == null) return;
+                menu.setX(getX());
+                menu.setY(getY());
+                System.out.printf("%dx%d%n", menu.getX(), menu.getY());
             }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
-            if (Global.LOG)
+            if (Global.LOG > 3) {
                 System.out.println(e);
-            LMB &= e.getButton() != MouseEvent.BUTTON1;
-            RMB &= e.getButton() != MouseEvent.BUTTON3;
-            LMBUsed &= e.getButton() != MouseEvent.BUTTON1;
-            RMBUsed &= e.getButton() != MouseEvent.BUTTON3;
-            doubleClick = false;
+            } // $DEBUG
+
+            setLMBTemp(getLMBTemp() & (e.getButton() != MouseEvent.BUTTON1));
+            setRMBTemp(getRMBTemp() & (e.getButton() != MouseEvent.BUTTON3));
         }
 
+        @Override
         public void mouseExited(MouseEvent e) {
-            if (Global.LOG)
+            if (Global.LOG > 3) {
                 System.out.println(e);
-            LMB         = false;
-            RMB         = false;
-            LMBUsed     = false;
-            RMBUsed     = false;
-            doubleClick = false;
+            } // $DEBUG
+
+            setX(-1);
+            setY(-1);
+            setLMB(false);
+            setRMB(false);
+            setLMBPrev(false);
+            setRMBPrev(false);
+            setLMBTemp(false);
+            setRMBTemp(false);
         }
 
-        public Point getPos() {
-            return new Point(this.x, this.y);
+        public boolean isLMBRisingEdge() {
+            return getLMB() && !getLMBPrev();
+        }
+
+        public boolean isLMBFallingEdge() {
+            return !getLMB() && getLMBPrev();
+        }
+
+        public boolean isRMBRisingEdge() {
+            return getRMB() && !getRMBPrev();
+        }
+
+        public boolean isRMBFallingEdge() {
+            return !getRMB() && getRMBPrev();
         }
 
         public int getX() {
-            return this.x;
+            return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
         }
 
         public int getY() {
-            return this.y;
+            return y;
+        }
+
+        public void setY(int y) {
+            this.y = y;
         }
 
         public boolean getLMB() {
             return LMB;
         }
 
+        public void setLMB(boolean bool) {
+            this.LMB = bool;
+        }
+
         public boolean getRMB() {
             return RMB;
         }
 
-        public boolean getLMBUsed() {
-            return LMBUsed;
+        public void setRMB(boolean bool) {
+            this.RMB = bool;
         }
 
-        public void setLMBUsed(boolean bool) {
-            LMBUsed = bool;
+        public boolean getLMBPrev() {
+            return LMBPrev;
         }
 
-        public boolean getRMBUsed() {
-            return RMBUsed;
+        public void setLMBPrev(boolean bool) {
+            LMBPrev = bool;
         }
 
-        public void setRMBUsed(boolean bool) {
-            RMBUsed = bool;
+        public boolean getRMBPrev() {
+            return RMBPrev;
+        }
+
+        public void setRMBPrev(boolean bool) {
+            RMBPrev = bool;
+        }
+
+        public boolean getLMBTemp() {
+            return LMBTemp;
+        }
+
+        public void setLMBTemp(boolean bool) {
+            LMBTemp = bool;
+        }
+
+        public boolean getRMBTemp() {
+            return RMBTemp;
+        }
+
+        public void setRMBTemp(boolean bool) {
+            RMBTemp = bool;
         }
     }
 
-// TODO: this is from my Game of Life project
-// TODO: extract what you need
-//
-//    ComponentAdapter componentAdapter = new ComponentAdapter() {
-//        @Override
-//        public void componentResized(ComponentEvent e) {
-//            super.componentResized(e);
-//            changeSize(e.getComponent().getSize());
-//        }
-//    };
-//    KeyAdapter           keyAdapter       = new KeyAdapter() {
-//        @Override
-//        public void keyPressed(KeyEvent e) {
-//            char key = e.getKeyChar();
-//            switch (key) {
-//                case 'm' -> mainView.scrollLock = !mainView.scrollLock;
-//                case '=', '+' -> mainView.changeScale(1);
-//                case '-' -> mainView.changeScale(-1);
-//                case '[' -> GameOfLife.changeSimStepTime(false);
-//                case ']' -> GameOfLife.changeSimStepTime(true);
-//                case 'w' -> GameOfLife.keys[0] = true;
-//                case 'a' -> GameOfLife.keys[1] = true;
-//                case 's' -> GameOfLife.keys[2] = true;
-//                case 'd' -> GameOfLife.keys[3] = true;
-//                case 'r' -> GameOfLife.randomFill();
-//                case '\n' -> GameOfLife.simulate();
-//                case ' ' -> {
-//                    GameOfLife.paused = !GameOfLife.paused;
-//                    GameOfLife.prevSimStep = 0;
-//                }
-//                case 'q' -> System.exit(1);
-//            }
-//            prevKey = key;
-//        }
-//        @Override
-//        public void keyReleased(KeyEvent e) {
-//            switch (e.getKeyChar()) {
-//                case 'w' -> GameOfLife.keys[0] = false;
-//                case 'a' -> GameOfLife.keys[1] = false;
-//                case 's' -> GameOfLife.keys[2] = false;
-//                case 'd' -> GameOfLife.keys[3] = false;
-//            }
-//            prevKey = '\'';
-//            keyLock = false;
-//        }
-//    };
+    public static class Keyboard extends KeyAdapter {
+
+        private boolean[] pressedKeys = new boolean[256];
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            pressedKeys[e.getKeyCode()] = true;
+            char key = e.getKeyChar();
+            switch (key) {
+                case 'l' -> Global.ACTIONS.dumpInfoToConsole();
+                case 'q' -> System.exit(1);
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            pressedKeys[e.getKeyCode()] = false;
+        }
+    }
+
+    // TODO: this is from my Game of Life project
+    // TODO: extract what you need
+    //
+    //    ComponentAdapter componentAdapter = new ComponentAdapter() {
+    //        @Override
+    //        public void componentResized(ComponentEvent e) {
+    //            super.componentResized(e);
+    //            changeSize(e.getComponent().getSize());
+    //        }
+    //    };
 }

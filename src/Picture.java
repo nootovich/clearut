@@ -2,126 +2,51 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 
-public class Picture implements Element {
+public class Picture extends Element {
 
-    private int     x;
-    private int     y;
-    private int     w;
-    private int     h;
-    private int     priority;
-    private boolean visible = true;
-    private String  imageName;
-    private Image   image;
+    private String filepath = "";
+    private Image  image    = null;
 
-    public Picture(int x, int y, int w, int h, int priority, String imageName) {
-        this.x         = x;
-        this.y         = y;
-        this.w         = w;
-        this.h         = h;
-        this.priority  = priority;
-        this.imageName = imageName;
+    public Picture(int x, int y, int w, int h, int z, String filepath) {
+        super(x, y, w, h, z);
+        change(filepath);
+    }
+
+    @Override
+    public void draw(Graphics2D g2d) {
+        int x = getX();
+        int y = getY();
+        int w = getWidth();
+        int h = getHeight();
+
+        g2d.drawImage(image, x, y, w, h, null);
+
+        // TODO: this is temporary
+        if (isActive()) {
+            g2d.setColor(new Color(0x30000000, true));
+            g2d.fillRect(x, y, w, h);
+        } else if (isHovered()) {
+            g2d.setColor(new Color(0x20ffffff, true));
+            g2d.fillRect(x, y, w, h);
+        }
+    }
+
+    public void change(String filepath) {
+        this.filepath = filepath;
         try {
-            this.image = ImageIO.read(new File(Global.IMAGE_FOLDER.getAbsolutePath() + "\\" + imageName));
+            this.image = ImageIO.read(new File(getFilepath()));
         } catch (Exception e) {
+            System.out.printf("Image %s can't be opened :(%n", filepath);
             e.printStackTrace();
         }
     }
 
-
-    public boolean update() {
-        return false;
+    public String getFilepath() {
+        return filepath;
     }
 
-    public void draw(Graphics2D g) {
-        g.drawImage(image, x, y, w, h, null);
-    }
-
-    public int getX() {
-        return x;
-    }
-
-    public void setX(int x) {
-        this.x = x;
-    }
-
-    public int getY() {
-        return y;
-    }
-
-    public void setY(int y) {
-        this.y = y;
-    }
-
-    public int getWidth() {
-        return w;
-    }
-
-    public void setWidth(int w) {
-        this.w = w;
-    }
-
-    public int getHeight() {
-        return h;
-    }
-
-    public void setHeight(int h) {
-        this.h = h;
-    }
-
-    public Point getPos() {
-        return new Point(x, y);
-    }
-
-    public void setPos(Point pos) {
-        this.x = pos.x;
-        this.y = pos.y;
-    }
-
-    public Point getSize() {
-        return new Point(w, h);
-    }
-
-    public void setSize(Point size) {
-        this.w = size.x;
-        this.h = size.y;
-    }
-
-    public Point getCenter() {
-        return new Point(x + (w >> 1), y + (h >> 1));
-    }
-
-    public int getPriority() {
-        return priority;
-    }
-
-    public void setPriority(int priority) {
-        this.priority = priority;
-    }
-
-    public boolean isVisible() {
-        return visible;
-    }
-
-    public void setVisibility(boolean bool) {
-        visible = bool;
-    }
-
-    public String getImageName() {
-        return imageName;
-    }
     public Image getImage() {
         return image;
     }
 
-    public void setImage(Image image) throws Exception {
-        throw new Exception("TODO: not implemented");
-    }
-
-    public Color getColor() {
-        return null;
-    }
-
-    public void setColor(Color color) {
-
-    }
 }
