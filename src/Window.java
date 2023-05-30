@@ -1,10 +1,10 @@
 import javax.swing.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Window extends JFrame {
 
-    ArrayList<UILayer> layers = new ArrayList<>(); // TODO: turn into a regular array
+    UILayer[] layers = new UILayer[0];
 
     public Window(int width, int height) {
         Global.IMAGE  = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -26,28 +26,21 @@ public class Window extends JFrame {
     }
 
     public UILayer[] getLayers() {
-        return layers.toArray(new UILayer[0]);
+        return layers;
     }
 
     public void addLayer(UILayer layer) {
-        layers.add(layer);
-        layers.sort(new LayerPriorityComparator());
-    }
+        Element[] old_array = getLayers();
+        layers                    = new UILayer[layers.length + 1];
+        layers[layers.length - 1] = layer;
+        System.arraycopy(old_array, 0, layers, 0, old_array.length);
 
-    public void addLayer(String name, int z) {
-        layers.add(new UILayer(name, z));
-        layers.sort(new LayerPriorityComparator());
+        Arrays.sort(layers, new LayerPriorityComparator());
     }
 
     public void addLayerToTop(String name) {
-        if (layers.size() == 0) {
-            layers.add(new UILayer(name, 0));
-            return;
-        }
-
-        int maxZ = layers.get(layers.size() - 1).getZ();
-        layers.add(new UILayer(name, maxZ + 1));
-        layers.sort(new LayerPriorityComparator());
+        int newZ = layers.length == 0 ? 0 : layers[layers.length - 1].getZ();
+        addLayer(new UILayer(name, newZ));
     }
 
 }

@@ -3,106 +3,86 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-// import java.io.BufferedWriter;
-// import java.io.File;
-// import java.io.FileWriter;
-// import java.io.IOException;
-// import java.time.ZonedDateTime;
-// import java.time.format.DateTimeFormatter;
-// import java.util.ArrayList;
-// import static java.lang.String.format;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+
+import static java.lang.String.format;
 
 public class IO {
-//     private static final String infoFileLocation = "./saves/";
-//
-//     public static void saveInfo() {
-//
-//         // DATA LAYOUT
-//         // int - info version number
-//         // int, int - screen size
-//         // available actions and objects and their states
-//         // history of unlocks
-//         // history of actions
-//         // TODO: figure it out in the process of development
-//
-//         // init info
-//         ArrayList<Object> info = new ArrayList<>();
-//         info.add("INFO_VERSION: " + Global.INFO_VERSION);
-//         info.add(format(
-//                 "WINDOW: %dx%d@%dx%d",
-//                 Global.CANVAS.getWidth(),
-//                 Global.CANVAS.getHeight(),
-//                 Global.WINDOW.getX(),
-//                 Global.WINDOW.getY()));
-//
-//         UILayer[] layers = Global.WINDOW.getLayers();
-//         for (UILayer layer : layers) {
-//             String layerInfo = format(
-//                     "$LAYER: priority[%d] name[%s] elements_size[%d];",
-//                     layer.getPriority(),
-//                     layer.getName(),
-//                     layer.getElements().length);
-//             info.add(layerInfo);
-//             Element[] elements = layer.getElements();
-//             for (Element element : elements) { // TODO: extract this into a recursive function
-//                 String ElementInfo;
-//                 if (element.getClass() == Button.class) {
-//                     Button button = (Button) element;
-//                     ElementInfo = format(
-//                             "\t$BUTTON: priority[%d] name[%s] pos[%d,%d] size[%d,%d] visible[%b] elements_size[%d]",
-//                             button.getPriority(),
-//                             button.getLMBPrev(),
-//                             button.getX(),
-//                             button.getY(),
-//                             button.getWidth(),
-//                             button.getHeight(),
-//                             button.isVisible(),
-//                             button.getElements().length);
-//                 } else {
-//                     ElementInfo = format(
-//                             "\t$OTHER: priority[%d] type[%s] pos[%d,%d] size[%d,%d] visible[%b]",
-//                             element.getPriority(),
-//                             element.getClass(),
-//                             element.getX(),
-//                             element.getY(),
-//                             element.getWidth(),
-//                             element.getHeight(),
-//                             element.isVisible());
-//
-//                 }
-//                 info.add(ElementInfo);
-//             }
-//         }
-//
-//         // convert info to String
-//         StringBuilder infoString = new StringBuilder();
-//         for (Object infoLine : info)
-//             infoString.append(infoLine.toString()).append("\n");
-//
-//         // save info to file
-//         try {
-//             String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
-//             File   file        = new File(infoFileLocation + currentTime + ".txt");
-//             File   directory   = new File(file.getParent());
-//
-//             if (!directory.exists())
-//                 directory.mkdirs();
-//             file.createNewFile();
-//
-//             FileWriter     writer       = new FileWriter(file.getAbsoluteFile());
-//             BufferedWriter bufferWriter = new BufferedWriter(writer);
-//
-//             bufferWriter.write(infoString.toString());
-//             bufferWriter.close();
-//         } catch (IOException e) {
-//             System.out.println(e.getCause() + "\n" + e.getMessage());
-//         }
-//     }
+
+    public static void saveInfo() {
+
+        // DATA LAYOUT
+        // int - savedata version number
+        // int, int - screen size
+        // available actions and objects and their states
+        // history of unlocks
+        // history of actions
+        // TODO: figure it out in the process of development
+
+        // init savedata
+        StringBuilder savedata = new StringBuilder("SAVEDATA_VERSION: ").append(Global.SAVEDATA_VERSION);
+        savedata.append('\n').append(format(
+                "$WINDOW: x=%d y=%d w=%d h=%d",
+                Global.WINDOW.getX(), Global.WINDOW.getY(), Global.CANVAS.getWidth(), Global.CANVAS.getHeight()));
+
+        UILayer[] layers = Global.WINDOW.getLayers();
+        for (UILayer layer : layers) {
+            Element[] descendants = layer.getChildren();
+
+            savedata.append('\n').append(format(
+                    "\t$LAYER: name=%s z=%d children_size=%d",
+                    layer.getName(), layer.getZ(), descendants.length));
+
+            for (Element descendant : descendants) {
+                savedata.append('\n').append(getDescendantData(descendant, 2));
+            }
+        }
+
+        // save savedata to file
+        try {
+            String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
+            File   file        = new File(Global.SAVEDATA_FOLDER + currentTime + ".txt");
+            File   directory   = new File(file.getParent());
+
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+            file.createNewFile();
+
+            FileWriter     writer       = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bufferWriter = new BufferedWriter(writer);
+
+            bufferWriter.write(savedata.toString());
+            bufferWriter.close();
+        } catch (IOException e) {
+            System.out.println(e.getCause() + "\n" + e.getMessage());
+        }
+    }
+
+    private static String getDescendantData(Element e, int depth) {
+        Element[]     descendants = e.getChildren();
+        StringBuilder result      = new StringBuilder("\t".repeat(depth));
+        String data = format("$%s: name=%s x=%d y=%d w=%d h=%d z=%d action=%s state=%s%s%s children_size=%d",
+                             e.getClass(), e.getName(), e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getZ(), e.getAction(),
+                             e.isVisible() ? "v" : "", e.isHovered() ? "h" : "", e.isActive() ? "a" : "", descendants.length);
+        result.append(data);
+
+        for (Element descendant : descendants) {
+            result.append("\n").append(getDescendantData(descendant, depth + 1));
+        }
+
+        return result.toString();
+    }
 
     public static class Mouse extends MouseAdapter {
-        private int     x           = -1;
-        private int     y           = -1;
-        private boolean LMB         = false;
+        private int     x       = -1;
+        private int     y       = -1;
+        private boolean LMB     = false;
         private boolean RMB     = false;
         private boolean LMBPrev = false;
         private boolean RMBPrev = false;

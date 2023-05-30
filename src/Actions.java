@@ -7,7 +7,7 @@ public class Actions {
         try {
             this.getClass().getMethod(action).invoke(this);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+            System.out.printf("The is no action named \"%s\"%n", action);
         }
     }
 

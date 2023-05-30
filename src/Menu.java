@@ -1,5 +1,3 @@
-import java.util.Arrays;
-
 public class Menu extends Element {
 
     private boolean minimized = false;

@@ -1,9 +1,9 @@
 import java.awt.*;
-import java.awt.image.BufferedImage;
 
 public class Text extends Element {
 
     // TODO: Prob make width and height actually matter
+    // TODO: Automate textSize of Text and actually render Text based on its dimentions
     private int    textSize;
     private String text;
     private Color  color;

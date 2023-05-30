@@ -45,16 +45,8 @@ public class Outline extends Element {
 
         if (!isVisible()) return;
 
-        // TODO: don't forget to rework this part. Color should be set based on current state of the Sprite
-        if (isActive()) {
-            g2d.setColor(getActiveColor());
-        } else if (isHovered()) {
-            g2d.setColor(getHoveredColor());
-        } else {
-            g2d.setColor(getIdleColor());
-        }
-
         g2d.setStroke(new BasicStroke(thickness));
+        g2d.setColor(getColorBasedOnState());
 
         if (parent.getClass() == Sprite.class) {
             Sprite p          = (Sprite) parent;
@@ -100,6 +92,12 @@ public class Outline extends Element {
 
     public void setColors(Color idleColor, Color hoveredColor, Color activeColor) {
         colors = new Color[]{idleColor, hoveredColor, activeColor};
+    }
+
+    private Color getColorBasedOnState() {
+        if (isActive()) return getActiveColor();
+        if (isHovered()) return getHoveredColor();
+        return getIdleColor();
     }
 
 }

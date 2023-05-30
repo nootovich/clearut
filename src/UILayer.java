@@ -24,7 +24,7 @@ public class UILayer extends Element {
 
     @Override
     public void draw(Graphics2D g2d) {
-         if (Global.LOG > 2) {
+        if (Global.LOG > 2) {
             System.out.println("draw layer " + getZ() + " : " + getName());
         } // $DEBUG
 

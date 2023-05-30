@@ -4,7 +4,7 @@ public class Main {
         Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
         layer("BG").addChild(new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS[0], "bg"));
 
-        initGame();
+        initSaveTesting();
 
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -19,11 +19,11 @@ public class Main {
         }
     }
 
-//     private static void initSaveTesting() {
-//         initGame();
-//         IO.saveInfo();
-//         System.exit(0);
-//     }
+    private static void initSaveTesting() {
+        initGame();
+        IO.saveInfo();
+        System.exit(0);
+    }
 
     private static void initSpawnMenuTesting() {
         Menu testMenu = new Menu(50, 50, 200, 70, 2, "SPAWN_MENU");
@@ -70,34 +70,37 @@ public class Main {
         layer("UI").addChild(sample_sprite2);
     }
 
-   private static void initGame() {
-       int   GW          = Global.WINDOW_WIDTH;
-       int   GH          = Global.WINDOW_HEIGHT;
-       float offset      = GH / 28.0f;
-       float button_size = GH / 8.0f;
+    private static void initGame() {
+        int   GW          = Global.WINDOW_WIDTH;
+        int   GH          = Global.WINDOW_HEIGHT;
+        float offset      = GH / 28.0f;
+        float button_size = GH / 8.0f;
 
-       Sprite sideBG = new Sprite(0, 0, (int) (button_size + offset * 2), GH, 0, Global.COLORS[2]);
-       layer("UISIDE").addChild(sideBG);
+        Sprite sideBG = new Sprite(0, 0, (int) (button_size + offset * 2), GH, 0, Global.COLORS[2]);
+        layer("UISIDE").addChild(sideBG);
 
-       for (int i = 0; i < 6; i++) {
-           int bx = (int) offset;
-           int by = (int) (offset + (button_size + offset) * i);
-           int bs = (int) button_size;
-           Sprite button = new Sprite(bx, by, bs, bs, 1);
-           button.setColors(Global.COLORS[4],Global.COLORS[5],Global.COLORS[6]);
-           button.setAction("button" + i);
-           button.setName("button" + i);
-           button.setParent(sideBG);
-       }
+        for (int i = 0; i < 6; i++) {
+            int    bx     = (int) offset;
+            int    by     = (int) (offset + (button_size + offset) * i);
+            int    bs     = (int) button_size;
+            Sprite button = new Sprite(bx, by, bs, bs, 1);
+            button.setColors(Global.COLORS[4], Global.COLORS[5], Global.COLORS[6]);
+            button.setAction("button" + i);
+            button.setName("button" + i);
+            layer("UISIDE").addChild(button);
+        }
 
-       int pxh = (int) (button_size + offset * 2);
-       Sprite profileBG = new Sprite(pxh, 0, GW, pxh, 0, Global.COLORS[1]);
-       layer("PROFILE").addChild(profileBG);
+        int    pxh       = (int) (button_size + offset * 2);
+        Sprite profileBG = new Sprite(pxh, 0, GW, pxh, 0, Global.COLORS[1]);
+        layer("PROFILE").addChild(profileBG);
 
-//       InteractivePicture profilePic = new InteractivePicture((int) (GW - button_size - offset), (int) offset, (int) (button_size), (int) (button_size), 1, "ipolitta.jpg");
-//       layer("PROFILE").addElement(profilePic);
+        int     px         = (int) (GW - button_size - offset);
+        int     py         = (int) offset;
+        int     ps         = (int) (button_size);
+        Picture profilePic = new Picture(px, py, ps, ps, 1, Global.IMAGE_FOLDER + "ipolitta.jpg");
+        layer("PROFILE").addChild(profilePic);
 
-   }
+    }
 
     private static UILayer layer(String name) {
         // TODO: where this thing should be?
