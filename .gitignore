@@ -10,3 +10,4 @@ clearut.iml
 pom.xml
 replit.nix
 *.class
+/saves/*

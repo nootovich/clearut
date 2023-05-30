@@ -1,15 +1,19 @@
 import java.awt.*;
+import java.util.Arrays;
 import java.util.Comparator;
 
 public class Element {
 
-    int[]     dimensions = new int[5]; // x y z w h
-    boolean   visible    = true;
-    boolean   hovered    = false; // TODO: maybe combine states into one variable?
-    boolean   active     = false; // TODO: maybe combine states into one variable?
-    String    name       = "";
-	String 	  action	 = "";
-    Element[] children   = new Element[0];
+    private int[]     dimensions = new int[5]; // x y z w h
+    private boolean   visible    = true;
+    private boolean   hovered    = false; // TODO: maybe combine states into one variable?
+    private boolean   active     = false; // TODO: maybe combine states into one variable?
+    private String    name       = "";
+    private String    action     = "";
+    private Element[] children   = new Element[0];
+    private Element   parent     = null;
+
+    Element() {}
 
     Element(int x, int y, int w, int h, int z) {
         this.dimensions[0] = x;
@@ -21,61 +25,60 @@ public class Element {
 
     Element(int x, int y, int w, int h, int z, String name) {
         this(x, y, w, h, z);
-        this.name = name;
+        setName(name);
     }
 
     Element(int x, int y, int w, int h, int z, String name, String action) {
         this(x, y, w, h, z, name);
-        this.action = action;
+        setAction(action);
     }
 
     public boolean update() {
         // TODO: make this function accept a boolean
         //     as a flag that another element has already been activated?
-        boolean lmb 	= Global.MOUSE.getLMB();
-		boolean lmbUsed = Global.MOUSE.getLMBUsed(); // $DEBUG
-		boolean LMBRisingEdge  = Global.MOUSE.isRisingEdge();
-		boolean LMBFallingEdge = Global.MOUSE.isFallingEdge();
-        int mx = Global.MOUSE.getX();
-        int my = Global.MOUSE.getY();
-        int ex = getX();
-        int ey = getY();
-        int ew = getWidth();
-        int eh = getHeight();
-		String en = getName(); // $DEBUG
-		
+        boolean lmb            = Global.MOUSE.getLMB();
+        boolean lmbPrev        = Global.MOUSE.getLMBPrev(); // $DEBUG
+        boolean LMBRisingEdge  = Global.MOUSE.isLMBRisingEdge();
+        boolean LMBFallingEdge = Global.MOUSE.isLMBFallingEdge();
+        int     mx             = Global.MOUSE.getX();
+        int     my             = Global.MOUSE.getY();
+        int     ex             = getX();
+        int     ey             = getY();
+        int     ew             = getWidth();
+        int     eh             = getHeight();
+        String  en             = getName(); // $DEBUG
+
         if (Global.LOG > 1) {
-			System.out.printf("\t\tupdate element - z:%d x:%d y:%d w:%d h:%d %s '%s'%n",
-                			  getZ(), ex, ey, ew, eh, en, isVisible() ? " visible" : "!visible");
-		} // $DEBUG
+            System.out.printf("\t\tupdate element - z:%d x:%d y:%d w:%d h:%d %s '%s'%n",
+                              getZ(), ex, ey, ew, eh, en, isVisible() ? " visible" : "!visible");
+        } // $DEBUG
 
         setHovered(mx >= ex && mx <= ex + ew && my >= ey && my <= ey + eh);
-		setActive(isHovered() && lmb);
+        setActive(isHovered() && lmb);
         if (isHovered()) {
             if (Global.LOG > 0) {
-                System.out.printf("\tmouse hovered over %s, lmb: %b(%b)%n", en, lmb, lmbUsed);
+                System.out.printf("\tmouse hovered over %s, lmb: %b(%b)%n", en, lmb, lmbPrev);
             } // $DEBUG
-			
+
             if (LMBRisingEdge) {
                 if (Global.LOG > 0) {
                     System.out.println("\tmouse clicked at " + en);
                 } // $DEBUG
 
-				Global.MOUSE.setLMBUsed(true);	// TODO: these are redundant (used for the same things)
-                return true;					// TODO: these are redundant (used for the same things)
+                return true;
             } else if (LMBFallingEdge) {
-				Global.ACTIONS.invoke(action);
-			}
+                Global.ACTIONS.invoke(action);
+            }
         } else if (Global.LOG > 1) {
-           	System.out.printf("mouse not hovered on %s - x:%d y:%d lmb: %b(%b)%n", en, mx, my, lmb, lmbUsed);
-		} // $DEBUG
-		return updateChildren();
+            System.out.printf("mouse not hovered on %s - x:%d y:%d lmb: %b(%b)%n", en, mx, my, lmb, lmbPrev);
+        } // $DEBUG
+        return updateChildren();
     }
 
     public boolean updateChildren() {
-		if (getChildren() == null) return false;
-		
-        boolean result = false;
+        if (getChildren() == null) return false;
+
+        boolean   result      = false;
         Element[] descendants = getChildren();
         for (int i = descendants.length - 1; i >= 0; i--) {
             result |= descendants[i].update();
@@ -84,28 +87,49 @@ public class Element {
     }
 
     public void draw(Graphics2D g2d) {
-        return;
+        drawChildren(g2d);
     }
 
     public void drawChildren(Graphics2D g2d) {
-       for (Element e : getChildren()) {
+        for (Element e : getChildren()) {
             e.draw(g2d);
         }
     }
 
+    public Element getChild(String name) {
+        name = name.toUpperCase();
+
+        for (Element e : getChildren()) {
+            if (e.getName().equals(name)) return e;
+            Element foundChild = e.getChild(name);
+            if (foundChild != null) return foundChild;
+        }
+        return null;
+    }
+
     public Element[] getChildren() {
-		return children;
+        return children;
     }
 
     public void addChild(Element child) {
-        Element[] old_array 		  = getChildren();
+        child.parent = this;
+
+        Element[] old_array = getChildren();
         children                      = new Element[children.length + 1];
         children[children.length - 1] = child;
-        for (int i = 0; i < old_array.length; i++) {
-            children[i] = old_array[i];
-        }
+        System.arraycopy(old_array, 0, children, 0, old_array.length);
+
+        Arrays.sort(children, new ElementPriorityComparator());
 
         // TODO: maybe make this function return boolean to signify if it was successful or not
+    }
+
+    public Element getParent() {
+        return parent;
+    }
+
+    public void setParent(Element parent) {
+        parent.addChild(this);
     }
 
     public void removeChild(int index) {
@@ -179,7 +203,7 @@ public class Element {
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.name = name.toUpperCase();
     }
 
     public String getAction() {

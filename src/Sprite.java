@@ -2,8 +2,13 @@ import java.awt.*;
 
 public class Sprite extends Element {
 
-    // private boolean outline = false; // TODO: rework Sprite types
-    private Color[] colors = new Color[3]; // TODO: add colors for highlighting and activating
+    private int        additional = 0;
+    private SpriteType type       = SpriteType.RECTANGLE;
+    private Color[]    colors     = new Color[3];
+
+    public Sprite(int x, int y, int w, int h, int z) {
+        super(x, y, w, h, z);
+    }
 
     public Sprite(int x, int y, int w, int h, int z, Color color) {
         super(x, y, w, h, z);
@@ -22,77 +27,58 @@ public class Sprite extends Element {
 
     @Override
     public void draw(Graphics2D g2d) {
+        int sx  = getX();
+        int sy  = getY();
+        int sz  = getZ();
+        int sw  = getWidth();
+        int sh  = getHeight();
+        int add = getAdditional();
+
         if (Global.LOG > 2) {
             System.out.printf(
-                    "\t\tdraw sprite: x:%d, y:%d, z:%d, w:%d, h:%d, : %s%n",
-                    getX(), getY(), getZ(), getWidth(), getHeight(),
+                    "\t\tdraw sprite '%s': x:%d, y:%d, z:%d, w:%d, h:%d, : %s%n",
+                    getName(), sx, sy, sz, sw, sh,
                     isVisible() ? " visible" : "!visible"); // $DEBUG
         }
 
         if (!isVisible()) return;
 
-        // TODO: make this function use enumeration to identify the type of sprite and draw it appropriately
-        // TODO: *everything after this line*
-
-
-        // TODO: don't forget to rework this part. Color should be set based on current state of the Sprite
-        if (isActive()) {
-            g2d.setColor(getActiveColor());
-        } else if (isHovered()) {
-            g2d.setColor(getHoveredColor());
-        } else {
-            g2d.setColor(getIdleColor());
+        // draw children with lower z order first
+        int       i           = 0;
+        Element[] descendants = getChildren();
+        for (; i < descendants.length; i++) {
+            if (descendants[i].getZ() > sz) break;
+            descendants[i].draw(g2d);
         }
 
-        // if (outline) {
-        //     if (Global.LOG) System.out.println("\t\t\toutline"); // $DEBUG
-        //     int s = Global.STROKE_WIDTH;
-        //     g.setStroke(new BasicStroke(s));
-        //     g.drawRect(x + s / 2, y + s / 2, w - s, h - s);
-        // } else {
-        //     if (Global.LOG) System.out.println("\t\t\tsolid"); // $DEBUG
-        //     g.fillRect(x, y, w, h);
-        // }
+        // draw sprite
+        g2d.setColor(getColorBasedOnState());
+        switch (getType()) {
+            case RECTANGLE -> g2d.fillRect(sx, sy, sw, sh);
+            case ROUNDED -> g2d.fillRoundRect(sx, sy, sw, sh, add, add);
+        }
 
-		int i = 0;
-		Element[] descendants = getChildren();
-		for (Element d : descendants) { // draw children with lower z order first
-			if (d.getZ() > getZ()) break;
-			d.draw(g2d);
-		}
-
-		// TEMPORARY
-        g2d.fillRect(getX(), getY(), getWidth(), getHeight());
-		// END OF TEMPORARY
-        
-		for (Element d : descendants) { // draw children with higher z order next
-			if (d.getZ() > getZ()) {
-				d.draw(g2d);
-			}
-		}
+        // draw children with higher z order next
+        for (; i < descendants.length; i++) {
+            descendants[i].draw(g2d);
+        }
     }
 
-    // public Point getPos() {
-    //     return new Point(x, y);
-    // }
+    public int getAdditional() {
+        return additional;
+    }
 
-    // public void setPos(Point pos) {
-    //     this.x = pos.x;
-    //     this.y = pos.y;
-    // }
+    public void setAdditional(int additional) {
+        this.additional = additional;
+    }
 
-    // public Point getSize() {
-    //     return new Point(w, h);
-    // }
+    public SpriteType getType() {
+        return type;
+    }
 
-    // public void setSize(Point size) {
-    //     this.w = size.x;
-    //     this.h = size.y;
-    // }
-
-    // public Point getCenter() {
-    //     return new Point(x + (w >> 1), y + (h >> 1));
-    // }
+    public void setType(SpriteType type) {
+        this.type = type;
+    }
 
     public Color[] getColors() {
         return colors;
@@ -126,11 +112,13 @@ public class Sprite extends Element {
         colors = new Color[]{idleColor, hoveredColor, activeColor};
     }
 
-//    public boolean isOutline() {
-//        return outline;
-//    }
-//
-//    public void setOutline(boolean bool) {
-//        outline = bool;
-//    }
+    private Color getColorBasedOnState() {
+        if (isActive()) return getActiveColor();
+        if (isHovered()) return getHoveredColor();
+        return getIdleColor();
+    }
+
+    public enum SpriteType {
+        RECTANGLE, ROUNDED;
+    }
 }

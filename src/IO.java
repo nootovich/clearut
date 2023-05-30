@@ -1,4 +1,6 @@
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 // import java.io.BufferedWriter;
@@ -49,7 +51,7 @@ public class IO {
 //                     ElementInfo = format(
 //                             "\t$BUTTON: priority[%d] name[%s] pos[%d,%d] size[%d,%d] visible[%b] elements_size[%d]",
 //                             button.getPriority(),
-//                             button.getName(),
+//                             button.getLMBPrev(),
 //                             button.getX(),
 //                             button.getY(),
 //                             button.getWidth(),
@@ -101,98 +103,173 @@ public class IO {
         private int     x           = -1;
         private int     y           = -1;
         private boolean LMB         = false;
-        private boolean RMB         = false;
-        private boolean LMBUsed     = false; // TODO: would be nice to rename to something better
-        private boolean RMBUsed     = false; // TODO: would be nice to rename to something better
-        private boolean doubleClick = false; // TODO: getter/setter (or maybe remove?)
+        private boolean RMB     = false;
+        private boolean LMBPrev = false;
+        private boolean RMBPrev = false;
+        private boolean LMBTemp = false;
+        private boolean RMBTemp = false;
 
         public void update() {
             try {
                 Point mousePos = Global.CANVAS.getMousePosition();
-                this.x = mousePos.x;
-                this.y = mousePos.y;
+                setX(mousePos.x);
+                setY(mousePos.y);
+
+                if (Global.LOG > 0) {
+                    System.out.printf("mousePos: %dx%d%n", getX(), getY());
+                } // $DEBUG
+
+                setLMBPrev(getLMB());
+                setRMBPrev(getRMB());
+
+                setLMB(getLMBTemp());
+                setRMB(getRMBTemp());
             } catch (NullPointerException ignored) {
             }
         }
 
+        @Override
         public void mousePressed(MouseEvent e) {
             if (Global.LOG > 3) {
                 System.out.println(e);
-            }
-            LMB |= (e.getButton() == MouseEvent.BUTTON1);
-            RMB |= (e.getButton() == MouseEvent.BUTTON3);
-            if (e.getClickCount() > 1)
-                doubleClick = true;
+            } // $DEBUG
 
-//             if (RMB) {
-//                 Global.spawnMenu.setPos(getPos());
-//             }
+            setLMBTemp(getLMBTemp() | (e.getButton() == MouseEvent.BUTTON1));
+            setRMBTemp(getRMBTemp() | (e.getButton() == MouseEvent.BUTTON3));
+
+            if (getRMBTemp()) {
+                Element menu = Global.WINDOW.getLayer("UI").getChild("SPAWN_MENU");
+                if (menu == null) return;
+                menu.setX(getX());
+                menu.setY(getY());
+                System.out.printf("%dx%d%n", menu.getX(), menu.getY());
+            }
         }
 
+        @Override
         public void mouseReleased(MouseEvent e) {
             if (Global.LOG > 3) {
                 System.out.println(e);
-            }
-            LMB &= e.getButton() != MouseEvent.BUTTON1;
-            RMB &= e.getButton() != MouseEvent.BUTTON3;
-            LMBUsed &= e.getButton() != MouseEvent.BUTTON1; // TODO: schedule for update in the next frame
-            RMBUsed &= e.getButton() != MouseEvent.BUTTON3; // TODO: schedule for update in the next frame
-            doubleClick = false;
+            } // $DEBUG
+
+            setLMBTemp(getLMBTemp() & (e.getButton() != MouseEvent.BUTTON1));
+            setRMBTemp(getRMBTemp() & (e.getButton() != MouseEvent.BUTTON3));
         }
 
+        @Override
         public void mouseExited(MouseEvent e) {
             if (Global.LOG > 3) {
                 System.out.println(e);
-            }
-            LMB         = false;
-            RMB         = false;
-            LMBUsed     = false;
-            RMBUsed     = false;
-            doubleClick = false;
+            } // $DEBUG
+
+            setX(-1);
+            setY(-1);
+            setLMB(false);
+            setRMB(false);
+            setLMBPrev(false);
+            setRMBPrev(false);
+            setLMBTemp(false);
+            setRMBTemp(false);
         }
 
-//         public Point getPos() {
-//             return new Point(this.x, this.y);
-//         }
+        public boolean isLMBRisingEdge() {
+            return getLMB() && !getLMBPrev();
+        }
 
-		public boolean isRisingEdge() {
-			return LMB && !LMBUsed;
-		}
-	
-		public boolean isFallingEdge() {
-			return !LMB && LMBUsed;
-		}
-		
+        public boolean isLMBFallingEdge() {
+            return !getLMB() && getLMBPrev();
+        }
+
+        public boolean isRMBRisingEdge() {
+            return getRMB() && !getRMBPrev();
+        }
+
+        public boolean isRMBFallingEdge() {
+            return !getRMB() && getRMBPrev();
+        }
+
         public int getX() {
             return x;
+        }
+
+        public void setX(int x) {
+            this.x = x;
         }
 
         public int getY() {
             return y;
         }
 
+        public void setY(int y) {
+            this.y = y;
+        }
+
         public boolean getLMB() {
             return LMB;
+        }
+
+        public void setLMB(boolean bool) {
+            this.LMB = bool;
         }
 
         public boolean getRMB() {
             return RMB;
         }
 
-        public boolean getLMBUsed() {
-            return LMBUsed;
+        public void setRMB(boolean bool) {
+            this.RMB = bool;
         }
 
-        public void setLMBUsed(boolean bool) {
-            LMBUsed = bool;
+        public boolean getLMBPrev() {
+            return LMBPrev;
         }
 
-        public boolean getRMBUsed() {
-            return RMBUsed;
+        public void setLMBPrev(boolean bool) {
+            LMBPrev = bool;
         }
 
-        public void setRMBUsed(boolean bool) {
-            RMBUsed = bool;
+        public boolean getRMBPrev() {
+            return RMBPrev;
+        }
+
+        public void setRMBPrev(boolean bool) {
+            RMBPrev = bool;
+        }
+
+        public boolean getLMBTemp() {
+            return LMBTemp;
+        }
+
+        public void setLMBTemp(boolean bool) {
+            LMBTemp = bool;
+        }
+
+        public boolean getRMBTemp() {
+            return RMBTemp;
+        }
+
+        public void setRMBTemp(boolean bool) {
+            RMBTemp = bool;
+        }
+    }
+
+    public static class Keyboard extends KeyAdapter {
+
+        private boolean[] pressedKeys = new boolean[256];
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            pressedKeys[e.getKeyCode()] = true;
+            char key = e.getKeyChar();
+            switch (key) {
+                case 'l' -> Global.ACTIONS.dumpInfoToConsole();
+                case 'q' -> System.exit(1);
+            }
+        }
+
+        @Override
+        public void keyReleased(KeyEvent e) {
+            pressedKeys[e.getKeyCode()] = false;
         }
     }
 
@@ -204,42 +281,6 @@ public class IO {
     //        public void componentResized(ComponentEvent e) {
     //            super.componentResized(e);
     //            changeSize(e.getComponent().getSize());
-    //        }
-    //    };
-    //    KeyAdapter           keyAdapter       = new KeyAdapter() {
-    //        @Override
-    //        public void keyPressed(KeyEvent e) {
-    //            char key = e.getKeyChar();
-    //            switch (key) {
-    //                case 'm' -> mainView.scrollLock = !mainView.scrollLock;
-    //                case '=', '+' -> mainView.changeScale(1);
-    //                case '-' -> mainView.changeScale(-1);
-    //                case '[' -> GameOfLife.changeSimStepTime(false);
-    //                case ']' -> GameOfLife.changeSimStepTime(true);
-    //                case 'w' -> GameOfLife.keys[0] = true;
-    //                case 'a' -> GameOfLife.keys[1] = true;
-    //                case 's' -> GameOfLife.keys[2] = true;
-    //                case 'd' -> GameOfLife.keys[3] = true;
-    //                case 'r' -> GameOfLife.randomFill();
-    //                case '\n' -> GameOfLife.simulate();
-    //                case ' ' -> {
-    //                    GameOfLife.paused = !GameOfLife.paused;
-    //                    GameOfLife.prevSimStep = 0;
-    //                }
-    //                case 'q' -> System.exit(1);
-    //            }
-    //            prevKey = key;
-    //        }
-    //        @Override
-    //        public void keyReleased(KeyEvent e) {
-    //            switch (e.getKeyChar()) {
-    //                case 'w' -> GameOfLife.keys[0] = false;
-    //                case 'a' -> GameOfLife.keys[1] = false;
-    //                case 's' -> GameOfLife.keys[2] = false;
-    //                case 'd' -> GameOfLife.keys[3] = false;
-    //            }
-    //            prevKey = '\'';
-    //            keyLock = false;
     //        }
     //    };
 }

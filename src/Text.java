@@ -1,53 +1,52 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public class Text extends Element {
 
     // TODO: Prob make width and height actually matter
-    private int     textSize;
-    private String  text;
-    private Color   color;
+    private int    textSize;
+    private String text;
+    private Color  color;
 
-    public Text(int x, int y, int size, int z, String text, Color color) {
-		super(x, y, 0, 0, z);
+    public Text(int x, int y, int size, int z) {
+        super(x, y, 0, 0, z);
         this.textSize = size;
-        this.text     = text;
-        this.color    = color;
     }
 
-	@Override
+    public Text(int x, int y, int size, int z, String text) {
+        this(x, y, size, z);
+        this.text = text;
+    }
+
+    public Text(int x, int y, int size, int z, String text, Color color) {
+        this(x, y, size, z, text);
+        this.color = color;
+    }
+
+    @Override
     public boolean update() {
         return false;
     }
 
-	@Override
-    public void draw(Graphics2D g) {
-        g.setColor(color);
-        g.setFont(new Font("Roboto Mono", Font.BOLD, textSize));
-        FontMetrics metrics = g.getFontMetrics();
+    @Override
+    public void draw(Graphics2D g2d) {
+        g2d.setColor(color);
+        g2d.setFont(new Font("Roboto Mono", Font.BOLD, textSize));
+        FontMetrics metrics = g2d.getFontMetrics();
         int         tx      = getX() - (int) (metrics.stringWidth(text) / 2.0f);
-        int         ty      = getY() - (int) (metrics.getHeight() 		/ 2.0f) + metrics.getAscent();
-        g.drawString(text, tx, ty);
+        int         ty      = getY() - (int) (metrics.getHeight() / 2.0f) + metrics.getAscent();
+        g2d.drawString(text, tx, ty);
     }
 
-	// public Point getPos() {
- //        return new Point(x, y);
- //    }
+    public String getText() {
+        return text;
+    }
 
- //    public void setPos(Point pos) {
- //        this.x = pos.x;
- //        this.y = pos.y;
- //    }
+    public void setText(String text) {
+        this.text = text;
+    }
 
- //    public Point getSize() {
- //        return new Point(w, h);
- //    }
-
- //    public void setSize(Point size) {
- //        this.w = size.x;
- //        this.h = size.y;
- //    }
-
-	public Color getColor() {
+    public Color getColor() {
         return color;
     }
 
