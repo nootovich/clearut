@@ -119,6 +119,6 @@ public class Sprite extends Element {
     }
 
     public enum SpriteType {
-        RECTANGLE, ROUNDED;
+        RECTANGLE, ROUNDED; // TODO: rename to ROUNDED_RECTANGLE when i get home
     }
 }

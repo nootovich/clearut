@@ -243,7 +243,7 @@ public class IO {
             char key = e.getKeyChar();
             switch (key) {
                 case 'l' -> Global.ACTIONS.dumpInfoToConsole();
-                case 'q' -> System.exit(1);
+                case 'q' -> System.exit(0);
             }
         }
 

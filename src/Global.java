@@ -1,16 +1,17 @@
 import java.awt.*;
+import java.io.File;
 
 public class Global {
     public static final int LOG = 0;
 
-    public static final int         WINDOW_WIDTH     = 600;
-    public static final int         WINDOW_HEIGHT    = 300;
+    public static final int         WINDOW_WIDTH     = 800;
+    public static final int         WINDOW_HEIGHT    = 400;
     public static final int         SAVEDATA_VERSION = 1; //TODO: rename 'info' to 'data'
     public static final Actions     ACTIONS          = new Actions();
     public static final IO.Mouse    MOUSE            = new IO.Mouse();
     public static final IO.Keyboard KEYBOARD         = new IO.Keyboard();
-    public static final String      IMAGE_FOLDER     = "C:\\Users\\noot\\IdeaProjects\\clearut\\images\\";
-    public static final String      SAVEDATA_FOLDER  = "C:\\Users\\noot\\IdeaProjects\\clearut\\saves\\";
+    public static final String      IMAGE_FOLDER     = "images" + File.separator;
+    public static final String      SAVEDATA_FOLDER  = "saves" + File.separator;
 
     @SuppressWarnings("ConstantConditionalExpression")
     public static final Color[] COLORS            =

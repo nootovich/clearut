@@ -1,17 +1,17 @@
 public class Main {
 
     public static void main(String[] args) throws InterruptedException {
-        Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
+	    Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
         layer("BG").addChild(new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS[0], "bg"));
 
-        initSaveTesting();
+        initGame();
 
         //noinspection InfiniteLoopStatement
         while (true) {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(50);
+            //Thread.sleep(50);
 
             if (Global.LOG > 1) {
                 System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
@@ -85,8 +85,11 @@ public class Main {
             int    bs     = (int) button_size;
             Sprite button = new Sprite(bx, by, bs, bs, 1);
             button.setColors(Global.COLORS[4], Global.COLORS[5], Global.COLORS[6]);
+			button.setType(Sprite.SpriteType.ROUNDED);
+			button.setAdditional(5);
             button.setAction("button" + i);
             button.setName("button" + i);
+			Outline button_outline = new Outline(button, 2, Global.COLORS[7]);			
             layer("UISIDE").addChild(button);
         }
 
@@ -97,7 +100,7 @@ public class Main {
         int     px         = (int) (GW - button_size - offset);
         int     py         = (int) offset;
         int     ps         = (int) (button_size);
-        Picture profilePic = new Picture(px, py, ps, ps, 1, Global.IMAGE_FOLDER + "ipolitta.jpg");
+        Picture profilePic = new Picture(px, py, ps, ps, 1, Global.IMAGE_FOLDER + "lizard.jpg");
         layer("PROFILE").addChild(profilePic);
 
     }
