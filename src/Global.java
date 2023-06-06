@@ -35,4 +35,7 @@ public class Global {
 
     public static int FRAMECOUNT = 0;
 
+	public static Color getColor(int color) {
+		return new Color(color);
+	}
 }

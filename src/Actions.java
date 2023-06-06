@@ -7,7 +7,7 @@ public class Actions {
         try {
             this.getClass().getMethod(action).invoke(this);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            System.out.printf("The is no action named \"%s\"%n", action);
+            printf("The is no action named \"%s\"", action);
         }
     }
 
@@ -32,6 +32,16 @@ public class Actions {
         }
     }
 
+	public void openNotes() {
+		int x = findElement("sideBG").getWidth();
+		int y = findElement("profileBG").getHeight();
+		int w = Global.WINDOW_WIDTH - x;
+		int h = Global.WINDOW_HEIGHT - y;
+		
+		Sprite notesBG = new Sprite(x, y, w, h, 0, Global.getColor(0xBBAA42), "notesBG");
+		layer("UIMAIN").addChild(notesBG);
+	}
+	
     public void button0() {
         System.out.println("button0 was pressed!");
     }
@@ -69,5 +79,15 @@ public class Actions {
 
         printf("Element %s was not found!", name);
         return null;
+    }
+	
+    private static UILayer layer(String name) {
+        // TODO: where this thing should be?
+        // MEGA TODO: prob rework or remove this. Good idea tho
+        // GIGA TODO: this thing is amazing. DO NOT TOUCHA MA SPAGET
+        UILayer layer = Global.WINDOW.getLayer(name);
+        if (layer != null) return layer;
+        Global.WINDOW.addLayerToTop(name);
+        return Global.WINDOW.getLayer(name);
     }
 }

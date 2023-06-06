@@ -3,7 +3,8 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 	    Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
         layer("BG").addChild(new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS[0], "bg"));
-
+		layer("UIMAIN");
+		
         initGame();
 
         //noinspection InfiniteLoopStatement
@@ -11,7 +12,7 @@ public class Main {
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            //Thread.sleep(50);
+            Thread.sleep(50);
 
             if (Global.LOG > 1) {
                 System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
@@ -77,16 +78,28 @@ public class Main {
         float button_size = GH / 8.0f;
 
         Sprite sideBG = new Sprite(0, 0, (int) (button_size + offset * 2), GH, 0, Global.COLORS[2]);
-        layer("UISIDE").addChild(sideBG);
+        sideBG.setName("sideBG");
+		layer("UISIDE").addChild(sideBG);
 
-        for (int i = 0; i < 6; i++) {
+		Sprite notesButton = new Sprite((int) offset, (int) offset, (int) button_size, (int) button_size, 1);
+		Outline notesButtonOutline = new Outline(notesButton, 4, Global.getColor(0xAAAA69));
+		Text notesButtonText = new Text((int) (offset + (button_size / 2.0f)), (int) (offset + (button_size / 2.0f)), 10, 3, "NOTES", Global.getColor(0xFFFFFF));
+		notesButton.addChild(notesButtonText);
+		notesButton.setColors(Global.getColor(0xBFCF42), Global.getColor(0xC7D742), Global.getColor(0xCFDF69));
+		notesButton.setType(Sprite.SpriteType.ROUNDED);
+		notesButton.setAdditional(12);
+		notesButton.setAction("openNotes");
+		notesButton.setName("notesButton");
+		layer("UISIDE").addChild(notesButton);
+		
+        for (int i = 1; i < 6; i++) {
             int    bx     = (int) offset;
             int    by     = (int) (offset + (button_size + offset) * i);
             int    bs     = (int) button_size;
             Sprite button = new Sprite(bx, by, bs, bs, 1);
             button.setColors(Global.COLORS[4], Global.COLORS[5], Global.COLORS[6]);
 			button.setType(Sprite.SpriteType.ROUNDED);
-			button.setAdditional(5);
+			button.setAdditional(10);
             button.setAction("button" + i);
             button.setName("button" + i);
 			Outline button_outline = new Outline(button, 2, Global.COLORS[7]);			
@@ -95,13 +108,15 @@ public class Main {
 
         int    pxh       = (int) (button_size + offset * 2);
         Sprite profileBG = new Sprite(pxh, 0, GW, pxh, 0, Global.COLORS[1]);
-        layer("PROFILE").addChild(profileBG);
+        profileBG.setName("profileBG");
+		layer("UIPROFILE").addChild(profileBG);
 
         int     px         = (int) (GW - button_size - offset);
         int     py         = (int) offset;
         int     ps         = (int) (button_size);
         Picture profilePic = new Picture(px, py, ps, ps, 1, Global.IMAGE_FOLDER + "lizard.jpg");
-        layer("PROFILE").addChild(profilePic);
+        profilePic.setName("profilePic");
+		layer("UIPROFILE").addChild(profilePic);
 
     }
 
@@ -110,8 +125,7 @@ public class Main {
         // MEGA TODO: prob rework or remove this. Good idea tho
         // GIGA TODO: this thing is amazing. DO NOT TOUCHA MA SPAGET
         UILayer layer = Global.WINDOW.getLayer(name);
-        if (layer != null)
-            return layer;
+        if (layer != null) return layer;
         Global.WINDOW.addLayerToTop(name);
         return Global.WINDOW.getLayer(name);
     }

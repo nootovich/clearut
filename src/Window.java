@@ -39,7 +39,7 @@ public class Window extends JFrame {
     }
 
     public void addLayerToTop(String name) {
-        int newZ = layers.length == 0 ? 0 : layers[layers.length - 1].getZ();
+        int newZ = layers.length == 0 ? 0 : layers[layers.length - 1].getZ() + 1;
         addLayer(new UILayer(name, newZ));
     }
 

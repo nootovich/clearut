@@ -31,10 +31,10 @@ public class Outline extends Element {
     @Override
     public void draw(Graphics2D g2d) {
         Element parent = getParent();
-        int     x      = parent.getX() + (thickness >> 1);
-        int     y      = parent.getY() + (thickness >> 1);
-        int     w      = parent.getWidth() - thickness;
-        int     h      = parent.getHeight() - thickness;
+        int     x      = parent.getX() + (thickness >> 2);
+        int     y      = parent.getY() + (thickness >> 2);
+        int     w      = parent.getWidth() - (thickness >> 1);
+        int     h      = parent.getHeight() - (thickness >> 1);
 
         if (Global.LOG > 2) {
             System.out.printf(
@@ -50,7 +50,7 @@ public class Outline extends Element {
 
         if (parent.getClass() == Sprite.class) {
             Sprite p          = (Sprite) parent;
-            int    additional = p.getAdditional();
+            int    additional = p.getAdditional() - 4;
 
             switch (p.getType()) {
                 case RECTANGLE -> g2d.drawRect(x, y, w, h);
