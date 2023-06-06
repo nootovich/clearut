@@ -4,9 +4,10 @@ public class Text extends Element {
 
     // TODO: Prob make width and height actually matter
     // TODO: Automate textSize of Text and actually render Text based on its dimentions
-    private int    textSize;
-    private String text;
-    private Color  color;
+    private int       textSize;
+    private Alignment alignment = Alignment.CENTER;
+    private String    text;
+    private Color     color;
 
     public Text(int x, int y, int size, int z) {
         super(x, y, 0, 0, z);
@@ -30,11 +31,27 @@ public class Text extends Element {
 
     @Override
     public void draw(Graphics2D g2d) {
+        if (!isVisible()) return;
+
         g2d.setColor(color);
         g2d.setFont(new Font("Roboto Mono", Font.BOLD, textSize));
         FontMetrics metrics = g2d.getFontMetrics();
-        int         tx      = getX() - (int) (metrics.stringWidth(text) / 2.0f);
-        int         ty      = getY() - (int) (metrics.getHeight() / 2.0f) + metrics.getAscent();
+
+
+        int tx = getX();
+        int ty = getY();
+
+        // TODO: implement the rest of alignments
+        switch (getAlignment()) {
+            case CENTER -> {
+                tx -= metrics.stringWidth(text) >> 1;
+                ty -= metrics.getHeight() >> 1;
+                ty += metrics.getAscent();
+            }
+            case LEFT -> ty += metrics.getHeight();
+            default -> System.exit(420);
+        }
+
         g2d.drawString(text, tx, ty);
     }
 
@@ -52,5 +69,17 @@ public class Text extends Element {
 
     public void setColor(Color color) {
         this.color = color;
+    }
+
+    public Alignment getAlignment() {
+        return alignment;
+    }
+
+    public void setAlignment(Alignment alignment) {
+        this.alignment = alignment;
+    }
+
+    public enum Alignment {
+        CENTER, LEFT, RIGHT, TOP, BOTTOM
     }
 }

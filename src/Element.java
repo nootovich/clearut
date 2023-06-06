@@ -4,14 +4,15 @@ import java.util.Comparator;
 
 public class Element {
 
-    private int[]     dimensions = new int[5]; // x y z w h
-    private boolean   visible    = true;
-    private boolean   hovered    = false; // TODO: maybe combine states into one variable?
-    private boolean   active     = false; // TODO: maybe combine states into one variable?
-    private String    name       = "";
-    private String    action     = "";
-    private Element[] children   = new Element[0];
-    private Element   parent     = null;
+    private int[]     dimensions  = new int[5]; // x y z w h
+    private boolean   interactive = true;
+    private boolean   visible     = true;
+    private boolean   hovered     = false; // TODO: maybe combine states into one variable?
+    private boolean   active      = false; // TODO: maybe combine states into one variable?
+    private String    name        = "";
+    private String    action      = "";
+    private Element[] children    = new Element[0];
+    private Element   parent      = null;
 
     Element() {}
 
@@ -49,9 +50,13 @@ public class Element {
         String  en             = getName(); // $DEBUG
 
         if (Global.LOG > 1) {
-            System.out.printf("\t\tupdate element - z:%d x:%d y:%d w:%d h:%d %s '%s'%n",
-                              getZ(), ex, ey, ew, eh, en, isVisible() ? " visible" : "!visible");
+            System.out.printf("\t\tupdate element - z:%d x:%d y:%d w:%d h:%d %s '%s %s'%n",
+                              getZ(), ex, ey, ew, eh, en,
+                              isVisible() ? " visible" : "!visible",
+                              isInteractive() ? " interactive" : "!interactive");
         } // $DEBUG
+
+        if (!isInteractive()) return false;
 
         setHovered(mx >= ex && mx <= ex + ew && my >= ey && my <= ey + eh);
         setActive(isHovered() && lmb);
@@ -220,6 +225,14 @@ public class Element {
 
     public void setVisibility(boolean bool) {
         this.visible = bool;
+    }
+
+    public boolean isInteractive() {
+        return interactive;
+    }
+
+    public void setInteractive(boolean bool) {
+        this.interactive = bool;
     }
 
     public boolean isHovered() {

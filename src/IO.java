@@ -235,13 +235,40 @@ public class IO {
 
     public static class Keyboard extends KeyAdapter {
 
-        private boolean[] pressedKeys = new boolean[256];
+        private boolean[] pressedKeys = new boolean[256]; // TODO: not implemented
 
         @Override
         public void keyPressed(KeyEvent e) {
             pressedKeys[e.getKeyCode()] = true;
             char key = e.getKeyChar();
-            switch (key) {
+            if (Global.MODE.equals("NOTES")) {
+                switch (key) {
+                    case '=' -> {
+                        Global.ACTIONS.dumpInfoToConsole();
+                        return;
+                    }
+                    case '\n' -> {
+                        Text notes = (Text) Global.ACTIONS.findElement("notes0");
+                        assert notes != null;
+                        int lineCount = notes.getChildren().length;
+                        // TODO: remove hardcoded values
+                        Text newNotesLine = new Text(notes.getX(), notes.getY() + 20, 12, 4, "", Color.BLACK);
+                        newNotesLine.setAlignment(Text.Alignment.LEFT);
+                        newNotesLine.setName("notes" + (lineCount + 1));
+                        notes.addChild(newNotesLine);
+                    }
+                }
+                Text notes = (Text) Global.ACTIONS.findElement("notes0");
+                assert notes != null;
+                int lineCount = notes.getChildren().length;
+                if (lineCount == 0) {
+                    notes.setText(notes.getText() + key);
+                    return;
+                }
+                notes = (Text) Global.ACTIONS.findElement("notes" + lineCount);
+                assert notes != null;
+                notes.setText(notes.getText() + key);
+            } else switch (key) {
                 case 'l' -> Global.ACTIONS.dumpInfoToConsole();
                 case 'q' -> System.exit(0);
             }
