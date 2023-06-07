@@ -40,78 +40,78 @@ public class Text extends Element {
         int tx = getX();
         int ty = getY();
 
-		String[] lines = text.split("\\r?\\n", -1);
-		for (int i = 0; i < lines.length; i++) {
+        String[] lines = text.split("\\r?\\n", -1);
+        for (int i = 0; i < lines.length; i++) {
 
-			String line = lines[i];
-			
-	        // TODO: implement the rest of alignments
-	        switch (getAlignment()) {
-	            case CENTER -> {
-	                tx -= metrics.stringWidth(line) >> 1;
-	                ty -= metrics.getHeight() >> 1;
-	                ty += metrics.getAscent() * (i + 1);
-	            }
-	            case LEFT -> ty += metrics.getHeight();
-	            default -> System.exit(420);
-	        }
+            String line = lines[i];
 
-        	g2d.drawString(line, tx, ty);
-    	}
-	}
+            // TODO: implement the rest of alignments
+            switch (getAlignment()) {
+                case CENTER -> {
+                    tx -= metrics.stringWidth(line) >> 1;
+                    ty -= metrics.getHeight() >> 1;
+                    ty += metrics.getAscent() * (i + 1);
+                }
+                case LEFT -> ty += metrics.getHeight();
+                default -> System.exit(420);
+            }
+
+            g2d.drawString(line, tx, ty);
+        }
+    }
 
     public String getText() {
         return text;
     }
-	
-	// public int getTextLength() {
- //        return text.length();
- //    }
-		
-	// public String[] getLines() {
- //        return text.split("\\r?\\n");
- //    }
-	
-	// public int getNumOfLines() {
- //        return text.split("\\r?\\n").length;
- //    }
+
+    // public int getTextLength() {
+    //        return text.length();
+    //    }
+
+    // public String[] getLines() {
+    //        return text.split("\\r?\\n");
+    //    }
+
+    // public int getNumOfLines() {
+    //        return text.split("\\r?\\n").length;
+    //    }
 
     public void setText(String text) {
         this.text = text;
     }
 
-	public void addChar(char c) {
-		setText(getText() + c);
-	}
+    public void addChar(char c) {
+        setText(getText() + c);
+    }
 
-	public void addText(String text) {
-		setText(getText() + text);
-	}
+    public void addText(String text) {
+        setText(getText() + text);
+    }
 
-	public void removeLastChar() {
-		String txt = getText();
-		if (txt.length() == 0) return;
-		setText(txt.substring(0, txt.length() - 1));
-	}
+    public void removeLastChar() {
+        String txt = getText();
+        if (txt.length() == 0) return;
+        setText(txt.substring(0, txt.length() - 1));
+    }
 
-	public void removeCharAt(int index) {
-		assert false : "Not implemented";
-	}
-	
-	public void removeCharAt(int row, int col) {
-		assert false : "Not implemented";
-	}
+    public void removeCharAt(int index) {
+        assert false : "Not implemented";
+    }
 
-	public void removeLastWord() {
-		removeLastChar();
-		String txt = getText();
-		while (txt.length() > 0) {
-			if (Character.isWhitespace(txt.charAt(txt.length() - 1))) break;	
-			txt = txt.substring(0, txt.length() - 1);			
-		}
-		setText(txt);	
-	}
-	
+    public void removeCharAt(int row, int col) {
+        assert false : "Not implemented";
+    }
+
+    public void removeLastWord() {
+        removeLastChar();
+        String txt = getText();
+        while (txt.length() > 0) {
+            if (Character.isWhitespace(txt.charAt(txt.length() - 1))) break;
+            txt = txt.substring(0, txt.length() - 1);
+        }
+        setText(txt);
+    }
+
     public Color getColor() {
         return color;
     }

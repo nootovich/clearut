@@ -235,124 +235,124 @@ public class IO {
 
     public static class Keyboard extends KeyAdapter {
 
-		private int row = 0;
-		private int col = 0;
+        private int row = 0;
+        private int col = 0;
 
         @Override
         public void keyPressed(KeyEvent e) {
-			// 8  - backspace / WIP
-			// 10 - enter / HANDLED
-			// 16 - shift
-			// 17 - ctrl / WIP
-			// 18 - alt
-			// 19 - pause break / DISABLED
-			// 20 - caps lock / DISABLED
-			// 27 - esc / HANDLED
-			// 33 - page up
-			// 34 - page down
-			// 35 - end
-			// 36 - home
-			// 37 - left arrow
-			// 38 - up arrow
-			// 39 - right arrow
-			// 40 - down arrow
-			// 112:123 - F1:F12 / DISABLED
-			// 127 - delete
-			// 144 - num lock / DISABLED
-			// 145 - scroll lock / DISABLED
-			// 155 - insert
-			// 65368 - begin (what is this?) / DISABLED
-			int[] THE_LIST = new int[]{
-				16, 17, 18, 19, 20, 33, 34, 35, 36, 37, 38, 39, 40,
-				112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
-				127, 144, 145, 155, 65368
-			};
-			
-			if (Global.LOG > 3) {
-				System.out.printf("%s%n--------------%n", e.paramString());
-			} // $DEBUG
-			
-            char key = e.getKeyChar();
-			int code = e.getKeyCode();
+            // 8  - backspace / WIP
+            // 10 - enter / HANDLED
+            // 16 - shift
+            // 17 - ctrl / WIP
+            // 18 - alt
+            // 19 - pause break / DISABLED
+            // 20 - caps lock / DISABLED
+            // 27 - esc / HANDLED
+            // 33 - page up
+            // 34 - page down
+            // 35 - end
+            // 36 - home
+            // 37 - left arrow
+            // 38 - up arrow
+            // 39 - right arrow
+            // 40 - down arrow
+            // 112:123 - F1:F12 / DISABLED
+            // 127 - delete
+            // 144 - num lock / DISABLED
+            // 145 - scroll lock / DISABLED
+            // 155 - insert
+            // 65368 - begin (what is this?) / DISABLED
+            int[] THE_LIST = new int[]{
+                    16, 17, 18, 19, 20, 33, 34, 35, 36, 37, 38, 39, 40,
+                    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+                    127, 144, 145, 155, 65368
+            };
 
-			if (code == KeyEvent.VK_ESCAPE) System.exit(69);
-			
-			// notes mode
+            if (Global.LOG > 3) {
+                System.out.printf("%s%n--------------%n", e.paramString());
+            } // $DEBUG
+
+            char key  = e.getKeyChar();
+            int  code = e.getKeyCode();
+
+            if (code == KeyEvent.VK_ESCAPE) System.exit(69);
+
+            // notes mode
             if (Global.MODE.equals("NOTES")) {
-				
-				for(int THE_FORBIDDEN_CODE : THE_LIST) {
-					if (code == THE_FORBIDDEN_CODE) {
-						System.out.println("forbidden char");
-						e.consume();
-						return;
-					}
-				}
-				
-				// TODO: temporary solution
-				//	in the future i would need to handle modifier keys as well
-				if (key == KeyEvent.CHAR_UNDEFINED || key == '\0') {
-					System.out.println("unknown char");
-					e.consume();
-					return;
-				}
-				
+
+                for (int THE_FORBIDDEN_CODE : THE_LIST) {
+                    if (code == THE_FORBIDDEN_CODE) {
+                        System.out.println("forbidden char");
+                        e.consume();
+                        return;
+                    }
+                }
+
+                // TODO: temporary solution
+                //	in the future i would need to handle modifier keys as well
+                if (key == KeyEvent.CHAR_UNDEFINED || key == '\0') {
+                    System.out.println("unknown char");
+                    e.consume();
+                    return;
+                }
+
                 Text notes = (Text) Global.ACTIONS.findElement("notes0");
                 assert notes != null;
-				
-				if (e.isControlDown()) {
-					switch (code) {
-						case KeyEvent.VK_BACK_SPACE -> notes.removeLastWord();
-						case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
-					}		
-				} else {
-					switch (code) {
-						case KeyEvent.VK_BACK_SPACE -> notes.removeLastChar();
-						default -> notes.setText(notes.getText() + key);
-					}
-				}
-				
-				String txt = notes.getText();
-				row = txt.length() - txt.replace("\n", "").length();
-				col = txt.length() - txt.lastIndexOf('\n') - 1;
 
-				Sprite cursor = (Sprite) Global.ACTIONS.findElement("cursor");
-				assert cursor != null;
+                if (e.isControlDown()) {
+                    switch (code) {
+                        case KeyEvent.VK_BACK_SPACE -> notes.removeLastWord();
+                        case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+                    }
+                } else {
+                    switch (code) {
+                        case KeyEvent.VK_BACK_SPACE -> notes.removeLastChar();
+                        default -> notes.setText(notes.getText() + key);
+                    }
+                }
 
-				// TODO: remove hardcoded values
-				cursor.setX(notes.getX() + 8 * col);
-				cursor.setY(notes.getY() + 15 * row);
-				
-				e.consume();
-            	return;
-			} 
+                String txt = notes.getText();
+                row = txt.length() - txt.replace("\n", "").length();
+                col = txt.length() - txt.lastIndexOf('\n') - 1;
 
-			// everything else except notes mode
-			switch (key) {
+                Sprite cursor = (Sprite) Global.ACTIONS.findElement("cursor");
+                assert cursor != null;
+
+                // TODO: remove hardcoded values
+                cursor.setX(notes.getX() + 8 * col);
+                cursor.setY(notes.getY() + 15 * row);
+
+                e.consume();
+                return;
+            }
+
+            // everything else except notes mode
+            switch (key) {
                 case 'l' -> Global.ACTIONS.dumpInfoToConsole();
             }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-			return;
+            return;
         }
 
-		public int getRow() {
-			return row;
-		}
-		
-		public int getCol() {
-			return col;
-		}
-		
-		public void setRow(int row) {
-			this.row = row;
-		}
-		
-		public void setCol(int col) {
-			this.col = col;
-		}
-		
+        public int getRow() {
+            return row;
+        }
+
+        public void setRow(int row) {
+            this.row = row;
+        }
+
+        public int getCol() {
+            return col;
+        }
+
+        public void setCol(int col) {
+            this.col = col;
+        }
+
     }
 
     // TODO: make window resizeable
