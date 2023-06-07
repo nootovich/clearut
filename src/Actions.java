@@ -40,7 +40,7 @@ public class Actions {
                e.isVisible() ? "v" : "", e.isHovered() ? "h" : "", e.isActive() ? "a" : "", descendants.length);
         if(e.getClass().equals(Text.class)) {
             Text ea = (Text) e;
-            printf("\t".repeat(depth+1) + "► Value: %s", ea.getText());
+            printf("\t".repeat(depth+1) + "► Value: |%s|", ea.getText());
         }
         for (Element el : descendants) {
             dumpChildInfoToConsole(el, depth + 1);
@@ -64,20 +64,13 @@ public class Actions {
 
         int x = sideBG.getWidth();
         int y = profileBG.getHeight();
-        Text input = new Text(x, y, 12, 4, "", Color.BLACK);
+        Text input = new Text(x + 20, y + 20, 12, 4, "", Color.BLACK);
         input.setAlignment(Text.Alignment.LEFT);
         input.setName("notes0");
         layer("UIMAIN").addChild(input);
 
-//        int w = Global.WINDOW_WIDTH - x;
-//        int h = Global.WINDOW_HEIGHT - y;
-
-//        Sprite notesBG = new Sprite(x, y, w, h, 0, Global.COLORS_YELLOW[6], "notesBG");
-//        layer("UIMAIN").addChild(notesBG);
-    }
-
-    public void button0() {
-        System.out.println("button0 was pressed!");
+		Sprite cursor = new Sprite(x + 20, y + 20, 1, 18, 5, Color.BLACK, "cursor");
+		layer("UIMAIN").addChild(cursor);
     }
 
     public void button1() {
@@ -88,14 +81,12 @@ public class Actions {
         Element button3 = findElement("button3");
         if (button3 == null) return;
         button3.setX(button3.getX() + 100);
-        System.out.println("button3 move right");
     }
 
     public void button5() {
         Element button3 = findElement("button3");
         if (button3 == null) return;
         button3.setX(button3.getX() - 50);
-        System.out.println("button3 move left");
     }
 
     private void printf(String template, Object... args) {

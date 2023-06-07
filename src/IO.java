@@ -235,53 +235,127 @@ public class IO {
 
     public static class Keyboard extends KeyAdapter {
 
-        private boolean[] pressedKeys = new boolean[256]; // TODO: not implemented
+		private int row = 0;
+		private int col = 0;
 
         @Override
         public void keyPressed(KeyEvent e) {
-            pressedKeys[e.getKeyCode()] = true;
+			// 8  - backspace / WIP
+			// 10 - enter / HANDLED
+			// 16 - shift
+			// 17 - ctrl / WIP
+			// 18 - alt
+			// 19 - pause break / DISABLED
+			// 20 - caps lock / DISABLED
+			// 27 - esc / HANDLED
+			// 33 - page up
+			// 34 - page down
+			// 35 - end
+			// 36 - home
+			// 37 - left arrow
+			// 38 - up arrow
+			// 39 - right arrow
+			// 40 - down arrow
+			// 112:123 - F1:F12 / DISABLED
+			// 127 - delete
+			// 144 - num lock / DISABLED
+			// 145 - scroll lock / DISABLED
+			// 155 - insert
+			// 65368 - begin (what is this?) / DISABLED
+			int[] THE_LIST = new int[]{
+				16, 17, 18, 19, 20, 33, 34, 35, 36, 37, 38, 39, 40,
+				112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+				127, 144, 145, 155, 65368
+			};
+			
+			if (Global.LOG > 3) {
+				System.out.printf("%s%n--------------%n", e.paramString());
+			} // $DEBUG
+			
             char key = e.getKeyChar();
+			int code = e.getKeyCode();
+
+			if (code == KeyEvent.VK_ESCAPE) System.exit(69);
+			
+			// notes mode
             if (Global.MODE.equals("NOTES")) {
-                switch (key) {
-                    case '=' -> {
-                        Global.ACTIONS.dumpInfoToConsole();
-                        return;
-                    }
-                    case '\n' -> {
-                        Text notes = (Text) Global.ACTIONS.findElement("notes0");
-                        assert notes != null;
-                        int lineCount = notes.getChildren().length;
-                        // TODO: remove hardcoded values
-                        Text newNotesLine = new Text(notes.getX(), notes.getY() + 20, 12, 4, "", Color.BLACK);
-                        newNotesLine.setAlignment(Text.Alignment.LEFT);
-                        newNotesLine.setName("notes" + (lineCount + 1));
-                        notes.addChild(newNotesLine);
-                    }
-                }
+				
+				for(int THE_FORBIDDEN_CODE : THE_LIST) {
+					if (code == THE_FORBIDDEN_CODE) {
+						System.out.println("forbidden char");
+						e.consume();
+						return;
+					}
+				}
+				
+				// TODO: temporary solution
+				//	in the future i would need to handle modifier keys as well
+				if (key == KeyEvent.CHAR_UNDEFINED || key == '\0') {
+					System.out.println("unknown char");
+					e.consume();
+					return;
+				}
+				
                 Text notes = (Text) Global.ACTIONS.findElement("notes0");
                 assert notes != null;
-                int lineCount = notes.getChildren().length;
-                if (lineCount == 0) {
-                    notes.setText(notes.getText() + key);
-                    return;
-                }
-                notes = (Text) Global.ACTIONS.findElement("notes" + lineCount);
-                assert notes != null;
-                notes.setText(notes.getText() + key);
-            } else switch (key) {
+				
+				if (e.isControlDown()) {
+					switch (code) {
+						case KeyEvent.VK_BACK_SPACE -> notes.removeLastWord();
+						case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+					}		
+				} else {
+					switch (code) {
+						case KeyEvent.VK_BACK_SPACE -> notes.removeLastChar();
+						default -> notes.setText(notes.getText() + key);
+					}
+				}
+				
+				String txt = notes.getText();
+				row = txt.length() - txt.replace("\n", "").length();
+				col = txt.length() - txt.lastIndexOf('\n') - 1;
+
+				Sprite cursor = (Sprite) Global.ACTIONS.findElement("cursor");
+				assert cursor != null;
+
+				// TODO: remove hardcoded values
+				cursor.setX(notes.getX() + 8 * col);
+				cursor.setY(notes.getY() + 15 * row);
+				
+				e.consume();
+            	return;
+			} 
+
+			// everything else except notes mode
+			switch (key) {
                 case 'l' -> Global.ACTIONS.dumpInfoToConsole();
-                case 'q' -> System.exit(0);
             }
         }
 
         @Override
         public void keyReleased(KeyEvent e) {
-            pressedKeys[e.getKeyCode()] = false;
+			return;
         }
+
+		public int getRow() {
+			return row;
+		}
+		
+		public int getCol() {
+			return col;
+		}
+		
+		public void setRow(int row) {
+			this.row = row;
+		}
+		
+		public void setCol(int col) {
+			this.col = col;
+		}
+		
     }
 
-    // TODO: this is from my Game of Life project
-    // TODO: extract what you need
+    // TODO: make window resizeable
     //
     //    ComponentAdapter componentAdapter = new ComponentAdapter() {
     //        @Override
