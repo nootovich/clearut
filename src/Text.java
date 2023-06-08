@@ -4,10 +4,10 @@ public class Text extends Element {
 
     // TODO: Prob make width and height actually matter
     // TODO: Automate textSize of Text and actually render Text based on its dimentions
-    private int       textSize;
+    private int       textSize = 10;
     private Alignment alignment = Alignment.CENTER;
-    private String    text;
-    private Color     color;
+    private String    text = "";
+    private Color     color = Color.BLACK;
 
     public Text(int x, int y, int size, int z) {
         super(x, y, 0, 0, z);
@@ -58,6 +58,8 @@ public class Text extends Element {
 
             g2d.drawString(line, tx, ty);
         }
+
+		drawChildren(g2d);
     }
 
     public String getText() {

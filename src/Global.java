@@ -76,5 +76,5 @@ public class Global {
 
     public static int    FRAMECOUNT = 0;
     public static String MODE       = "TEST";
-
+	public static String[] NOTES_DATA = new String[]{"test", "Hello, world!", "love you <3"};
 }

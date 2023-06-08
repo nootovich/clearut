@@ -278,7 +278,8 @@ public class IO {
             if (code == KeyEvent.VK_ESCAPE) System.exit(69);
 
             // notes mode
-            if (Global.MODE.equals("NOTES")) {
+			// TODO: enable when appropriate
+            if (Global.MODE.equals("NOTES") && true) {
 
                 for (int THE_FORBIDDEN_CODE : THE_LIST) {
                     if (code == THE_FORBIDDEN_CODE) {
@@ -296,7 +297,7 @@ public class IO {
                     return;
                 }
 
-                Text notes = (Text) Global.ACTIONS.findElement("notes0");
+                Text notes = (Text) Global.ACTIONS.findElement("openNote");
                 assert notes != null;
 
                 if (e.isControlDown()) {

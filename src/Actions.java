@@ -1,4 +1,6 @@
 import java.lang.reflect.InvocationTargetException;
+import java.awt.*;
+import java.util.Arrays;
 
 public class Actions {
 
@@ -15,7 +17,7 @@ public class Actions {
     public void invoke(String action) {
         if (action.equals("")) return;
 
-        String[] lines = action.split("\n");
+        String[] lines = action.split(":");
         if (lines.length > 1) {
             String function = lines[0];
 
@@ -24,7 +26,8 @@ public class Actions {
                     try {
                         this.getClass().getMethod(lines[0], int.class).invoke(this, Integer.parseInt(lines[2]));
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        printf("The is no action named \"%s\"", action);
+                        printf("2 There is no action named \"%s\"", action);
+						throw new InvocationTargetException(e);
                     }
 
                 }
@@ -32,7 +35,8 @@ public class Actions {
                     try {
                         this.getClass().getMethod(function, String.class).invoke(this, lines[2]);
                     } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-                        printf("The is no action named \"%s\"", action);
+                        printf("3 There is no action named \"%s\"", action);
+						throw new InvocationTargetException(e);
                     }
                 }
             }
@@ -40,7 +44,8 @@ public class Actions {
         } else try {
             this.getClass().getMethod(action).invoke(this);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            printf("The is no action named \"%s\"", action);
+            printf("1 There is no action named \"%s\"", action);
+						throw new InvocationTargetException(e);
         }
     }
 
@@ -74,7 +79,14 @@ public class Actions {
         Sprite sideBG    = (Sprite) findElement("sideBG");
         Sprite profileBG = (Sprite) findElement("profileBG");
 
-        assert bg != null;
+		Element openNote = findElement("openNote");
+		if (openNote != null) {
+			Text on = (Text) openNote;
+			Global.NOTES_DATA[on.getAdditional()] = on.getText();
+			layer("UIMAIN").removeChild("openNote");
+		}
+		
+		assert bg != null;
         assert sideBG != null;
         assert profileBG != null;
 
@@ -98,6 +110,8 @@ public class Actions {
         int nw = (freeW - spacing * (horizNotes + 1)) / horizNotes;
         int nh = (freeH - spacing * (vertNotes + 1)) / vertNotes;
 
+		Group notesGroup = new Group("notesGroup");
+		
         for (int i = 0; i < vertNotes; i++) {
             for (int j = 0; j < horizNotes; j++) {
 
@@ -107,30 +121,61 @@ public class Actions {
                 Sprite note = new Sprite(nx, ny, nw, nh, 3);
                 note.setColors(Global.COLORS_YELLOW_BRIGHT[5], Global.COLORS_YELLOW_BRIGHT[6], Global.COLORS_YELLOW_BRIGHT[7]);
                 note.setName("note" + (i * horizNotes + j));
-                note.setAction("openNote\nint\n" + (i * horizNotes + j));
+                note.setAction("openNote:int:" + (i * horizNotes + j));
 
-                layer("UIMAIN").addChild(note);
-
+                notesGroup.addChild(note);
             }
         }
 
-        // TODO: move this inside of opened note
-//        Text input = new Text(x + 20, y + 20, 12, 4, "", Color.BLACK);
-//        input.setAlignment(Text.Alignment.LEFT);
-//        input.setName("notes0");
-//        layer("UIMAIN").addChild(input);
-//
-//        Sprite cursor = new Sprite(x + 20, y + 20, 1, 18, 5, Color.BLACK, "cursor");
-//        layer("UIMAIN").addChild(cursor);
+		layer("UIMAIN").addChild(notesGroup);
     }
 
     public void openNote(int index) {
-        System.out.println("open note with index: " + index);
+		
+		layer("UIMAIN").removeChild("notesGroup");
+		
+		String[] notes = Global.NOTES_DATA;
+		String noteText = "";
+		
+		if (index < notes.length) {
+			noteText = notes[index] != null ? notes[index] : "";
+		} else {
+			String[] oldNotes = notes.clone();
+			notes = new String[index + 1];
+			System.arraycopy(oldNotes, 0, notes, 0, oldNotes.length);
+			Global.NOTES_DATA = notes;
+		}
+		
+        Sprite sideBG    = (Sprite) findElement("sideBG");
+        Sprite profileBG = (Sprite) findElement("profileBG");
+
+        assert sideBG != null;
+        assert profileBG != null;
+
+        int x = sideBG.getWidth();
+        int y = profileBG.getHeight();
+
+		Text note = new Text(x + 20, y + 20, 12, 4, noteText, Color.BLACK);
+       note.setAlignment(Text.Alignment.LEFT);
+		note.setAdditional(index);
+       note.setName("openNote");
+       layer("UIMAIN").addChild(note);
+
+       Sprite cursor = new Sprite(x + 20, y + 20, 1, 18, 5, Color.BLACK, "cursor");
+       note.addChild(cursor);
+
+		System.out.println(Global.NOTES_DATA.length);
+		System.out.println(Arrays.toString(Global.NOTES_DATA));
+		
     }
 
     public void button1() {
         System.out.println("Hello world!");
     }
+
+	public void button2() {
+		layer("UIMAIN").removeChild("notesGroup");
+	}
 
     public void button3() {
         Element button3 = findElement("button3");

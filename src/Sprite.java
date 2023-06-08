@@ -2,7 +2,6 @@ import java.awt.*;
 
 public class Sprite extends Element {
 
-    private int        additional = 0;
     private SpriteType type       = SpriteType.RECTANGLE;
     private Color[]    colors     = new Color[3];
 
@@ -62,14 +61,6 @@ public class Sprite extends Element {
         for (; i < descendants.length; i++) {
             descendants[i].draw(g2d);
         }
-    }
-
-    public int getAdditional() {
-        return additional;
-    }
-
-    public void setAdditional(int additional) {
-        this.additional = additional;
     }
 
     public SpriteType getType() {
