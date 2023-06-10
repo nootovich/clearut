@@ -1,5 +1,7 @@
 target/
 out/
+saves/
+notes/
 .idea/
 .settings/
 .breakpoints
@@ -10,4 +12,4 @@ clearut.iml
 pom.xml
 replit.nix
 *.class
-/saves/*
+
