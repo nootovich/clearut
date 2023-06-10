@@ -4,16 +4,17 @@ import java.util.Comparator;
 
 public class Element {
 
-    private int[]     dimensions  = new int[5]; // x y z w h
-    private boolean   interactive = true;
-    private boolean   visible     = true;
-    private boolean   hovered     = false; // TODO: maybe combine states into one variable?
-    private boolean   active      = false; // TODO: maybe combine states into one variable?
-    private String    name        = "";
-    private String    action      = "";
-    private Element[] children    = new Element[0];
-    private Element   parent      = null;
-    private int        additional = -1;
+    private int[]     dimensions          = new int[5]; // x y z w h
+    private boolean   interactive         = true;
+    private boolean   inheritInteractions = false;
+    private boolean   visible             = true;
+    private boolean   hovered             = false; // TODO: maybe combine states into one variable?
+    private boolean   active              = false; // TODO: maybe combine states into one variable?
+    private String    name                = "";
+    private String    action              = "";
+    private Element[] children            = new Element[0];
+    private Element   parent              = null;
+    private int       additional          = -1;
 
     Element() {}
 
@@ -58,6 +59,12 @@ public class Element {
         } // $DEBUG
 
         if (!isInteractive()) return false;
+
+        if (isInheritingInteractions()) {
+            setHovered(getParent().isHovered());
+            setActive(getParent().isActive());
+            return updateChildren();
+        }
 
         setHovered(mx >= ex && mx <= ex + ew && my >= ey && my <= ey + eh);
         setActive(isHovered() && lmb);
@@ -140,55 +147,55 @@ public class Element {
 
     public void removeChild(int index) {
         Element[] oldArray = getChildren();
-		if (index >= oldArray.length) {
-			System.out.printf("Element index (%d) is out of range (%d)!%n", index, oldArray.length);
-			return;
-		}
+        if (index >= oldArray.length) {
+            System.out.printf("Element index (%d) is out of range (%d)!%n", index, oldArray.length);
+            return;
+        }
 
-		if (oldArray.length == 1) {
-			children = new Element[0];
-			return;
-		}
-		
+        if (oldArray.length == 1) {
+            children = new Element[0];
+            return;
+        }
+
         children = new Element[oldArray.length - 1];
         int offset = 0;
-		for (int i = 0; i < oldArray.length; i++) {
-			if (i == index) {
-				offset = -1;
-				continue;
-			}
-			children[i + offset] = oldArray[i];
-		}
-		
+        for (int i = 0; i < oldArray.length; i++) {
+            if (i == index) {
+                offset = -1;
+                continue;
+            }
+            children[i + offset] = oldArray[i];
+        }
+
         Arrays.sort(children, new ElementPriorityComparator());
-		// TODO: maybe make this function return boolean to signify if it was successful or not
+        // TODO: maybe make this function return boolean to signify if it was successful or not
     }
 
     public void removeChild(String name) {
-		Element child = getChild(name);
-		if (child == null) {
-			System.out.printf("Element with the name \"%s\" was not found!%n", name);
-			return;
-		} 
-		
+        Element child = getChild(name);
+        if (child == null) {
+            System.out.printf("Element with the name \"%s\" was not found!%n", name);
+            return;
+        }
+
         Element[] oldArray = getChildren();
-		if (oldArray.length == 1) {
-			children = new Element[0];
-			return;
-		}
-		
+        if (oldArray.length == 1) {
+            children = new Element[0];
+            return;
+        }
+
         children = new Element[children.length - 1];
         int offset = 0;
-		for (int i = 0; i < oldArray.length; i++) {
-			if (oldArray[i].getName().equals(name)) {
-				offset = -1;
-				continue;
-			}
-			children[i + offset] = oldArray[i];
-		}
-		
+        for (int i = 0; i < oldArray.length; i++) {
+            if (oldArray[i].getName().equals(name)) {
+                offset = -1;
+                continue;
+            }
+            children[i + offset] = oldArray[i];
+        }
+
         Arrays.sort(children, new ElementPriorityComparator());
-		// TODO: maybe make this function return boolean to signify if it was successful or not
+        // TODO: maybe make this function return boolean to signify if it was successful or not
     }
 
     public int getX() {
@@ -285,6 +292,14 @@ public class Element {
 
     public void setInteractive(boolean bool) {
         this.interactive = bool;
+    }
+
+    public boolean isInheritingInteractions() {
+        return inheritInteractions;
+    }
+
+    public void setInheritingInteractions(boolean inheritInteractions) {
+        this.inheritInteractions = inheritInteractions;
     }
 
     public boolean isHovered() {

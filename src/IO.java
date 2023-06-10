@@ -7,12 +7,57 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static java.lang.String.format;
 
 public class IO {
+
+    public static boolean saveFile(String fileName, String content) {
+        try {
+            File file      = new File(fileName);
+            File directory = new File(file.getParent());
+            if (!directory.exists()) directory.mkdirs();
+            file.createNewFile();
+
+            FileWriter     writer       = new FileWriter(file.getAbsoluteFile());
+            BufferedWriter bufferWriter = new BufferedWriter(writer);
+
+            bufferWriter.write(content);
+            bufferWriter.close();
+        } catch (IOException e) {
+            System.out.println(e.getCause() + "\n" + e.getMessage());
+            return false;
+        }
+        return true;
+    }
+
+    public static String loadFile(String fileName) {
+        try {
+            return Files.readString(Path.of(fileName));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static boolean fileExists(String fileName) {
+        File file = new File(fileName);
+        return file.exists() && !file.isDirectory();
+    }
+
+    public static boolean deleteFile(String fileName) {
+        try {
+            File file = new File(fileName);
+            file.delete();
+        } catch (Exception e) {
+            System.out.println(e.getCause() + "\n" + e.getMessage());
+            return false;
+        }
+        return true;
+    }
 
     public static void saveInfo() {
 
@@ -43,25 +88,9 @@ public class IO {
             }
         }
 
-        // save savedata to file
-        try {
-            String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
-            File   file        = new File(Global.SAVEDATA_FOLDER + currentTime + ".txt");
-            File   directory   = new File(file.getParent());
+        String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
+        saveFile(Global.SAVEDATA_FOLDER + currentTime + ".txt", savedata.toString());
 
-            if (!directory.exists()) {
-                directory.mkdirs();
-            }
-            file.createNewFile();
-
-            FileWriter     writer       = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bufferWriter = new BufferedWriter(writer);
-
-            bufferWriter.write(savedata.toString());
-            bufferWriter.close();
-        } catch (IOException e) {
-            System.out.println(e.getCause() + "\n" + e.getMessage());
-        }
     }
 
     private static String getDescendantData(Element e, int depth) {
@@ -78,6 +107,28 @@ public class IO {
 
         return result.toString();
     }
+
+    private static String getNoteName(int index) {
+        return Global.NOTES_FOLDER + index + ".txt";
+    }
+
+    public static void saveNote(int index, String content) {
+        saveFile(getNoteName(index), content);
+    }
+
+    public static String loadNote(int index) {
+        if (noteExists(index)) return loadFile(getNoteName(index));
+        return "";
+    }
+
+    public static boolean noteExists(int index) {
+        return fileExists(getNoteName(index));
+    }
+
+    public static void deleteNote(int index) {
+        if (noteExists(index)) deleteFile(getNoteName(index));
+    }
+
 
     public static class Mouse extends MouseAdapter {
         private int     x       = -1;
@@ -278,8 +329,7 @@ public class IO {
             if (code == KeyEvent.VK_ESCAPE) System.exit(69);
 
             // notes mode
-			// TODO: enable when appropriate
-            if (Global.MODE.equals("NOTES") && true) {
+            if (Global.MODE.equals("NOTES")) {
 
                 for (int THE_FORBIDDEN_CODE : THE_LIST) {
                     if (code == THE_FORBIDDEN_CODE) {
@@ -298,7 +348,7 @@ public class IO {
                 }
 
                 Text notes = (Text) Global.ACTIONS.findElement("openNote");
-                assert notes != null;
+                if (notes == null) throw new AssertionError();
 
                 if (e.isControlDown()) {
                     switch (code) {
@@ -317,7 +367,7 @@ public class IO {
                 col = txt.length() - txt.lastIndexOf('\n') - 1;
 
                 Sprite cursor = (Sprite) Global.ACTIONS.findElement("cursor");
-                assert cursor != null;
+                if (cursor == null) throw new AssertionError();
 
                 // TODO: remove hardcoded values
                 cursor.setX(notes.getX() + 8 * col);

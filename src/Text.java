@@ -97,11 +97,11 @@ public class Text extends Element {
     }
 
     public void removeCharAt(int index) {
-        assert false : "Not implemented";
+        if (true) throw new AssertionError("Not implemented");
     }
 
     public void removeCharAt(int row, int col) {
-        assert false : "Not implemented";
+        if (true) throw new AssertionError("Not implemented");
     }
 
     public void removeLastWord() {

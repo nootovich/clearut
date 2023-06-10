@@ -13,6 +13,7 @@ public class Global {
     public static final IO.Keyboard KEYBOARD         = new IO.Keyboard();
     public static final String      IMAGE_FOLDER     = "images" + File.separator;
     public static final String      SAVEDATA_FOLDER  = "saves" + File.separator;
+    public static final String      NOTES_FOLDER     = "notes" + File.separator;
 
     public static final Color[] COLORS_BLUE          = new Color[]{
             new Color(0x012a4a),
@@ -76,5 +77,4 @@ public class Global {
 
     public static int    FRAMECOUNT = 0;
     public static String MODE       = "TEST";
-	public static String[] NOTES_DATA = new String[]{"test", "Hello, world!", "love you <3"};
 }
