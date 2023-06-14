@@ -174,7 +174,9 @@ public class Element {
     public void removeChild(String name) {
         Element child = getChild(name);
         if (child == null) {
-            System.out.printf("Element with the name \"%s\" was not found!%n", name);
+            if (Global.LOG > 0) {
+                System.out.printf("Element with the name \"%s\" was not found!%n", name);
+            } // $DEBUG
             return;
         }
 

@@ -15,7 +15,7 @@ public class Global {
     public static final String      SAVEDATA_FOLDER  = "saves" + File.separator;
     public static final String      NOTES_FOLDER     = "notes" + File.separator;
 
-    public static final Color[] COLORS_BLUE          = new Color[]{
+    public static final Color[] BLUE1   = new Color[]{
             new Color(0x012a4a),
             new Color(0x013a63),
             new Color(0x01497c),
@@ -27,7 +27,7 @@ public class Global {
             new Color(0x89c2d9),
             new Color(0xa9d6e5)
     };
-    public static final Color[] COLORS_BLUE_BRIGHT   = new Color[]{
+    public static final Color[] BLUE2   = new Color[]{
             new Color(0x0d47a1),
             new Color(0x1565c0),
             new Color(0x1976d2),
@@ -39,7 +39,7 @@ public class Global {
             new Color(0xbbdefb),
             new Color(0xe3f2fd)
     };
-    public static final Color[] COLORS_YELLOW        = new Color[]{
+    public static final Color[] YELLOW1 = new Color[]{
             new Color(0x76520e),
             new Color(0x805b10),
             new Color(0x926c15),
@@ -51,7 +51,7 @@ public class Global {
             new Color(0xfad643),
             new Color(0xffe169)
     };
-    public static final Color[] COLORS_YELLOW_BRIGHT = new Color[]{
+    public static final Color[] YELLOW2 = new Color[]{
             new Color(0xfcac5d),
             new Color(0xfcb75d),
             new Color(0xfcbc5d),
@@ -64,12 +64,12 @@ public class Global {
             new Color(0xfcf45d)
     };
 
-    public static final Color COLOR_SPACE_CADET = new Color(0x2B2D42);
-    public static final Color COLOR_DARK_GRAY   = new Color(0x424269);
-    public static final Color COLOR_COOL_GRAY   = new Color(0x8D99AE);
-    public static final Color COLOR_VANILLA     = new Color(0xF6EFA6);
-    public static final Color COLOR_MELON       = new Color(0xFFA69E);
-    public static final Color COLOR_RED_MUNSELL = new Color(0xF21B3F);
+    public static final Color SPACE_CADET = new Color(0x2B2D42);
+    public static final Color DARK_GRAY   = new Color(0x424269);
+    public static final Color COOL_GRAY   = new Color(0x8D99AE);
+    public static final Color VANILLA     = new Color(0xF6EFA6);
+    public static final Color MELON       = new Color(0xFFA69E);
+    public static final Color RED_MUNSELL = new Color(0xF21B3F);
 
     public static Window               WINDOW;
     public static DoubleBufferedCanvas CANVAS;
@@ -77,4 +77,24 @@ public class Global {
 
     public static int    FRAMECOUNT = 0;
     public static String MODE       = "TEST";
+
+    public static Element findElement(String name) {
+        name = name.toUpperCase();
+
+        UILayer[] layers = WINDOW.getLayers();
+        for (UILayer layer : layers) {
+            Element foundElement = layer.getChild(name);
+            if (foundElement != null) return foundElement;
+        }
+
+        System.out.printf("Element %s was not found!%n", name);
+        return null;
+    }
+
+    public static UILayer layer(String name) {
+        UILayer layer = Global.WINDOW.getLayer(name);
+        if (layer != null) return layer;
+        Global.WINDOW.addLayerToTop(name);
+        return Global.WINDOW.getLayer(name);
+    }
 }

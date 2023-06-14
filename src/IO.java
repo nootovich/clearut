@@ -108,28 +108,6 @@ public class IO {
         return result.toString();
     }
 
-    private static String getNoteName(int index) {
-        return Global.NOTES_FOLDER + index + ".txt";
-    }
-
-    public static void saveNote(int index, String content) {
-        saveFile(getNoteName(index), content);
-    }
-
-    public static String loadNote(int index) {
-        if (noteExists(index)) return loadFile(getNoteName(index));
-        return "";
-    }
-
-    public static boolean noteExists(int index) {
-        return fileExists(getNoteName(index));
-    }
-
-    public static void deleteNote(int index) {
-        if (noteExists(index)) deleteFile(getNoteName(index));
-    }
-
-
     public static class Mouse extends MouseAdapter {
         private int     x       = -1;
         private int     y       = -1;
@@ -340,20 +318,21 @@ public class IO {
                 }
 
                 // TODO: temporary solution
-                //	in the future i would need to handle modifier keys as well
+                //	in the future i would need to handle keys properly
                 if (key == KeyEvent.CHAR_UNDEFINED || key == '\0') {
                     System.out.println("unknown char");
                     e.consume();
                     return;
                 }
 
-                Text notes = (Text) Global.ACTIONS.findElement("openNote");
-                if (notes == null) throw new AssertionError();
+                Text notes = (Text) Global.findElement("openNote");
+                //if (notes == null) throw new AssertionError();
 
                 if (e.isControlDown()) {
                     switch (code) {
                         case KeyEvent.VK_BACK_SPACE -> notes.removeLastWord();
                         case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+                        case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
                     }
                 } else {
                     switch (code) {
@@ -366,7 +345,7 @@ public class IO {
                 row = txt.length() - txt.replace("\n", "").length();
                 col = txt.length() - txt.lastIndexOf('\n') - 1;
 
-                Sprite cursor = (Sprite) Global.ACTIONS.findElement("cursor");
+                Sprite cursor = (Sprite) Global.findElement("cursor");
                 if (cursor == null) throw new AssertionError();
 
                 // TODO: remove hardcoded values
@@ -384,9 +363,7 @@ public class IO {
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {
-            return;
-        }
+        public void keyReleased(KeyEvent e) {}
 
         public int getRow() {
             return row;

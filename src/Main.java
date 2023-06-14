@@ -4,7 +4,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
-        Sprite bg = new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.COLORS_BLUE_BRIGHT[0], "bg");
+        Sprite bg = new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.BLUE2[0], "bg");
         bg.setInteractive(false);
         layer("BG").addChild(bg);
 
@@ -34,18 +34,18 @@ public class Main {
 
         for (int i = 0; i < buttonDefinitions.length; i++) {
             Sprite button = new Sprite(100, 50 + i * (buttonH + 5), buttonW, buttonH, 2);
-            button.setColors(Global.COLORS_BLUE_BRIGHT[4], Global.COLORS_BLUE_BRIGHT[5], Global.COLORS_BLUE_BRIGHT[6]);
+            button.setColors(Global.BLUE2[4], Global.BLUE2[5], Global.BLUE2[6]);
             button.setType(Sprite.SpriteType.ROUNDED);
             button.setAction(buttonDefinitions[i][0]);
             button.setName("sprite" + i);
 
             Outline outline = new Outline(button, 2);
-            outline.setColors(Global.COLORS_BLUE_BRIGHT[2], Global.COLORS_BLUE_BRIGHT[1], Global.COLORS_BLUE_BRIGHT[4]);
+            outline.setColors(Global.BLUE2[2], Global.BLUE2[1], Global.BLUE2[4]);
             outline.setParent(button);
 
-            Text text = new Text(100 + (buttonW >> 1), 50 + (buttonH >> 1) + i * (buttonH + 5), 12, 4);
+            Text text = new Text(100 + (buttonW >> 1), 50 + (buttonH >> 1) + i * (buttonH + 5), 5, 5, 12, 4);
             text.setText(buttonDefinitions[i][1]);
-            text.setColor(Global.COLOR_VANILLA);
+            text.setColor(Global.VANILLA);
             text.setParent(button);
 
             testMenu.addChild(button);
@@ -60,8 +60,8 @@ public class Main {
         float   button_size = GH / 8.0f;
         int     offs        = (int) offset;
         int     bs          = (int) button_size;
-        Color[] blue        = Global.COLORS_BLUE_BRIGHT;
-        Color[] yellow      = Global.COLORS_YELLOW_BRIGHT;
+        Color[] blue        = Global.BLUE2;
+        Color[] yellow      = Global.YELLOW2;
 
         Sprite sideBG = new Sprite(0, 0, bs + offs * 2, GH, 0, blue[2]);
         sideBG.setName("sideBG");
@@ -72,7 +72,7 @@ public class Main {
         Outline notesButtonOutline = new Outline(notesButton, 4, yellow[8]);
         int     nbcx               = notesButton.getCenterX();
         int     nbcy               = notesButton.getCenterY();
-        Text    notesButtonText    = new Text(nbcx, nbcy, 10, 3, "NOTES", Color.WHITE);
+        Text    notesButtonText    = new Text(nbcx, nbcy, bs, bs, 12, 5, "NOTES", Color.WHITE);
         notesButton.addChild(notesButtonText);
         notesButton.setColors(yellow[3], yellow[5], yellow[1]);
         notesButton.setType(Sprite.SpriteType.ROUNDED);
