@@ -6,7 +6,8 @@ public class Element {
 
     private int[]     dimensions          = new int[5]; // x y z w h
     private boolean   interactive         = true;
-    private boolean   inheritInteractions = false;
+    private boolean   inheritInteractions = false; // TODO: think of a better name
+    private boolean   scrollable          = false;
     private boolean   visible             = true;
     private boolean   hovered             = false; // TODO: maybe combine states into one variable?
     private boolean   active              = false; // TODO: maybe combine states into one variable?
@@ -36,7 +37,7 @@ public class Element {
         setAction(action);
     }
 
-    public boolean update() {
+    private boolean updateSelf() {
         // TODO: make this function accept a boolean
         //     as a flag that another element has already been activated?
         boolean lmb            = Global.MOUSE.getLMB();
@@ -63,7 +64,7 @@ public class Element {
         if (isInheritingInteractions()) {
             setHovered(getParent().isHovered());
             setActive(getParent().isActive());
-            return updateChildren();
+            return false;
         }
 
         setHovered(mx >= ex && mx <= ex + ew && my >= ey && my <= ey + eh);
@@ -85,19 +86,51 @@ public class Element {
         } else if (Global.LOG > 1) {
             System.out.printf("mouse not hovered on %s - x:%d y:%d lmb: %b(%b)%n", en, mx, my, lmb, lmbPrev);
         } // $DEBUG
-        return updateChildren();
+
+        return false;
     }
 
-    public boolean updateChildren() {
+    public boolean update(int flags) {
+        if (updateHigherChildren(flags)) return true;
+
+        if ((flags | Flags.NONE) == 0) {
+            return updateSelf();
+        } else if ((flags & Flags.MWHEELUP) > 0 || (flags & Flags.MWHEELDN) > 0) {
+            if (isScrollable()) scroll(flags); // moveY(50, 250);
+            return false;
+        }
+
+        return updateLowerChildren(flags);
+    }
+
+    public boolean updateHigherChildren(int flags) {
         if (getChildren() == null) return false;
 
         boolean   result      = false;
         Element[] descendants = getChildren();
-        for (int i = descendants.length - 1; i >= 0; i--) {
-            result |= descendants[i].update();
+        for (int i = descendants.length - 1; i >= 0 && descendants[i].getZ() > getZ(); i--) {
+            result |= descendants[i].update(flags);
         }
         return result;
     }
+
+    public boolean updateLowerChildren(int flags) {
+        if (getChildren() == null) return false;
+
+        boolean   result      = false;
+        Element[] descendants = getChildren();
+
+        int i = descendants.length - 1;
+        while (i >= 0 && descendants[i].getZ() > getZ()) {
+            i--;
+        }
+        for (; i >= 0; i--) {
+            result |= descendants[i].update(flags);
+        }
+        return result;
+    }
+
+    public void scroll(int amount) {}
 
     public void draw(Graphics2D g2d) {
         drawChildren(g2d);
@@ -212,6 +245,16 @@ public class Element {
         } // TODO: refactor after adding addX() function
     }
 
+    public void addX(int x) {
+        setX(getX() + x);
+    }
+
+    public void moveX(int amount, int time) {
+//        if (timer < 0) timer = System.currentTimeMillis();
+        // TODO: implement animations later
+
+    }
+
     public int getY() {
         return dimensions[1];
     }
@@ -222,6 +265,10 @@ public class Element {
         for (Element e : getChildren()) {
             e.setY(e.getY() + change);
         } // TODO: refactor after adding addY() function
+    }
+
+    public void addY(int y) {
+        setY(getY() + y);
     }
 
     public int getZ() {
@@ -296,6 +343,14 @@ public class Element {
         this.interactive = bool;
     }
 
+    public boolean isScrollable() {
+        return scrollable;
+    }
+
+    public void setScrollable(boolean scrollable) {
+        this.scrollable = scrollable;
+    }
+
     public boolean isInheritingInteractions() {
         return inheritInteractions;
     }
@@ -318,6 +373,13 @@ public class Element {
 
     public void setActive(boolean bool) {
         this.active = bool;
+    }
+
+    public abstract class Flags {
+        public static final int NONE = 0b00000000;
+
+        public static final int MWHEELUP = 0b00000010;
+        public static final int MWHEELDN = 0b00000100;
     }
 }
 

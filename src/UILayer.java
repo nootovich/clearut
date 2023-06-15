@@ -10,14 +10,14 @@ public class UILayer extends Element {
     }
 
     @Override
-    public boolean update() {
+    public boolean update(int flags) {
         if (Global.LOG > 2) {
             System.out.println("update layer " + getName());
         } // $DEBUG
 
         Element[] descendants = getChildren();
         for (int i = descendants.length - 1; i >= 0; i--) {
-            if (descendants[i].update()) return true;
+            if (descendants[i].update(flags)) return true;
         }
 
         return false;

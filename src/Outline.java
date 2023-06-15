@@ -22,7 +22,7 @@ public class Outline extends Element {
     }
 
     @Override
-    public boolean update() {
+    public boolean update(int flags) {
         setHovered(getParent().isHovered());
         setActive(getParent().isActive());
         return false;

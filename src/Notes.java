@@ -111,6 +111,7 @@ public class Notes {
         Text note = new Text(x, y, w, h, 20, 4, noteText, Color.BLACK);
         note.setAlignment(Text.Alignment.LEFT);
         note.setAdditional(index);
+        note.setScrollable(true);
         note.setName("openNote");
         Global.layer("UIMAIN").addChild(note);
 

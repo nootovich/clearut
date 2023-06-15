@@ -1,8 +1,4 @@
-import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -109,6 +105,9 @@ public class IO {
     }
 
     public static class Mouse extends MouseAdapter {
+
+        public static boolean DEBUG = false;
+
         private int     x       = -1;
         private int     y       = -1;
         private boolean LMB     = false;
@@ -119,27 +118,23 @@ public class IO {
         private boolean RMBTemp = false;
 
         public void update() {
-            try {
-                Point mousePos = Global.CANVAS.getMousePosition();
-                setX(mousePos.x);
-                setY(mousePos.y);
+            setX(Global.CANVAS.getMouseX());
+            setY(Global.CANVAS.getMouseY());
 
-                if (Global.LOG > 0) {
-                    System.out.printf("mousePos: %dx%d%n", getX(), getY());
-                } // $DEBUG
+            if (DEBUG) {
+                System.out.printf("mousePos: %dx%d%n", getX(), getY());
+            } // $DEBUG
 
-                setLMBPrev(getLMB());
-                setRMBPrev(getRMB());
+            setLMBPrev(getLMB());
+            setRMBPrev(getRMB());
 
-                setLMB(getLMBTemp());
-                setRMB(getRMBTemp());
-            } catch (NullPointerException ignored) {
-            }
+            setLMB(getLMBTemp());
+            setRMB(getRMBTemp());
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (Global.LOG > 3) {
+            if (DEBUG) {
                 System.out.println(e);
             } // $DEBUG
 
@@ -147,7 +142,7 @@ public class IO {
             setRMBTemp(getRMBTemp() | (e.getButton() == MouseEvent.BUTTON3));
 
             if (getRMBTemp()) {
-                Element menu = Global.WINDOW.getLayer("UI").getChild("SPAWN_MENU");
+                Element menu = Global.findElement("SPAWN_MENU");
                 if (menu == null) return;
                 menu.setX(getX());
                 menu.setY(getY());
@@ -157,7 +152,7 @@ public class IO {
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (Global.LOG > 3) {
+            if (DEBUG) {
                 System.out.println(e);
             } // $DEBUG
 
@@ -167,7 +162,7 @@ public class IO {
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (Global.LOG > 3) {
+            if (DEBUG) {
                 System.out.println(e);
             } // $DEBUG
 
@@ -179,6 +174,15 @@ public class IO {
             setRMBPrev(false);
             setLMBTemp(false);
             setRMBTemp(false);
+        }
+
+        @Override
+        public void mouseWheelMoved(MouseWheelEvent e) {
+            if (DEBUG) {
+                System.out.println(e.paramString());
+            } // $DEBUG
+
+            Global.CANVAS.updateScrollAt(e.getX(), e.getY(), e.getWheelRotation());
         }
 
         public boolean isLMBRisingEdge() {
@@ -264,6 +268,8 @@ public class IO {
 
     public static class Keyboard extends KeyAdapter {
 
+        private static final boolean DEBUG = false;
+
         private int row = 0;
         private int col = 0;
 
@@ -297,7 +303,7 @@ public class IO {
                     127, 144, 145, 155, 65368
             };
 
-            if (Global.LOG > 3) {
+            if (DEBUG) {
                 System.out.printf("%s%n--------------%n", e.paramString());
             } // $DEBUG
 
@@ -311,7 +317,9 @@ public class IO {
 
                 for (int THE_FORBIDDEN_CODE : THE_LIST) {
                     if (code == THE_FORBIDDEN_CODE) {
-                        System.out.println("forbidden char");
+                        if (DEBUG) {
+                            System.out.println("forbidden char");
+                        } // $DEBUG
                         e.consume();
                         return;
                     }

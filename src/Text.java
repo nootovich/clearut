@@ -5,12 +5,15 @@ public class Text extends Element {
 
     public static boolean DEBUG = true;
 
-    // TODO: Prob make width and height actually matter
-    // TODO: Automate textSize of Text and actually render Text based on its dimentions
-    private int       textSize  = 10;
-    private Alignment alignment = Alignment.CENTER;
-    private String    text      = "";
-    private Color     color     = Color.BLACK;
+    public  int       offsetX             = 0;
+    public  int       offsetY             = 0;
+    public  int       cachedTextHeight    = 0;
+    public  int       cachedLineHeight    = 0;
+    public  int       cachedLastLineWidth = 0;
+    private int       textSize            = 10;
+    private String    text                = "";
+    private Color     color               = Color.BLACK;
+    private Alignment alignment           = Alignment.CENTER;
 
     public Text(int x, int y, int maxW, int maxH, int size, int z) {
         super(x, y, maxW, maxH, z);
@@ -27,9 +30,23 @@ public class Text extends Element {
         this.color = color;
     }
 
-    @Override
-    public boolean update() {
+    public boolean updateSelf() {
         return false;
+    }
+
+    @Override
+    public void scroll(int flags) {
+
+        int scrollAmount = 5;
+        if ((flags & Flags.MWHEELUP) > 0) offsetY += scrollAmount;
+        else if ((flags & Flags.MWHEELDN) > 0) offsetY -= scrollAmount;
+
+        int lowerBound = getHeight() - cachedTextHeight;
+        if (offsetY < lowerBound) offsetY = lowerBound;
+
+        int higherBound = 0;
+        if (offsetY > higherBound) offsetY = higherBound;
+
     }
 
     @Override
@@ -69,7 +86,7 @@ public class Text extends Element {
         int lineCount  = 0;
 
         String[] lines = getLines();
-        for (int i = 0; i < lines.length && lineHeight * lineCount < maxHeight; i++) {
+        for (int i = 0; i < lines.length; i++) {
 
             int lineWidth = metrics.stringWidth(lines[i]);
             if (lineWidth <= maxWidth) {
@@ -82,7 +99,7 @@ public class Text extends Element {
 
             StringBuilder line  = new StringBuilder();
             String[]      words = lines[i].split(" ");
-            for (int j = 0; j < words.length && lineHeight * lineCount < maxHeight; j++) {
+            for (int j = 0; j < words.length; j++) {
 
                 lineWidth = metrics.stringWidth(line + words[j]);
                 if (lineWidth < maxWidth) {
@@ -92,7 +109,7 @@ public class Text extends Element {
 
                 if (j != 0) {
                     drawLine(g2d, line.toString(), textX, textY + lineHeight * lineCount);
-                    line      = new StringBuilder();
+                    line = new StringBuilder();
                     lineCount++;
                 }
 
@@ -104,7 +121,7 @@ public class Text extends Element {
 
                 int    wordBegin = 0;
                 String word      = words[j];
-                for (int k = 1; k < word.length() && lineHeight * lineCount < maxHeight; k++) {
+                for (int k = 1; k < word.length(); k++) {
 
                     String partialWord  = word.substring(wordBegin, k);
                     int    partialWidth = metrics.stringWidth(partialWord + " ");
@@ -116,24 +133,30 @@ public class Text extends Element {
 
                 }
 
-                if (lineHeight * lineCount < maxHeight) {
-                    line.append(word.substring(wordBegin)).append(" ");
-                }
+                line.append(word.substring(wordBegin)).append(" ");
 
             }
 
-            if (line.length() > 0 && lineHeight * lineCount < maxHeight) {
+            if (line.length() > 0) {
                 drawLine(g2d, line.toString(), textX, textY + lineHeight * lineCount);
                 lineCount++;
             }
 
         }
 
+        cachedLineHeight = lineHeight;
+        cachedTextHeight = lineHeight * lineCount;
         drawChildren(g2d);
     }
 
     private void drawLine(Graphics2D g2d, String line, int x, int y) {
         FontMetrics metrics = g2d.getFontMetrics();
+
+        x += offsetX;
+        y += offsetY;
+        if (y - getY() > getHeight()) return;
+        if (y + metrics.getHeight() < getY()) return;
+
 
         // TODO: implement the rest of alignments
         switch (getAlignment()) {
@@ -166,6 +189,8 @@ public class Text extends Element {
 
         g2d.setColor(getColor());
         g2d.drawString(line, x, y + metrics.getAscent());
+
+        cachedLastLineWidth = metrics.stringWidth(line);
 
     }
 

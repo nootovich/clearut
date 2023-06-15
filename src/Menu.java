@@ -7,12 +7,14 @@ public class Menu extends Element {
     }
 
     @Override
-    public boolean update() {
+    public boolean update(int flags) {
+        if (updateHigherChildren(flags)) return true;
+
         if (Global.LOG > 1) {
             System.out.println("update menu " + getName());
-        }
+        } // $DEBUG
 
-        return updateChildren();
+        return updateLowerChildren(flags);
     }
 
     public boolean isMinimized() {
