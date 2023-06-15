@@ -353,13 +353,6 @@ public class IO {
                 row = txt.length() - txt.replace("\n", "").length();
                 col = txt.length() - txt.lastIndexOf('\n') - 1;
 
-                Sprite cursor = (Sprite) Global.findElement("cursor");
-                if (cursor == null) throw new AssertionError();
-
-                // TODO: remove hardcoded values
-                cursor.setX(notes.getX() + 8 * col);
-                cursor.setY(notes.getY() + 15 * row);
-
                 e.consume();
                 return;
             }

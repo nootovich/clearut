@@ -115,8 +115,7 @@ public class Notes {
         note.setName("openNote");
         Global.layer("UIMAIN").addChild(note);
 
-        Sprite cursor = new Sprite(x + 20, y + 20, 1, 16, 5, Color.BLACK, "cursor");
-        note.addChild(cursor);
+        Cursor cursor = new Cursor(note, 2, Color.BLACK, "cursor");
 
     }
 

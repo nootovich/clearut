@@ -2,6 +2,11 @@ import java.awt.*;
 
 public class Main {
 
+    private static final boolean DEBUG = false;
+
+    private static final int FPS              = 60;
+    private static final int plannedFrameTime = (int) (1000.f / FPS);
+
     public static void main(String[] args) throws InterruptedException {
         Global.WINDOW = new Window(Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT);
         Sprite bg = new Sprite(0, 0, Global.WINDOW_WIDTH, Global.WINDOW_HEIGHT, 0, Global.BLUE2[0], "bg");
@@ -12,13 +17,30 @@ public class Main {
 
         layer("UIMAIN");
 
+        long prevFrameTime  = 0;
+        long curFrameTime   = 0;
+        long spentFrameTime = 0;
         while (true) {
+
+            curFrameTime   = System.currentTimeMillis();
+            spentFrameTime = curFrameTime - prevFrameTime;
+            prevFrameTime  = curFrameTime;
+            if (spentFrameTime > 250) spentFrameTime = 250;
+
+            if (DEBUG) {
+                System.out.printf("frametime: %dms%n", spentFrameTime);
+            } // $DEBUG
 
             Global.MOUSE.update();
             Global.CANVAS.repaint();
-            Thread.sleep(50);
 
-            if (Global.LOG > 1) {
+            int sleepTime = (int) (plannedFrameTime * 2 - spentFrameTime);
+            if (sleepTime < 0) sleepTime = 0;
+            if (sleepTime > plannedFrameTime) sleepTime = plannedFrameTime;
+
+            Thread.sleep(sleepTime);
+
+            if (DEBUG) {
                 System.out.printf("\t\tmouse - x:%d y:%d%n", Global.MOUSE.getX(), Global.MOUSE.getY());
             } // $DEBUG
         }
