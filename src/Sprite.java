@@ -2,24 +2,24 @@ import java.awt.*;
 
 public class Sprite extends Element {
 
-    private SpriteType type       = SpriteType.RECTANGLE;
-    private Color[]    colors     = new Color[3];
+    private SpriteType type   = SpriteType.RECTANGLE;
+    private int[]      colors = new int[3];
 
     public Sprite(int x, int y, int w, int h, int z) {
         super(x, y, w, h, z);
     }
 
-    public Sprite(int x, int y, int w, int h, int z, Color color) {
+    public Sprite(int x, int y, int w, int h, int z, int color) {
         super(x, y, w, h, z);
         setColors(color, color, color);
     }
 
-    public Sprite(int x, int y, int w, int h, int z, Color color, String name) {
+    public Sprite(int x, int y, int w, int h, int z, int color, String name) {
         super(x, y, w, h, z, name);
         setColors(color, color, color);
     }
 
-    public Sprite(int x, int y, int w, int h, int z, Color color, String name, String action) {
+    public Sprite(int x, int y, int w, int h, int z, int color, String name, String action) {
         super(x, y, w, h, z, name, action);
         setColors(color, color, color);
     }
@@ -51,7 +51,7 @@ public class Sprite extends Element {
         }
 
         // draw sprite
-        g2d.setColor(getColorBasedOnState());
+        g2d.setColor(new Color(getColorBasedOnState()));
         switch (getType()) {
             case RECTANGLE -> g2d.fillRect(sx, sy, sw, sh);
             case ROUNDED -> g2d.fillRoundRect(sx, sy, sw, sh, add, add);
@@ -67,43 +67,45 @@ public class Sprite extends Element {
         return type;
     }
 
-    public void setType(SpriteType type) {
+    public Sprite setType(SpriteType type) {
         this.type = type;
+        return this;
     }
 
-    public Color[] getColors() {
+    public int[] getColors() {
         return colors;
     }
 
-    public Color getIdleColor() {
+    public int getIdleColor() {
         return colors[0];
     }
 
-    public void setIdleColor(Color color) {
+    public void setIdleColor(int color) {
         colors[0] = color;
     }
 
-    public Color getHoveredColor() {
+    public int getHoveredColor() {
         return colors[1];
     }
 
-    public void setHoveredColor(Color color) {
+    public void setHoveredColor(int color) {
         colors[1] = color;
     }
 
-    public Color getActiveColor() {
+    public int getActiveColor() {
         return colors[2];
     }
 
-    public void setActiveColor(Color color) {
+    public void setActiveColor(int color) {
         colors[2] = color;
     }
 
-    public void setColors(Color idleColor, Color hoveredColor, Color activeColor) {
-        colors = new Color[]{idleColor, hoveredColor, activeColor};
+    public Sprite setColors(int idleColor, int hoveredColor, int activeColor) {
+        colors = new int[]{idleColor, hoveredColor, activeColor};
+        return this;
     }
 
-    private Color getColorBasedOnState() {
+    private int getColorBasedOnState() {
         if (isActive()) return getActiveColor();
         if (isHovered()) return getHoveredColor();
         return getIdleColor();

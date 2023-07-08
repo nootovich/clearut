@@ -91,8 +91,8 @@ public class Element {
     }
 
     public boolean update(int flags) {
+        if (!isInteractive()) return false;
         if (updateHigherChildren(flags)) return true;
-
         if ((flags | Flags.NONE) == 0) {
             return updateSelf();
         } else if ((flags & Flags.MWHEELUP) > 0 || (flags & Flags.MWHEELDN) > 0) {
@@ -133,6 +133,7 @@ public class Element {
     public void scroll(int amount) {}
 
     public void draw(Graphics2D g2d) {
+        if (!isVisible()) return;
         drawChildren(g2d);
     }
 
@@ -233,16 +234,87 @@ public class Element {
         // TODO: maybe make this function return boolean to signify if it was successful or not
     }
 
+    public Sprite addSprite(int x, int y, int w, int h, int z, int color) {
+        Sprite s = new Sprite(x, y, w, h, z, color);
+        addChild(s);
+        return s;
+    }
+
+    public Sprite addSprite(int x, int y, int w, int h, int z, int color, String name) {
+        Sprite s = new Sprite(x, y, w, h, z, color, name);
+        addChild(s);
+        return s;
+    }
+
+    public Sprite addSprite(int x, int y, int w, int h, int z, String name, String action) {
+        Sprite s = new Sprite(x, y, w, h, z);
+        s.setName(name);
+        s.setAction(action);
+        addChild(s);
+        return s;
+    }
+
+    public Sprite addSprite(int x, int y, int w, int h, int z, int color, String name, String action) {
+        Sprite s = new Sprite(x, y, w, h, z, color, name, action);
+        addChild(s);
+        return s;
+    }
+
+    public Text addText(String text) {
+        // TODO: remove constant text size
+        Text t = new Text(getCenterX(), getCenterY(), getWidth(), getHeight(), 12, getZ() + 1, text, 0);
+        addChild(t);
+        return t;
+    }
+
+    public Text addText(int x, int y, int maxW, int maxH, int size, int z, String text, int color) {
+        Text t = new Text(x, y, maxW, maxH, size, z, text, color);
+        addChild(t);
+        return t;
+    }
+
+    public Outline addOutline(int thickness, int color) {
+        Outline o = new Outline(this, thickness, color);
+        addChild(o);
+        return o;
+    }
+
+    public Outline addOutline(int thickness, int idle_color, int hovered_color, int active_color) {
+        Outline o = new Outline(this, thickness, idle_color, hovered_color, active_color);
+        addChild(o);
+        return o;
+    }
+
+    public Slider addSlider(int x, int y, int w, int h, String name, int low, int high, int val) {
+        Slider s = new Slider(x, y, w, h, getMaxChildZ() + 1, name, low, high, val);
+        addChild(s);
+        return s;
+    }
+
+    public Slider addSlider(int x, int y, int w, int h, String name, int low, int high, int val, int color) {
+        Slider s = addSlider(x, y, w, h, name, low, high, val);
+        s.setColors(color, color, color);
+        return s;
+    }
+
+    public Slider addSlider(int x, int y, int w, int h, String name, int low, int high, int val, int color, int lineColor) {
+        Slider s = addSlider(x, y, w, h, name, low, high, val);
+        s.setColors(color, color, color);
+        s.setLineColor(lineColor);
+        return s;
+    }
+
     public int getX() {
         return dimensions[0];
     }
 
-    public void setX(int x) {
+    public Element setX(int x) {
         int change = x - getX();
         dimensions[0] = x;
         for (Element e : getChildren()) {
             e.setX(e.getX() + change);
         } // TODO: refactor after adding addX() function
+        return this;
     }
 
     public void addX(int x) {
@@ -259,12 +331,13 @@ public class Element {
         return dimensions[1];
     }
 
-    public void setY(int y) {
+    public Element setY(int y) {
         int change = y - getY();
         dimensions[1] = y;
         for (Element e : getChildren()) {
             e.setY(e.getY() + change);
         } // TODO: refactor after adding addY() function
+        return this;
     }
 
     public void addY(int y) {
@@ -273,6 +346,19 @@ public class Element {
 
     public int getZ() {
         return dimensions[2];
+    }
+
+    private int getMaxChildZ() {
+        int max = -10000;
+
+        Element[] descendants = getChildren();
+        if (descendants.length == 0) return -1;
+        for (Element e : descendants) {
+            int z = e.getZ();
+            if (z > max) max = z;
+        }
+
+        return max;
     }
 
     public void setZ(int z) {
@@ -291,8 +377,9 @@ public class Element {
         return dimensions[4];
     }
 
-    public void setHeight(int h) {
+    public Element setHeight(int h) {
         dimensions[4] = h;
+        return this;
     }
 
     public int getCenterX() {
@@ -307,8 +394,9 @@ public class Element {
         return name;
     }
 
-    public void setName(String name) {
+    public Element setName(String name) {
         this.name = name.toUpperCase();
+        return this;
     }
 
     public String getAction() {
@@ -323,24 +411,27 @@ public class Element {
         return additional;
     }
 
-    public void setAdditional(int additional) {
+    public Element setAdditional(int additional) {
         this.additional = additional;
+        return this;
     }
 
     public boolean isVisible() {
         return visible;
     }
 
-    public void setVisibility(boolean bool) {
+    public Element setVisibility(boolean bool) {
         this.visible = bool;
+        return this;
     }
 
     public boolean isInteractive() {
         return interactive;
     }
 
-    public void setInteractive(boolean bool) {
+    public Element setInteractive(boolean bool) {
         this.interactive = bool;
+        return this;
     }
 
     public boolean isScrollable() {

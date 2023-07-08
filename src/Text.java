@@ -3,17 +3,17 @@ import java.awt.*;
 
 public class Text extends Element {
 
-    public static boolean DEBUG = true;
+    public static boolean DEBUG = false;
 
-    public  int       offsetX             = 0;
-    public  int       offsetY             = 0;
-    public  int       cachedTextHeight    = 0;
-    public  int       cachedLineHeight    = 0;
-    public  int       cachedLastLineWidth = 0;
-    private int       textSize            = 10;
-    private String    text                = "";
-    private Color     color               = Color.BLACK;
-    private Alignment alignment           = Alignment.CENTER;
+    public  int       offsetX          = 0;
+    public  int       offsetY          = 0;
+    public  int       cachedTextHeight = 0;
+    public  int       cachedLineHeight = 0;
+    public  int       textSize         = 10;
+    private String    text             = "";
+    private String    wrappedText      = "";
+    private int       color            = 0;
+    private Alignment alignment        = Alignment.CENTER;
 
     public Text(int x, int y, int maxW, int maxH, int size, int z) {
         super(x, y, maxW, maxH, z);
@@ -22,31 +22,16 @@ public class Text extends Element {
 
     public Text(int x, int y, int maxW, int maxH, int size, int z, String text) {
         this(x, y, maxW, maxH, size, z);
-        this.text = text;
+        setText(text);
     }
 
-    public Text(int x, int y, int maxW, int maxH, int size, int z, String text, Color color) {
+    public Text(int x, int y, int maxW, int maxH, int size, int z, String text, int color) {
         this(x, y, maxW, maxH, size, z, text);
         this.color = color;
     }
 
     public boolean updateSelf() {
         return false;
-    }
-
-    @Override
-    public void scroll(int flags) {
-
-        int scrollAmount = 5;
-        if ((flags & Flags.MWHEELUP) > 0) offsetY += scrollAmount;
-        else if ((flags & Flags.MWHEELDN) > 0) offsetY -= scrollAmount;
-
-        int lowerBound = getHeight() - cachedTextHeight;
-        if (offsetY < lowerBound) offsetY = lowerBound;
-
-        int higherBound = 0;
-        if (offsetY > higherBound) offsetY = higherBound;
-
     }
 
     @Override
@@ -76,76 +61,19 @@ public class Text extends Element {
 
         if (!isVisible()) return;
 
-        g2d.setColor(color);
+        g2d.setColor(new Color(color));
 
         int textX      = getX();
         int textY      = getY();
         int lineHeight = metrics.getHeight();
-        int maxWidth   = getWidth();
-        int maxHeight  = getHeight();
-        int lineCount  = 0;
 
-        String[] lines = getLines();
+        String[] lines = getWrappedLines();
         for (int i = 0; i < lines.length; i++) {
-
-            int lineWidth = metrics.stringWidth(lines[i]);
-            if (lineWidth <= maxWidth) {
-
-                drawLine(g2d, lines[i], textX, textY + lineHeight * lineCount);
-                lineCount++;
-                continue;
-
-            }
-
-            StringBuilder line  = new StringBuilder();
-            String[]      words = lines[i].split(" ");
-            for (int j = 0; j < words.length; j++) {
-
-                lineWidth = metrics.stringWidth(line + words[j]);
-                if (lineWidth < maxWidth) {
-                    line.append(words[j]).append(" ");
-                    continue;
-                }
-
-                if (j != 0) {
-                    drawLine(g2d, line.toString(), textX, textY + lineHeight * lineCount);
-                    line = new StringBuilder();
-                    lineCount++;
-                }
-
-                int wordWidth = metrics.stringWidth(words[j]);
-                if (wordWidth < maxWidth) {
-                    line.append(words[j]).append(" ");
-                    continue;
-                }
-
-                int    wordBegin = 0;
-                String word      = words[j];
-                for (int k = 1; k < word.length(); k++) {
-
-                    String partialWord  = word.substring(wordBegin, k);
-                    int    partialWidth = metrics.stringWidth(partialWord + " ");
-                    if (partialWidth < maxWidth) continue;
-
-                    drawLine(g2d, partialWord, textX, textY + lineHeight * lineCount);
-                    wordBegin = k;
-                    lineCount++;
-
-                }
-
-                line.append(word.substring(wordBegin)).append(" ");
-
-            }
-
-            if (line.length() > 0) {
-                drawLine(g2d, line.toString(), textX, textY + lineHeight * lineCount);
-                lineCount++;
-            }
-
+            drawLine(g2d, lines[i], textX, textY + i * lineHeight);
         }
 
         cachedLineHeight = lineHeight;
-        cachedTextHeight = lineHeight * lineCount;
+        cachedTextHeight = lineHeight * lines.length;
         drawChildren(g2d);
     }
 
@@ -187,11 +115,10 @@ public class Text extends Element {
             g2d.drawRect(x, y, mw, mh);
         } // $DEBUG
 
-        g2d.setColor(getColor());
+        g2d.setColor(new Color(getColor()));
         g2d.drawString(line, x, y + metrics.getAscent());
 
-        cachedLastLineWidth = metrics.stringWidth(line);
-
+//        cachedLastLineWidth = metrics.stringWidth(line);
     }
 
     public String getText() {
@@ -199,18 +126,97 @@ public class Text extends Element {
     }
 
     public void setText(String text) {
-        this.text = text;
+        this.text        = text;
+        this.wrappedText = wrapText();
+    }
+
+    public String getWrappedText() {
+        return wrappedText;
     }
 
     public String[] getLines() {
-        return text.split("\\r?\\n", -1);
+        return getText().split("\n", -1);
+    }
+
+    public String[] getWrappedLines() {
+        return getWrappedText().split("\n", -1);
+    }
+
+    public String wrapText() {
+
+        StringBuilder result = new StringBuilder();
+
+        Graphics2D g2d = (Graphics2D) Global.IMAGE.getGraphics();
+        g2d.setFont(new Font("Rubik", Font.BOLD, textSize));
+        FontMetrics metrics = g2d.getFontMetrics();
+
+        int textX     = getX();
+        int textY     = getY();
+        int maxWidth  = getWidth();
+        int maxHeight = getHeight();
+        int lineCount = 0;
+
+        String[] lines = getLines();
+        for (int i = 0; i < lines.length; i++) {
+
+            int lineWidth = metrics.stringWidth(lines[i]);
+            if (lineWidth <= maxWidth) {
+                result.append(lines[i]).append("\n");
+                lineCount++;
+                continue;
+            }
+
+            StringBuilder line  = new StringBuilder();
+            String[]      words = lines[i].split(" ");
+            for (int j = 0; j < words.length; j++) {
+
+                lineWidth = metrics.stringWidth(line + words[j]);
+                if (lineWidth < maxWidth) {
+                    if (line.length() > 0) line.append(" ");
+                    line.append(words[j]);
+                    continue;
+                }
+
+                if (j != 0) {
+                    result.append(line.toString()).append("\r\n");
+                    line = new StringBuilder();
+                    lineCount++;
+                }
+
+                int wordWidth = metrics.stringWidth(words[j]);
+                if (wordWidth < maxWidth) {
+                    if (line.length() > 0) line.append(" ");
+                    line.append(words[j]);
+                    continue;
+                }
+
+                int    wordBegin = 0;
+                String word      = words[j];
+                for (int k = 1; k < word.length(); k++) {
+                    String partialWord  = word.substring(wordBegin, k);
+                    int    partialWidth = metrics.stringWidth(partialWord + " ");
+                    if (partialWidth < maxWidth) continue;
+                    result.append(partialWord).append("\r\n");
+                    wordBegin = k;
+                    lineCount++;
+                }
+
+                line.append(word.substring(wordBegin));
+            }
+            if (line.length() > 0) {
+                result.append(line.toString()).append("\n");
+                lineCount++;
+            }
+        }
+
+        return result.deleteCharAt(result.length() - 1).toString();
     }
 
     public void addChar(char c) {
         setText(getText() + c);
     }
 
-    public void addText(String text) {
+    public void addString(String text) {
         setText(getText() + text);
     }
 
@@ -238,11 +244,11 @@ public class Text extends Element {
         setText(txt);
     }
 
-    public Color getColor() {
+    public int getColor() {
         return color;
     }
 
-    public void setColor(Color color) {
+    public void setColor(int color) {
         this.color = color;
     }
 
@@ -250,11 +256,30 @@ public class Text extends Element {
         return alignment;
     }
 
-    public void setAlignment(Alignment alignment) {
+    public Text setAlignment(Alignment alignment) {
         this.alignment = alignment;
+        return this;
+    }
+
+    public int getOffsetX() {
+        return offsetX;
+    }
+
+    public Text setOffsetX(int x) {
+        offsetX = x;
+        return this;
+    }
+
+    public int getOffsetY() {
+        return offsetY;
+    }
+
+    public Text setOffsetY(int y) {
+        offsetY = y;
+        return this;
     }
 
     public enum Alignment {
-        CENTER, LEFT, RIGHT, TOP, BOTTOM
+        CENTER, LEFT, RIGHT, TOP, BOTTOM;
     }
 }

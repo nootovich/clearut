@@ -1,5 +1,3 @@
-import java.awt.*;
-
 public class Notes {
 
     public static void openList() {
@@ -16,17 +14,20 @@ public class Notes {
 
 
         // TODO: implement findSprite(), findText() and similar functions
-        Sprite bg        = (Sprite) Global.findElement("BG");
-        Sprite sideBG    = (Sprite) Global.findElement("sideBG");
-        Sprite profileBG = (Sprite) Global.findElement("profileBG");
+        Sprite windowBG  = (Sprite) Global.findElement("window_bg");
+        Sprite sideBG    = (Sprite) Global.findElement("side_bg");
+        Sprite profileBG = (Sprite) Global.findElement("profile_bg");
 
-        if (bg == null) throw new AssertionError();
-        if (sideBG == null) throw new AssertionError();
-        if (profileBG == null) throw new AssertionError();
+        Global.asrt(windowBG != null, "windowBG was not found!");
+        Global.asrt(sideBG != null, "sideBG was not found!");
+        Global.asrt(profileBG != null, "profileBG was not found!");
 
-        bg.setIdleColor(Global.YELLOW1[6]);
-        sideBG.setIdleColor(Global.YELLOW2[7]);
-        profileBG.setIdleColor(Global.YELLOW1[8]);
+        int[] yellow1 = Colors.yellow1();
+        int[] yellow2 = Colors.yellow2();
+
+        windowBG.setIdleColor(yellow1[6]);
+        sideBG.setIdleColor(yellow2[7]);
+        profileBG.setIdleColor(yellow1[8]);
 
         Global.MODE = "NOTES"; // TODO: rework
 
@@ -52,7 +53,7 @@ public class Notes {
                 int ny    = y + spacing * (i + 1) + nh * i;
 
                 Sprite note = new Sprite(nx, ny, nw, nh, 3);
-                note.setColors(Global.YELLOW2[5], Global.YELLOW2[6], Global.YELLOW2[7]);
+                note.setColors(yellow2[5], yellow2[6], yellow2[7]);
                 note.setName("note" + index);
                 note.setAction("openNote:int:" + index);
 
@@ -77,8 +78,8 @@ public class Notes {
                 int    ncy       = ny + nh / 2;
                 Sprite s1        = new Sprite(ncx - thickness, ncy - size, thickness << 1, size << 1, 4);
                 Sprite s2        = new Sprite(ncx - size, ncy - thickness, size << 1, thickness << 1, 4);
-                s1.setColors(Global.YELLOW2[3], Global.YELLOW2[9], Global.YELLOW2[5]);
-                s2.setColors(Global.YELLOW2[3], Global.YELLOW2[9], Global.YELLOW2[5]);
+                s1.setColors(yellow2[3], yellow2[9], yellow2[5]);
+                s2.setColors(yellow2[3], yellow2[9], yellow2[5]);
                 s1.setInheritingInteractions(true);
                 s2.setInheritingInteractions(true);
                 note.addChild(s1);
@@ -94,11 +95,11 @@ public class Notes {
 
         String noteText = Notes.noteExists(index) ? Notes.loadNote(index) : "";
 
-        Sprite sideBG    = (Sprite) Global.findElement("sideBG");
-        Sprite profileBG = (Sprite) Global.findElement("profileBG");
+        Sprite sideBG    = (Sprite) Global.findElement("side_bg");
+        Sprite profileBG = (Sprite) Global.findElement("profile_bg");
 
-        if (sideBG == null) throw new AssertionError();
-        if (profileBG == null) throw new AssertionError();
+        Global.asrt(sideBG != null, "sideBG was not found!");
+        Global.asrt(profileBG != null, "profileBG was not found!");
 
         int padding = 25;
 
@@ -108,15 +109,12 @@ public class Notes {
         int h = Global.CANVAS.getHeight() - profileBG.getHeight() - padding * 2;
 
         // TODO: add a way to set the value of z based on what you want to do with it
-        Text note = new Text(x, y, w, h, 20, 4, noteText, Color.BLACK);
+        Note note = new Note(x, y, w, h, 20, 4, noteText, 0);
         note.setAlignment(Text.Alignment.LEFT);
         note.setAdditional(index);
         note.setScrollable(true);
         note.setName("openNote");
         Global.layer("UIMAIN").addChild(note);
-
-        Cursor cursor = new Cursor(note, 2, Color.BLACK, "cursor");
-
     }
 
     private static String getNoteName(int index) {

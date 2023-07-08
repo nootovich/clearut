@@ -69,9 +69,9 @@ public class IO {
         StringBuilder savedata = new StringBuilder("SAVEDATA_VERSION: ").append(Global.SAVEDATA_VERSION);
         savedata.append('\n').append(format(
                 "$WINDOW: x=%d y=%d w=%d h=%d",
-                Global.WINDOW.getX(), Global.WINDOW.getY(), Global.CANVAS.getWidth(), Global.CANVAS.getHeight()));
+                Main.window.getX(), Main.window.getY(), Global.CANVAS.getWidth(), Global.CANVAS.getHeight()));
 
-        UILayer[] layers = Global.WINDOW.getLayers();
+        UILayer[] layers = Main.window.getLayers();
         for (UILayer layer : layers) {
             Element[] descendants = layer.getChildren();
 
@@ -270,9 +270,6 @@ public class IO {
 
         private static final boolean DEBUG = false;
 
-        private int row = 0;
-        private int col = 0;
-
         @Override
         public void keyPressed(KeyEvent e) {
             // 8  - backspace / WIP
@@ -287,20 +284,20 @@ public class IO {
             // 34 - page down
             // 35 - end
             // 36 - home
-            // 37 - left arrow
-            // 38 - up arrow
-            // 39 - right arrow
-            // 40 - down arrow
+            // 37 - left arrow / WIP
+            // 38 - up arrow / WIP
+            // 39 - right arrow / WIP
+            // 40 - down arrow / WIP
             // 112:123 - F1:F12 / DISABLED
-            // 127 - delete
+            // 127 - delete / WIP
             // 144 - num lock / DISABLED
             // 145 - scroll lock / DISABLED
             // 155 - insert
             // 65368 - begin (what is this?) / DISABLED
             int[] THE_LIST = new int[]{
-                    16, 17, 18, 19, 20, 33, 34, 35, 36, 37, 38, 39, 40,
+                    16, 18, 19, 20, 33, 34, 35, 36,
                     112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
-                    127, 144, 145, 155, 65368
+                    144, 145, 155, 65368
             };
 
             if (DEBUG) {
@@ -317,9 +314,7 @@ public class IO {
 
                 for (int THE_FORBIDDEN_CODE : THE_LIST) {
                     if (code == THE_FORBIDDEN_CODE) {
-                        if (DEBUG) {
-                            System.out.println("forbidden char");
-                        } // $DEBUG
+                        System.out.println("forbidden char");
                         e.consume();
                         return;
                     }
@@ -327,31 +322,36 @@ public class IO {
 
                 // TODO: temporary solution
                 //	in the future i would need to handle keys properly
-                if (key == KeyEvent.CHAR_UNDEFINED || key == '\0') {
+                if (key == '\0') {
                     System.out.println("unknown char");
                     e.consume();
                     return;
                 }
 
-                Text notes = (Text) Global.findElement("openNote");
-                //if (notes == null) throw new AssertionError();
+                Note note = (Note) Global.findElement("openNote");
+
+                Global.asrt(note != null, "Couldn't find openNote");
 
                 if (e.isControlDown()) {
                     switch (code) {
-                        case KeyEvent.VK_BACK_SPACE -> notes.removeLastWord();
+                        case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
+                        case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
+                        case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
+                        case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
                         case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
                         case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
                     }
                 } else {
                     switch (code) {
-                        case KeyEvent.VK_BACK_SPACE -> notes.removeLastChar();
-                        default -> notes.setText(notes.getText() + key);
+                        case KeyEvent.VK_BACK_SPACE -> note.deleteCharAtCursorLeft();
+                        case KeyEvent.VK_DELETE -> note.deleteCharAtCursorRight();
+                        case KeyEvent.VK_LEFT -> note.moveCursorCharLeft();
+                        case KeyEvent.VK_RIGHT -> note.moveCursorCharRight();
+                        case KeyEvent.VK_UP -> note.moveCursorUp();
+                        case KeyEvent.VK_DOWN -> note.moveCursorDown();
+                        default -> note.addCharAtCursor(key);
                     }
                 }
-
-                String txt = notes.getText();
-                row = txt.length() - txt.replace("\n", "").length();
-                col = txt.length() - txt.lastIndexOf('\n') - 1;
 
                 e.consume();
                 return;
@@ -365,22 +365,6 @@ public class IO {
 
         @Override
         public void keyReleased(KeyEvent e) {}
-
-        public int getRow() {
-            return row;
-        }
-
-        public void setRow(int row) {
-            this.row = row;
-        }
-
-        public int getCol() {
-            return col;
-        }
-
-        public void setCol(int col) {
-            this.col = col;
-        }
 
     }
 

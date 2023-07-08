@@ -8,6 +8,7 @@ public class Group extends Element {
 
     @Override
     public boolean update(int flags) {
+        if (!isInteractive()) return false;
         if (updateHigherChildren(flags)) return true;
         return updateLowerChildren(flags);
     }

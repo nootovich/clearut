@@ -10,10 +10,28 @@ public class Window extends JFrame {
         Global.IMAGE  = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Global.CANVAS = new DoubleBufferedCanvas(width, height);
         add(Global.CANVAS);
+
+        Sprite bg = new Sprite(0, 0, width, height, 0, 0, "window_bg");
+        bg.setInteractive(false);
+        layer("window").addChild(bg);
+
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setVisible(true);
         pack();
+    }
+
+    public void setBG(int color) {
+        Sprite bg = (Sprite) layer("window").getChild("window_bg");
+        Global.asrt(bg != null, "Couldn't find background for some reason.");
+        bg.setIdleColor(color);
+    }
+
+    public UILayer layer(String name) {
+        UILayer layer = getLayer(name);
+        if (layer != null) return layer;
+        addLayerToTop(name);
+        return getLayer(name);
     }
 
     public UILayer getLayer(String name) {

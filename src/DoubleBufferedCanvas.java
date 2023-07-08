@@ -31,14 +31,14 @@ public class DoubleBufferedCanvas extends Canvas {
     }
 
     public void updateChildren() {
-        UILayer[] layers = Global.WINDOW.getLayers();
+        UILayer[] layers = Main.window.getLayers();
         for (int i = layers.length - 1; i >= 0; i--) {
             if (layers[i].update(Element.Flags.NONE)) return;
         }
     }
 
     public void drawChildren(Graphics2D g2d) {
-        UILayer[] layers = Global.WINDOW.getLayers();
+        UILayer[] layers = Main.window.getLayers();
         for (UILayer layer : layers) {
             layer.draw(g2d);
         }
@@ -46,7 +46,7 @@ public class DoubleBufferedCanvas extends Canvas {
 
     public void updateScrollAt(int x, int y, int wheelRotation) {
         int flags = wheelRotation < 0 ? Element.Flags.MWHEELUP : Element.Flags.MWHEELDN;
-        UILayer[] layers = Global.WINDOW.getLayers();
+        UILayer[] layers = Main.window.getLayers();
         for (int i = layers.length - 1; i >= 0; i--) {
             if (layers[i].update(flags)) return;
         }

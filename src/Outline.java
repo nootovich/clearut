@@ -2,8 +2,8 @@ import java.awt.*;
 
 public class Outline extends Element {
 
-    private int     thickness = 1;
-    private Color[] colors    = new Color[3];
+    private int   thickness = 1;
+    private int[] colors    = new int[3];
 
     Outline(Element parent, int thickness) {
         this.thickness = thickness;
@@ -11,12 +11,12 @@ public class Outline extends Element {
         setParent(parent);
     }
 
-    Outline(Element parent, int thickness, Color color) {
+    Outline(Element parent, int thickness, int color) {
         this(parent, thickness);
         setColors(color, color, color);
     }
 
-    Outline(Element parent, int thickness, Color idle_color, Color hovered_color, Color active_color) {
+    Outline(Element parent, int thickness, int idle_color, int hovered_color, int active_color) {
         this(parent, thickness);
         setColors(idle_color, hovered_color, active_color);
     }
@@ -46,7 +46,7 @@ public class Outline extends Element {
         if (!isVisible()) return;
 
         g2d.setStroke(new BasicStroke(thickness));
-        g2d.setColor(getColorBasedOnState());
+        g2d.setColor(new Color(getColorBasedOnState()));
 
         if (parent.getClass() == Sprite.class) {
             Sprite p          = (Sprite) parent;
@@ -62,39 +62,39 @@ public class Outline extends Element {
         }
     }
 
-    public Color[] getColors() {
+    public int[] getColors() {
         return colors;
     }
 
-    public Color getIdleColor() {
+    public int getIdleColor() {
         return colors[0];
     }
 
-    public void setIdleColor(Color color) {
+    public void setIdleColor(int color) {
         colors[0] = color;
     }
 
-    public Color getHoveredColor() {
+    public int getHoveredColor() {
         return colors[1];
     }
 
-    public void setHoveredColor(Color color) {
+    public void setHoveredColor(int color) {
         colors[1] = color;
     }
 
-    public Color getActiveColor() {
+    public int getActiveColor() {
         return colors[2];
     }
 
-    public void setActiveColor(Color color) {
+    public void setActiveColor(int color) {
         colors[2] = color;
     }
 
-    public void setColors(Color idleColor, Color hoveredColor, Color activeColor) {
-        colors = new Color[]{idleColor, hoveredColor, activeColor};
+    public void setColors(int idleColor, int hoveredColor, int activeColor) {
+        colors = new int[]{idleColor, hoveredColor, activeColor};
     }
 
-    private Color getColorBasedOnState() {
+    private int getColorBasedOnState() {
         if (isActive()) return getActiveColor();
         if (isHovered()) return getHoveredColor();
         return getIdleColor();
