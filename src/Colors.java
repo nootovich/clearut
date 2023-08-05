@@ -12,6 +12,10 @@ public class Colors {
     private static final int[] YELLOW2 = new int[]{
             0xfcac5d, 0xfcb75d, 0xfcbc5d, 0xfcc75d, 0xfccc5d, 0xfcd45d, 0xfcdc5d, 0xfce45d, 0xfcec5d, 0xfcf45d
     };
+	// TODO: temporary
+	private static final int[] GREEN = new int[]{
+            0x0da147, 0x15c065, 0x19d276, 0x1ee588, 0x21f396, 0x42f5a5, 0x64f6b5, 0x90f9ca, 0xbbfbde, 0xe3fdf2
+    };
 
     public static int[] blue1() {
         return BLUE1;
@@ -43,6 +47,14 @@ public class Colors {
 
     public static int yellow2(int index) {
         return YELLOW2[index];
+    }
+
+    public static int[] green() {
+        return GREEN;
+    }
+
+    public static int green(int index) {
+        return GREEN[index];
     }
 
 }

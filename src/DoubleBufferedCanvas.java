@@ -1,68 +1,74 @@
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.Point;
+import java.awt.HeadlessException;
+import javax.swing.*;
+import java.util.Arrays;
 
-public class DoubleBufferedCanvas extends Canvas {
+public class DoubleBufferedCanvas extends JPanel {
 
-    private Point mousePos = new Point(getWidth() >> 1, getHeight() >> 1);
-
-    public DoubleBufferedCanvas(int width, int height) {
-        addMouseWheelListener(Global.MOUSE);
-        addMouseListener(Global.MOUSE);
-        addKeyListener(Global.KEYBOARD);
+	// TODO: move MOUSE and KEYBOARD classes from IO inside DBC as adapters (like in GOL)
+	public IO.Mouse      mouse ;
+	public BufferedImage buffer;
+	public Layer[]       layers;
+	
+    public DoubleBufferedCanvas(int width, int height, IO.Mouse mouse) {
+        this.mouse  = mouse;
+		this.layers = new Layer[0];
+		addMouseWheelListener(mouse);
+        addMouseListener(mouse);
+        // addKeyListener(Global.KEYBOARD);
+		buffer    = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         setPreferredSize(new Dimension(width, height));
         setBounds(0, 0, width, height);
         setVisible(true);
     }
 
-    @Override
-    public void update(Graphics g) {
-        Graphics2D g2d = (Graphics2D) Global.IMAGE.getGraphics();
-
+    public void paint(Graphics g) {
+		Graphics2D g2d = (Graphics2D) buffer.getGraphics();
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_LCD_CONTRAST, 130);
-
-        updateChildren();
+        updateChildren(mouse);
         drawChildren(g2d);
-
-        g.drawImage(Global.IMAGE, 0, 0, this);
-        Global.FRAMECOUNT++;
+        g.drawImage(buffer, 0, 0, this);
     }
 
-    public void updateChildren() {
-        UILayer[] layers = Main.window.getLayers();
+    public void updateChildren(IO.Mouse mouse) {
         for (int i = layers.length - 1; i >= 0; i--) {
-            if (layers[i].update(Element.Flags.NONE)) return;
+            layers[i].update(mouse);
         }
     }
 
     public void drawChildren(Graphics2D g2d) {
-        UILayer[] layers = Main.window.getLayers();
-        for (UILayer layer : layers) {
-            layer.draw(g2d);
+		for (Layer l : layers) {
+            l.draw(g2d);
         }
     }
 
-    public void updateScrollAt(int x, int y, int wheelRotation) {
-        int flags = wheelRotation < 0 ? Element.Flags.MWHEELUP : Element.Flags.MWHEELDN;
-        UILayer[] layers = Main.window.getLayers();
-        for (int i = layers.length - 1; i >= 0; i--) {
-            if (layers[i].update(flags)) return;
+    public void addLayer(Layer newLayer) {
+        Layer[] temp = layers;
+        layers = new Layer[layers.length + 1];
+        layers[layers.length - 1] = newLayer;
+        System.arraycopy(temp, 0, layers, 0, temp.length);
+        Arrays.sort(layers, new LayerPriorityComparator());
+    }
+
+	public Layer getLayer(String searchName) {
+        for (Layer l : layers) {
+            if (l.name.equals(searchName.toUpperCase())) return l;
         }
+        return null;
     }
 
-    public Point getMousePos() {
-        Point newMousePos = getMousePosition();
-        if (newMousePos != null) mousePos = newMousePos;
-        return mousePos;
-    }
+    // public void updateScrollAt(int x, int y, int wheelRotation) {
+    //     int flags = wheelRotation < 0 ? Element.Flags.MWHEELUP : Element.Flags.MWHEELDN;
+    //     UILayer[] layers = Main.window.getLayers();
+    //     for (int i = layers.length - 1; i >= 0; i--) {
+    //         if (layers[i].update(flags)) return;
+    //     }
+    // }
 
-    public int getMouseX() {
-        return getMousePos().x;
-    }
-
-    public int getMouseY() {
-        return getMousePos().y;
-    }
 }

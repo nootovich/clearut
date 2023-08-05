@@ -1,4 +1,6 @@
 import java.awt.event.*;
+import java.awt.Point;
+import java.awt.HeadlessException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -55,214 +57,118 @@ public class IO {
         return true;
     }
 
-    public static void saveInfo() {
+    // public static void saveInfo() {
 
-        // DATA LAYOUT
-        // int - savedata version number
-        // int, int - screen size
-        // available actions and objects and their states
-        // history of unlocks
-        // history of actions
-        // TODO: figure it out in the process of development
+    //     // DATA LAYOUT
+    //     // int - savedata version number
+    //     // int, int - screen size
+    //     // available actions and objects and their states
+    //     // history of unlocks
+    //     // history of actions
+    //     // TODO: figure it out in the process of development
 
-        // init savedata
-        StringBuilder savedata = new StringBuilder("SAVEDATA_VERSION: ").append(Global.SAVEDATA_VERSION);
-        savedata.append('\n').append(format(
-                "$WINDOW: x=%d y=%d w=%d h=%d",
-                Main.window.getX(), Main.window.getY(), Global.CANVAS.getWidth(), Global.CANVAS.getHeight()));
+    //     // init savedata
+    //     StringBuilder savedata = new StringBuilder("SAVEDATA_VERSION: ").append(Global.SAVEDATA_VERSION);
+    //     savedata.append('\n').append(format(
+    //             "$WINDOW: x=%d y=%d w=%d h=%d",
+    //             Main.window.getX(), Main.window.getY(), Global.CANVAS.getWidth(), Global.CANVAS.getHeight()));
 
-        UILayer[] layers = Main.window.getLayers();
-        for (UILayer layer : layers) {
-            Element[] descendants = layer.getChildren();
+    //     UILayer[] layers = Main.window.getLayers();
+    //     for (UILayer layer : layers) {
+    //         Element[] descendants = layer.getChildren();
 
-            savedata.append('\n').append(format(
-                    "\t$LAYER: name=%s z=%d children_size=%d",
-                    layer.getName(), layer.getZ(), descendants.length));
+    //         savedata.append('\n').append(format(
+    //                 "\t$LAYER: name=%s z=%d children_size=%d",
+    //                 layer.name, layer.z, layer.children.length));
 
-            for (Element descendant : descendants) {
-                savedata.append('\n').append(getDescendantData(descendant, 2));
-            }
-        }
+    //         for (Object c : children) {
+    //             savedata.append('\n').append(getChildData(c, 2));
+    //         }
+    //     }
 
-        String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
-        saveFile(Global.SAVEDATA_FOLDER + currentTime + ".txt", savedata.toString());
+    //     String currentTime = ZonedDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
+    //     saveFile(Global.SAVEDATA_FOLDER + currentTime + ".txt", savedata.toString());
 
-    }
+    // }
 
-    private static String getDescendantData(Element e, int depth) {
-        Element[]     descendants = e.getChildren();
-        StringBuilder result      = new StringBuilder("\t".repeat(depth));
-        String data = format("$%s: name=%s x=%d y=%d w=%d h=%d z=%d action=%s state=%s%s%s children_size=%d",
-                             e.getClass(), e.getName(), e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getZ(), e.getAction(),
-                             e.isVisible() ? "v" : "", e.isHovered() ? "h" : "", e.isActive() ? "a" : "", descendants.length);
-        result.append(data);
+    // private static String getChildData(Element e, int depth) {
+    //     Element[]     descendants = e.getChildren();
+    //     StringBuilder result      = new StringBuilder("\t".repeat(depth));
+    //     String data = format("$%s: name=%s x=%d y=%d w=%d h=%d z=%d action=%s state=%s%s%s children_size=%d",
+    //                          e.getClass(), e.getName(), e.getX(), e.getY(), e.getWidth(), e.getHeight(), e.getZ(), e.getAction(),
+    //                          e.isVisible() ? "v" : "", e.isHovered() ? "h" : "", e.isActive() ? "a" : "", descendants.length);
+    //     result.append(data);
 
-        for (Element descendant : descendants) {
-            result.append("\n").append(getDescendantData(descendant, depth + 1));
-        }
+    //     for (Element descendant : descendants) {
+    //         result.append("\n").append(getChildData(descendant, depth + 1));
+    //     }
 
-        return result.toString();
-    }
+    //     return result.toString();
+    // }
 
     public static class Mouse extends MouseAdapter {
+        
+		public static boolean DEBUG = false;
+        public int x = -1, y = -1;
+        public boolean LMB = false, RMB = false, LMBPrev = false, RMBPrev = false, LMBTemp = false, RMBTemp = false;
 
-        public static boolean DEBUG = false;
-
-        private int     x       = -1;
-        private int     y       = -1;
-        private boolean LMB     = false;
-        private boolean RMB     = false;
-        private boolean LMBPrev = false;
-        private boolean RMBPrev = false;
-        private boolean LMBTemp = false;
-        private boolean RMBTemp = false;
-
-        public void update() {
-            setX(Global.CANVAS.getMouseX());
-            setY(Global.CANVAS.getMouseY());
-
-            if (DEBUG) {
-                System.out.printf("mousePos: %dx%d%n", getX(), getY());
-            } // $DEBUG
-
-            setLMBPrev(getLMB());
-            setRMBPrev(getRMB());
-
-            setLMB(getLMBTemp());
-            setRMB(getRMBTemp());
+        public void update(Window window) {
+			Point mousePos = window.DBC.getMousePosition();
+			if (mousePos != null) { x = mousePos.x; y = mousePos.y; }
+            if (DEBUG) System.out.printf("mousePos: %dx%d%n", x, y); // $DEBUG
+            LMBPrev = LMB; RMBPrev = RMB; LMB = LMBTemp; RMB = RMBTemp;
         }
 
         @Override
         public void mousePressed(MouseEvent e) {
-            if (DEBUG) {
-                System.out.println(e);
-            } // $DEBUG
-
-            setLMBTemp(getLMBTemp() | (e.getButton() == MouseEvent.BUTTON1));
-            setRMBTemp(getRMBTemp() | (e.getButton() == MouseEvent.BUTTON3));
-
-            if (getRMBTemp()) {
-                Element menu = Global.findElement("SPAWN_MENU");
-                if (menu == null) return;
-                menu.setX(getX());
-                menu.setY(getY());
-                System.out.printf("%dx%d%n", menu.getX(), menu.getY());
-            }
+            if (DEBUG) System.out.println(e); // $DEBUG
+            LMBTemp |= e.getButton() == MouseEvent.BUTTON1;
+            RMBTemp |= e.getButton() == MouseEvent.BUTTON3;
+            // if (getRMBTemp()) {
+            //     Element menu = Global.findElement("SPAWN_MENU");
+            //     if (menu == null) return;
+            //     menu.setX(getX());
+            //     menu.setY(getY());
+            //     System.out.printf("%dx%d%n", menu.getX(), menu.getY());
+            // }
         }
 
         @Override
         public void mouseReleased(MouseEvent e) {
-            if (DEBUG) {
-                System.out.println(e);
-            } // $DEBUG
-
-            setLMBTemp(getLMBTemp() & (e.getButton() != MouseEvent.BUTTON1));
-            setRMBTemp(getRMBTemp() & (e.getButton() != MouseEvent.BUTTON3));
+            if (DEBUG) System.out.println(e); // $DEBUG
+            LMBTemp &= e.getButton() != MouseEvent.BUTTON1;
+            RMBTemp &= e.getButton() != MouseEvent.BUTTON3;
         }
 
         @Override
         public void mouseExited(MouseEvent e) {
-            if (DEBUG) {
-                System.out.println(e);
-            } // $DEBUG
-
-            setX(-1);
-            setY(-1);
-            setLMB(false);
-            setRMB(false);
-            setLMBPrev(false);
-            setRMBPrev(false);
-            setLMBTemp(false);
-            setRMBTemp(false);
+            if (DEBUG) System.out.println(e); // $DEBUG
+            x       = -1   ; y       = -1   ;
+            LMB     = false; RMB     = false;
+            LMBPrev = false; RMBPrev = false;
+            LMBTemp = false; RMBTemp = false;
         }
 
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
-            if (DEBUG) {
-                System.out.println(e.paramString());
-            } // $DEBUG
-
-            Global.CANVAS.updateScrollAt(e.getX(), e.getY(), e.getWheelRotation());
+            if (DEBUG) System.out.println(e.paramString()); // $DEBUG
+            // Global.CANVAS.updateScrollAt(e.getX(), e.getY(), e.getWheelRotation());
         }
 
         public boolean isLMBRisingEdge() {
-            return getLMB() && !getLMBPrev();
+            return LMB && !LMBPrev;
         }
 
         public boolean isLMBFallingEdge() {
-            return !getLMB() && getLMBPrev();
+            return !LMB && LMBPrev;
         }
 
         public boolean isRMBRisingEdge() {
-            return getRMB() && !getRMBPrev();
+            return RMB && !RMBPrev;
         }
 
         public boolean isRMBFallingEdge() {
-            return !getRMB() && getRMBPrev();
-        }
-
-        public int getX() {
-            return x;
-        }
-
-        public void setX(int x) {
-            this.x = x;
-        }
-
-        public int getY() {
-            return y;
-        }
-
-        public void setY(int y) {
-            this.y = y;
-        }
-
-        public boolean getLMB() {
-            return LMB;
-        }
-
-        public void setLMB(boolean bool) {
-            this.LMB = bool;
-        }
-
-        public boolean getRMB() {
-            return RMB;
-        }
-
-        public void setRMB(boolean bool) {
-            this.RMB = bool;
-        }
-
-        public boolean getLMBPrev() {
-            return LMBPrev;
-        }
-
-        public void setLMBPrev(boolean bool) {
-            LMBPrev = bool;
-        }
-
-        public boolean getRMBPrev() {
-            return RMBPrev;
-        }
-
-        public void setRMBPrev(boolean bool) {
-            RMBPrev = bool;
-        }
-
-        public boolean getLMBTemp() {
-            return LMBTemp;
-        }
-
-        public void setLMBTemp(boolean bool) {
-            LMBTemp = bool;
-        }
-
-        public boolean getRMBTemp() {
-            return RMBTemp;
-        }
-
-        public void setRMBTemp(boolean bool) {
-            RMBTemp = bool;
+            return !RMB && RMBPrev;
         }
     }
 
@@ -310,57 +216,57 @@ public class IO {
             if (code == KeyEvent.VK_ESCAPE) System.exit(69);
 
             // notes mode
-            if (Global.MODE.equals("NOTES")) {
+            // if (Global.MODE.equals("NOTES")) {
 
-                for (int THE_FORBIDDEN_CODE : THE_LIST) {
-                    if (code == THE_FORBIDDEN_CODE) {
-                        System.out.println("forbidden char");
-                        e.consume();
-                        return;
-                    }
-                }
+            //     for (int THE_FORBIDDEN_CODE : THE_LIST) {
+            //         if (code == THE_FORBIDDEN_CODE) {
+            //             System.out.println("forbidden char");
+            //             e.consume();
+            //             return;
+            //         }
+            //     }
 
-                // TODO: temporary solution
-                //	in the future i would need to handle keys properly
-                if (key == '\0') {
-                    System.out.println("unknown char");
-                    e.consume();
-                    return;
-                }
+            //     // TODO: temporary solution
+            //     //	in the future i would need to handle keys properly
+            //     if (key == '\0') {
+            //         System.out.println("unknown char");
+            //         e.consume();
+            //         return;
+            //     }
 
-                Note note = (Note) Global.findElement("openNote");
+            //     //Note note = (Note) Global.findElement("openNote");
 
-                Global.asrt(note != null, "Couldn't find openNote");
+            //     //Global.asrt(note != null, "Couldn't find openNote");
 
-                if (e.isControlDown()) {
-                    switch (code) {
-                        case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
-                        case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
-                        case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
-                        case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
-                        case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
-                        case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
-                    }
-                } else {
-                    switch (code) {
-                        case KeyEvent.VK_BACK_SPACE -> note.deleteCharAtCursorLeft();
-                        case KeyEvent.VK_DELETE -> note.deleteCharAtCursorRight();
-                        case KeyEvent.VK_LEFT -> note.moveCursorCharLeft();
-                        case KeyEvent.VK_RIGHT -> note.moveCursorCharRight();
-                        case KeyEvent.VK_UP -> note.moveCursorUp();
-                        case KeyEvent.VK_DOWN -> note.moveCursorDown();
-                        default -> note.addCharAtCursor(key);
-                    }
-                }
+            //     // if (e.isControlDown()) {
+            //     //     switch (code) {
+            //     //         case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
+            //     //         case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
+            //     //         case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
+            //     //         case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
+            //     //         case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+            //     //         case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
+            //     //     }
+            //     // } else {
+            //     //     switch (code) {
+            //     //         case KeyEvent.VK_BACK_SPACE -> note.deleteCharAtCursorLeft();
+            //     //         case KeyEvent.VK_DELETE -> note.deleteCharAtCursorRight();
+            //     //         case KeyEvent.VK_LEFT -> note.moveCursorCharLeft();
+            //     //         case KeyEvent.VK_RIGHT -> note.moveCursorCharRight();
+            //     //         case KeyEvent.VK_UP -> note.moveCursorUp();
+            //     //         case KeyEvent.VK_DOWN -> note.moveCursorDown();
+            //     //         default -> note.addCharAtCursor(key);
+            //     //     }
+            //     // }
 
-                e.consume();
-                return;
-            }
+            //     e.consume();
+            //     return;
+            // }
 
-            // everything else except notes mode
-            switch (key) {
-                case 'l' -> Global.ACTIONS.dumpInfoToConsole();
-            }
+            // // everything else except notes mode
+            // switch (key) {
+            //     case 'l' -> Global.ACTIONS.dumpInfoToConsole();
+            // }
         }
 
         @Override
