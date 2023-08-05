@@ -143,10 +143,10 @@ public class Actions {
     //     Notes.openNote(index);
     // }
 
-	public static void openCalendar() {
-		Main.changeState(Main.State.CALENDAR);
-	}
-	
+    public static void openCalendar() {
+        Main.changeState(Main.State.CALENDAR);
+    }
+
     public void button1() {
         System.out.println("Hello world!");
     }

@@ -2,21 +2,21 @@ import java.awt.*;
 
 public class Text extends Child {
 
-    public static boolean DEBUG = false;
+    public static final boolean DEBUG = false;
 
-	public int       x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0;
-	public int       cachedTextHeight = 0, cachedLineHeight = 0; // TODO: remove (should be in program, not in library)
-	public boolean   visible = true, hovered, active;
-    public String    text = "";//, wrappedText = "";
+    public int x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0;
+    public int cachedTextHeight = 0, cachedLineHeight = 0; // TODO: remove (should be in program, not in library)
+    public boolean visible = true, hovered, active;
+    public String    text      = "";//, wrappedText = "";
     public Alignment alignment = Alignment.CENTER;
 
     public Text(int x, int y, int w, int h, int z, int size) {
-    	this.x = x; this.y = y; this.w = w; this.h = h; this.z = z; this.size = size;
-	}
+        this.x = x; this.y = y; this.w = w; this.h = h; this.z = z; this.size = size;
+    }
 
     public Text(int x, int y, int w, int h, int z, int size, String text) {
         this(x, y, w, h, z, size);
-		this.text = text;
+        this.text = text;
     }
 
     public Text(int x, int y, int w, int h, int size, int z, String text, int color) {
@@ -24,13 +24,13 @@ public class Text extends Child {
         this.color = color;
     }
 
-	@Override
+    @Override
     public void draw(Graphics2D g2d) {
-		drawLowerChildren(g2d);
-		if (!visible) {
-			drawHigherChildren(g2d);
-			return;
-		}
+        drawLowerChildren(g2d);
+        if (!visible) {
+            drawHigherChildren(g2d);
+            return;
+        }
         g2d.setFont(new Font("Rubik", Font.BOLD, size));
         FontMetrics metrics = g2d.getFontMetrics();
         if (DEBUG) {
@@ -47,8 +47,8 @@ public class Text extends Child {
         } // $DEBUG
         if (!visible) return;
         g2d.setColor(new Color(color));
-        int lineHeight = metrics.getHeight();
-        String[] lines = getLines();//getWrappedLines();
+        int      lineHeight = metrics.getHeight();
+        String[] lines      = getLines();//getWrappedLines();
         for (int i = 0; i < lines.length; i++) {
             drawLine(g2d, lines[i], x, y + i * lineHeight);
         }
@@ -59,8 +59,8 @@ public class Text extends Child {
 
     private void drawLine(Graphics2D g2d, String line, int x, int y) {
         FontMetrics metrics = g2d.getFontMetrics();
-        int curX = x + offsetX;
-        int curY = y + offsetY;
+        int         curX    = x + offsetX;
+        int         curY    = y + offsetY;
         if (curY - y > h) return;
         if (curY + metrics.getHeight() < y) return;
         // TODO: implement the rest of alignments
@@ -193,7 +193,7 @@ public class Text extends Child {
             text = text.substring(0, text.length() - 1);
         }
     }
-	
+
     public enum Alignment {
         CENTER, LEFT, RIGHT, TOP, BOTTOM;
     }
