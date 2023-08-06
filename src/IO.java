@@ -1,16 +1,11 @@
+import java.awt.*;
 import java.awt.event.*;
-import java.awt.Point;
-import java.awt.HeadlessException;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-
-import static java.lang.String.format;
 
 public class IO {
 
@@ -27,7 +22,7 @@ public class IO {
             bufferWriter.write(content);
             bufferWriter.close();
         } catch (IOException e) {
-            System.out.println(e.getCause() + "\n" + e.getMessage());
+            System.out.println(e.getCause()+"\n"+e.getMessage());
             return false;
         }
         return true;
@@ -51,7 +46,7 @@ public class IO {
             File file = new File(fileName);
             file.delete();
         } catch (Exception e) {
-            System.out.println(e.getCause() + "\n" + e.getMessage());
+            System.out.println(e.getCause()+"\n"+e.getMessage());
             return false;
         }
         return true;
@@ -107,14 +102,14 @@ public class IO {
     // }
 
     public static class Mouse extends MouseAdapter {
-        
-		public static boolean DEBUG = false;
-        public int x = -1, y = -1;
+
+        public static boolean DEBUG = false;
+        public        int     x     = -1, y = -1;
         public boolean LMB = false, RMB = false, LMBPrev = false, RMBPrev = false, LMBTemp = false, RMBTemp = false;
 
         public void update(Window window) {
-			Point mousePos = window.DBC.getMousePosition();
-			if (mousePos != null) { x = mousePos.x; y = mousePos.y; }
+            Point mousePos = window.DBC.getMousePosition();
+            if (mousePos != null) { x = mousePos.x; y = mousePos.y; }
             if (DEBUG) System.out.printf("mousePos: %dx%d%n", x, y); // $DEBUG
             LMBPrev = LMB; RMBPrev = RMB; LMB = LMBTemp; RMB = RMBTemp;
         }
@@ -143,8 +138,8 @@ public class IO {
         @Override
         public void mouseExited(MouseEvent e) {
             if (DEBUG) System.out.println(e); // $DEBUG
-            x       = -1   ; y       = -1   ;
-            LMB     = false; RMB     = false;
+            x       = -1; y = -1;
+            LMB     = false; RMB = false;
             LMBPrev = false; RMBPrev = false;
             LMBTemp = false; RMBTemp = false;
         }
@@ -201,9 +196,9 @@ public class IO {
             // 155 - insert
             // 65368 - begin (what is this?) / DISABLED
             int[] THE_LIST = new int[]{
-                    16, 18, 19, 20, 33, 34, 35, 36,
-                    112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
-                    144, 145, 155, 65368
+                16, 18, 19, 20, 33, 34, 35, 36,
+                112, 113, 114, 115, 116, 117, 118, 119, 120, 121, 122, 123,
+                144, 145, 155, 65368
             };
 
             if (DEBUG) {
@@ -270,7 +265,7 @@ public class IO {
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {}
+        public void keyReleased(KeyEvent e) { }
 
     }
 

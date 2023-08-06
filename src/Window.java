@@ -13,8 +13,8 @@ public class Window extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void addLayer(String name, int z) {
-        DBC.addLayer(new Layer(name, z));
+    public Layer addLayer(String name, int z) {
+        return DBC.addLayer(new Layer(name, z));
     }
 
     public Layer getLayer(String name) {

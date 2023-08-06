@@ -1,4 +1,3 @@
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -13,16 +12,16 @@ public class Main {
     public static State    state;
 
     public static void main(String[] args) throws InterruptedException {
-        mouse = new IO.Mouse();
+        mouse  = new IO.Mouse();
         window = new Window(WINDOW_WIDTH, WINDOW_HEIGHT, mouse);
         changeState(State.MAIN);
         // spawnMenu   = initSpawnMenu();
         // editingMenu = initEditingMenu();
         long prevFrameTime = 0, curFrameTime = 0, spentFrameTime = 0;
         while (true) {
-            curFrameTime = System.currentTimeMillis();
+            curFrameTime   = System.currentTimeMillis();
             spentFrameTime = curFrameTime-prevFrameTime;
-            prevFrameTime = curFrameTime;
+            prevFrameTime  = curFrameTime;
             if (spentFrameTime > 250) spentFrameTime = 250;
             if (DEBUG) System.out.printf("frametime: %dms%n", spentFrameTime); // $DEBUG
             mouse.update(window);
@@ -40,7 +39,7 @@ public class Main {
     }
 
     public static void changeState(State newState) {
-        state = newState;
+        state             = newState;
         window.DBC.layers = new Layer[0];
         System.gc();
         if (state == State.MAIN) {
@@ -71,31 +70,31 @@ public class Main {
         window.getLayer("UI_SIDE").addChild(sideBG);
 
         Sprite notesButton = new Sprite(offs, offs, bs, bs, 1, "NOTES_BUTTON", "openNotes");
-        notesButton.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        notesButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         notesButton.extra = 8;
         notesButton.setColors(yellow[3], yellow[5], yellow[1]);
         window.getLayer("UI_SIDE").addChild(notesButton);
 
-        Text notesButtonText = new Text(notesButton.getCenterX(), notesButton.getCenterY(), bs, bs, 12, 5, "NOTES", 0xFFFFFF);
+        Text notesButtonText = new Text(notesButton.getCenterX(), notesButton.getCenterY(), bs, bs, 5, 12, "NOTES", 0xFFFFFF);
         notesButton.addChild(notesButtonText);
 
         Sprite calButton = new Sprite(offs, offs*2+bs, bs, bs, 1, "CALENDAR_BUTTON", "openCalendar");
-        calButton.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        calButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         calButton.extra = 8;
         calButton.setColors(yellow[3], yellow[5], yellow[1]);
         window.getLayer("UI_SIDE").addChild(calButton);
 
-        Text calButtonText = new Text(calButton.getCenterX(), calButton.getCenterY(), bs, bs, 7, 5, "CALENDAR", 0xFFFFFF);
+        Text calButtonText = new Text(calButton.getCenterX(), calButton.getCenterY(), bs, bs, 5, 8, "CALENDAR", 0xFFFFFF);
         calButton.addChild(calButtonText);
 
         for (int i = 2; i < 6; i++) {
             int    bx     = (int) offset;
             int    by     = (int) (offset+(button_size+offset)*i);
             Sprite button = new Sprite(bx, by, bs, bs, 1);
-            button.name = "BUTTON_"+i;
+            button.name   = "BUTTON_"+i;
             button.action = "button"+i;
-            button.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
-            button.extra = 8;
+            button.type   = Sprite.SpriteType.ROUNDED_RECTANGLE;
+            button.extra  = 8;
             button.setColors(blue[4], blue[5], blue[6]);
 
             Outline buttonOutline = new Outline(4, 2, blue[5], blue[6], blue[7]);
@@ -125,109 +124,89 @@ public class Main {
         int[] green       = Colors.green();
         int[] blue        = Colors.blue2();
 
-        window.addLayer("BG", 0);
+        Layer BG = window.addLayer("BG", 0);
+        BG.addChild(new Sprite(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, green[1], "BG"));
 
-        Sprite bg = new Sprite(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, green[1], "bg");
-        window.getLayer("BG").addChild(bg);
-
-        window.addLayer("UI_SIDE", 1);
-
-        Sprite sideBG = new Sprite(0, 0, bs+offs*2, WINDOW_HEIGHT, 0, green[2], "SIDE_BG");
-        window.getLayer("UI_SIDE").addChild(sideBG);
+        Layer  UI_side = window.addLayer("UI_SIDE", 1);
+        Sprite sideBG  = new Sprite(0, 0, bs+offs*2, WINDOW_HEIGHT, 0, green[2], "SIDE_BG");
+        UI_side.addChild(sideBG);
 
         Sprite notesButton = new Sprite(offs, offs, bs, bs, 1, "NOTES_BUTTON", "openNotes");
-        notesButton.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        notesButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         notesButton.extra = 8;
         notesButton.setColors(blue[4], blue[5], blue[6]);
-        window.getLayer("UI_SIDE").addChild(notesButton);
-
-        Text notesButtonText = new Text(notesButton.getCenterX(), notesButton.getCenterY(), bs, bs, 12, 5, "NOTES", 0xFFFFFF);
+        Text notesButtonText = new Text(notesButton.getCenterX(), notesButton.getCenterY(), bs, bs, 5, 12, "NOTES", 0xFFFFFF);
         notesButton.addChild(notesButtonText);
+        UI_side.addChild(notesButton);
 
         Sprite calButton = new Sprite(offs, offs*2+bs, bs, bs, 1, "CALENDAR_BUTTON", "openCalendar");
-        calButton.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        calButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         calButton.extra = 8;
         calButton.setColors(blue[4], blue[5], blue[6]);
-        window.getLayer("UI_SIDE").addChild(calButton);
-
-        Text calButtonText = new Text(calButton.getCenterX(), calButton.getCenterY(), bs, bs, 7, 5, "CALENDAR", 0xFFFFFF);
+        Text calButtonText = new Text(calButton.getCenterX(), calButton.getCenterY(), bs, bs, 5, 8, "CALENDAR", 0xFFFFFF);
         calButton.addChild(calButtonText);
+        UI_side.addChild(calButton);
 
         for (int i = 2; i < 6; i++) {
             int    bx     = (int) offset;
             int    by     = (int) (offset+(button_size+offset)*i);
             Sprite button = new Sprite(bx, by, bs, bs, 1);
-            button.name = "BUTTON_"+i;
+            button.name   = "BUTTON_"+i;
             button.action = "button"+i;
-            button.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
-            button.extra = 8;
+            button.type   = Sprite.SpriteType.ROUNDED_RECTANGLE;
+            button.extra  = 8;
             button.setColors(green[4], green[5], green[6]);
-            window.getLayer("UI_SIDE").addChild(button);
+            UI_side.addChild(button);
         }
 
-        window.addLayer("UI_PROFILE", 2);
+        Layer  UI_profile = window.addLayer("UI_PROFILE", 2);
+        Sprite profileBG  = new Sprite(bs+offs*2, 0, WINDOW_WIDTH, bs+offs*2, 0, green[3], "PROFILE_BG");
+        UI_profile.addChild(profileBG);
+        Picture profilePic = new Picture(WINDOW_WIDTH-bs-offs, offs, bs, bs, 1, Global.IMAGE_FOLDER+"lizard.jpg", "PROFILE_PIC");
+        UI_profile.addChild(profilePic);
 
-        int    pxh       = (int) (button_size+offset*2);
-        Sprite profileBG = new Sprite(pxh, 0, WINDOW_WIDTH, pxh, 0, green[3], "PROFILE_BG");
-        window.getLayer("UI_PROFILE").addChild(profileBG);
-
-        int     px         = (int) (WINDOW_WIDTH-button_size-offset);
-        int     py         = (int) offset;
-        int     ps         = (int) (button_size);
-        Picture profilePic = new Picture(px, py, ps, ps, 1, Global.IMAGE_FOLDER+"lizard.jpg", "PROFILE_PIC");
-        window.getLayer("UI_PROFILE").addChild(profilePic);
-
-        window.addLayer("UI_CALENDAR", 3);
-        String[] tasks = new String[]{"Подъём 08:00", "Зарядка", "Правильное питание",
-            "Тренировка", "Иностранный язык", "Отбой 00:00"};
+        Layer UI_calendar = window.addLayer("UI_CALENDAR", 3);
+        String[] tasks = new String[]{"Подъём в 08:00", "Зарядка",
+            "Правильное питание", "Тренировка", "Иностранный язык", "Отбой в 00:00"};
         int ox = sideBG.w;
         int oy = profileBG.h;
         int tw = (WINDOW_WIDTH-ox);
         int th = (WINDOW_HEIGHT-oy);
-        int pw = tw/14;
+        int pw = tw/7/2;
         int ph = th/(tasks.length+2);
-        for (int i = 0; i < tasks.length+1; i++) {
-            Sprite line = new Sprite(ox, oy+ph*i+ph, tw, 1, 3, 0);
-            window.getLayer("UI_CALENDAR").addChild(line);
-        }
-        for (int i = 0; i < 7; i++) {
-            Sprite line = new Sprite(ox+tw/2+pw*i, oy, 1, th, 3, 0);
-            window.getLayer("UI_CALENDAR").addChild(line);
+
+        LocalDate now = LocalDate.now();
+        int       dow = now.getDayOfWeek().getValue()-1;
+        UI_calendar.addChild(new Sprite(ox+tw/2+pw*dow, oy, pw, th, 2, green[2]));
+
+        for (int i = 0; i < tasks.length+1; i++) UI_calendar.addChild(new Sprite(ox, oy+ph*i+ph, tw, 1, 5, 0));
+        for (int i = -2; i < 7; i++) {
+            UI_calendar.addChild(new Sprite(ox+tw/2+pw*i, oy, 1, th, 5, 0));
+            String date = now.plusDays(i-dow).format(DateTimeFormatter.ofPattern("ddMMyy"));
+            UI_calendar.addChild(new Text(ox+tw/2+pw*i+pw/2, oy+ph*(tasks.length+1)+ph/2, pw, ph, 4, 14, "0", "total"+date, Colors.white));
         }
 
-        LocalDate now = LocalDate.now().plusDays(-2);
-        int    dayOfWeek = now.getDayOfWeek().getValue()-1;
-        String dayVal    = now.format(DateTimeFormatter.ofPattern("dd/MM"));
-        Sprite dayBG = new Sprite(ox+tw/2+pw*dayOfWeek, oy, pw, th, 2, green[2]);
-        // TODO: implement "Child" (Member) sorting (comparison)
-        window.getLayer("UI_CALENDAR").addChild(dayBG);
-        Text   day       = new Text(ox+tw/2+pw*dayOfWeek+pw/2, oy+ph/2, pw, ph, 12, 3, dayVal, Colors.white);
-        window.getLayer("UI_CALENDAR").addChild(day);
-//        for (int i = 0; i < dayOfWeek; i++) {
-//            dayVal = now.minusDays(dayOfWeek-i).format(DateTimeFormatter.ofPattern("dd/MM"));
-//            day = new Text(ox+tw/2+pw*i+pw/2, oy+ph/2, pw, ph, 12, 3, dayVal, blue[9]);
-//            window.getLayer("UI_CALENDAR").addChild(day);
-//        }
-        for (int i = 0; i < 7; i++) {
-            if (i == dayOfWeek) continue;
-            dayVal = now.plusDays(i-dayOfWeek).format(DateTimeFormatter.ofPattern("dd/MM"));
-            day = new Text(ox+tw/2+pw*i+pw/2, oy+ph/2, pw, ph, 9, 3, dayVal, Colors.lgray);
-            window.getLayer("UI_CALENDAR").addChild(day);
-        }
-
-        for (int i = 0; i < tasks.length; i++) {
-            Text taskName = new Text(ox+tw/4, oy+ph*(i+1)+ph/2, tw/2, ph, 20, 3, tasks[i], Colors.white);
-            window.getLayer("UI_CALENDAR").addChild(taskName);
-            for (int j = 0; j < 7; j++) {
-                Sprite box = new Sprite(ox+tw/2+pw*j+pw/4, oy+ph*(i+1)+ph/4, pw/2, ph/2, 4);
-                box.setColors(blue[3], blue[4], blue[5]);
-                window.getLayer("UI_CALENDAR").addChild(box);
+        for (int i = -2; i < 7; i++) {
+            LocalDate day    = now.plusDays(i-dow);
+            String    dayVal = day.format(DateTimeFormatter.ofPattern("dd/MM"));
+            int       color  = i < 0 || i > 4 ? 0xFF8888 : i == dow ? Colors.white : Colors.lgray;
+            UI_calendar.addChild(new Text(ox+tw/2+pw*i+pw/2, oy+ph/2, pw, ph, 3, i == dow ? 12 : 9, dayVal, color));
+            if (i > dow) break;
+            for (int j = 0; j < tasks.length; j++) {
+                String date      = day.format(DateTimeFormatter.ofPattern("ddMMyy"));
+                String action    = "toggleTask:String:"+date+"000"+j; // TODO: temp
+                Sprite dayTaskBG = new Sprite(ox+tw/2+pw*i, oy+ph*(j+1), pw, ph, 3, "task"+date+"000"+j, action);
+                if (i == dow) {
+                    dayTaskBG.setColors(green[2], green[3], green[4]);
+                    dayTaskBG.extra = 1;
+                } else dayTaskBG.setColors(green[1], green[2], green[3]);
+                UI_calendar.addChild(dayTaskBG);
             }
         }
-        Text title = new Text(ox+tw/4, (int) (oy+ph*0.4f), tw/2, ph, 34, 3, "Задания", Colors.white);
-        window.getLayer("UI_CALENDAR").addChild(title);
-        Text total = new Text(ox+tw/4, oy+ph*(tasks.length+1)+ph/2, tw/2, ph, 30, 3, "Итого:", Colors.white);
-        window.getLayer("UI_CALENDAR").addChild(total);
+
+        UI_calendar.addChild(new Text(ox+tw/4-pw, (int) (oy+ph*0.4f), tw/2, ph, 3, 34, "Задания", Colors.white));
+        UI_calendar.addChild(new Text(ox+tw/4-pw, oy+ph*(tasks.length+1)+ph/2, tw/2, ph, 3, 30, "Итого:", Colors.white));
+        for (int i = 0; i < tasks.length; i++) UI_calendar.addChild(new Text(ox+tw/4-pw, oy+ph*(i+1)+ph/2, tw/2, ph, 3, 20, tasks[i], Colors.white));
     }
 
     // private static Menu initSpawnMenu() {
@@ -274,7 +253,7 @@ public class Main {
     // }
 
     public enum State {
-        MAIN, NOTES, CALENDAR;
+        MAIN, NOTES, CALENDAR
     }
 
 }

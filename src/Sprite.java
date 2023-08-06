@@ -4,7 +4,7 @@ public class Sprite extends Child {
 
     private static final boolean DEBUG = false;
 
-    public int x, y, w, h, extra;
+    public int x, y, w, h, extra = 0;
     public int[]   colors  = new int[3];
     public boolean visible = true, interactive = false, hovered = false, active = false;
     public String     action = "";
@@ -43,7 +43,7 @@ public class Sprite extends Child {
     public void update(IO.Mouse mouse) {
         updateHigherChildren(mouse);
         if (active && mouse.isLMBFallingEdge()) Global.ACTIONS.invoke(action); // TODO: refactor
-        hovered = mouse.x > x && mouse.x < x + w && mouse.y > y && mouse.y < y + h;
+        hovered = mouse.x > x && mouse.x < x+w && mouse.y > y && mouse.y < y+h;
         active  = hovered && mouse.LMB;
         updateLowerChildren(mouse);
     }
@@ -51,7 +51,7 @@ public class Sprite extends Child {
     @Override
     public void draw(Graphics2D g2d) {
         if (DEBUG) System.out.printf("\t\tdraw sprite '%s': x:%d, y:%d, z:%d, w:%d, h:%d, : %s%n",
-                                     name, x, y, z, w, h, visible ? " visible" : "!visible"); // $DEBUG
+            name, x, y, z, w, h, visible ? " visible" : "!visible"); // $DEBUG
         drawLowerChildren(g2d);
         if (visible) {
             g2d.setColor(new Color(getColorBasedOnState()));
@@ -74,14 +74,14 @@ public class Sprite extends Child {
     }
 
     public int getCenterX() {
-        return x + w / 2;
+        return x+w/2;
     }
 
     public int getCenterY() {
-        return y + h / 2;
+        return y+h/2;
     }
 
     public enum SpriteType {
-        RECTANGLE, ROUNDED_RECTANGLE;
+        RECTANGLE, ROUNDED_RECTANGLE
     }
 }

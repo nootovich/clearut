@@ -35,7 +35,7 @@ public class DoubleBufferedCanvas extends JPanel {
     }
 
     public void updateChildren(IO.Mouse mouse) {
-        for (int i = layers.length - 1; i >= 0; i--) {
+        for (int i = layers.length-1; i >= 0; i--) {
             layers[i].update(mouse);
         }
     }
@@ -46,12 +46,13 @@ public class DoubleBufferedCanvas extends JPanel {
         }
     }
 
-    public void addLayer(Layer newLayer) {
+    public Layer addLayer(Layer newLayer) {
         Layer[] temp = layers;
-        layers                    = new Layer[layers.length + 1];
-        layers[layers.length - 1] = newLayer;
+        layers                  = new Layer[layers.length+1];
+        layers[layers.length-1] = newLayer;
         System.arraycopy(temp, 0, layers, 0, temp.length);
         Arrays.sort(layers, new LayerPriorityComparator());
+        return newLayer;
     }
 
     public Layer getLayer(String searchName) {

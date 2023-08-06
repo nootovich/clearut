@@ -19,8 +19,18 @@ public class Text extends Child {
         this.text = text;
     }
 
-    public Text(int x, int y, int w, int h, int size, int z, String text, int color) {
+    public Text(int x, int y, int w, int h, int z, int size, String text, int color) {
         this(x, y, w, h, z, size, text);
+        this.color = color;
+    }
+
+    public Text(int x, int y, int w, int h, int z, int size, String text, String name) {
+        this(x, y, w, h, z, size, text);
+        this.name = name.toUpperCase();
+    }
+
+    public Text(int x, int y, int w, int h, int z, int size, String text, String name, int color) {
+        this(x, y, w, h, z, size, text, name);
         this.color = color;
     }
 
@@ -35,8 +45,8 @@ public class Text extends Child {
         FontMetrics metrics = g2d.getFontMetrics();
         if (DEBUG) {
             if (alignment == Alignment.CENTER) {
-                x -= w >> 1;
-                y -= metrics.getAscent() >> 1;
+                x -= w>>1;
+                y -= metrics.getAscent()>>1;
             } else if (alignment != Alignment.LEFT) {
                 System.out.println("This text alignment is not implemented");
                 System.exit(69);
@@ -50,26 +60,26 @@ public class Text extends Child {
         int      lineHeight = metrics.getHeight();
         String[] lines      = getLines();//getWrappedLines();
         for (int i = 0; i < lines.length; i++) {
-            drawLine(g2d, lines[i], x, y + i * lineHeight);
+            drawLine(g2d, lines[i], x, y+i*lineHeight);
         }
         cachedLineHeight = lineHeight;
-        cachedTextHeight = lineHeight * lines.length;
+        cachedTextHeight = lineHeight*lines.length;
         drawHigherChildren(g2d);
     }
 
     private void drawLine(Graphics2D g2d, String line, int x, int y) {
         FontMetrics metrics = g2d.getFontMetrics();
-        int         curX    = x + offsetX;
-        int         curY    = y + offsetY;
-        if (curY - y > h) return;
-        if (curY + metrics.getHeight() < y) return;
+        int         curX    = x+offsetX;
+        int         curY    = y+offsetY;
+        if (curY-y > h) return;
+        if (curY+metrics.getHeight() < y) return;
         // TODO: implement the rest of alignments
         switch (alignment) {
             case CENTER -> {
-                curX -= metrics.stringWidth(line) >> 1;
-                curY -= metrics.getAscent() >> 1;
+                curX -= metrics.stringWidth(line)>>1;
+                curY -= metrics.getAscent()>>1;
             }
-            case LEFT -> {}
+            case LEFT -> { }
             default -> {
                 System.out.println("This text alignment is not implemented");
                 System.exit(69);
@@ -83,12 +93,12 @@ public class Text extends Child {
             g2d.setColor(new Color(0x55ff0000, true));
             g2d.fillRect(curX, curY, mw, ma);
             g2d.setColor(new Color(0x550000ff, true));
-            g2d.fillRect(curX, curY + ma, mw, md);
+            g2d.fillRect(curX, curY+ma, mw, md);
             g2d.setColor(Color.GREEN);
             g2d.drawRect(curX, curY, mw, mh);
         } // $DEBUG
         g2d.setColor(new Color(color));
-        g2d.drawString(line, curX, curY + metrics.getAscent());
+        g2d.drawString(line, curX, curY+metrics.getAscent());
 //        cachedLastLineWidth = metrics.stringWidth(line);
     }
 
@@ -175,7 +185,7 @@ public class Text extends Child {
 
     public void removeLastChar() {
         if (text.length() == 0) return;
-        text = text.substring(0, text.length() - 1);
+        text = text.substring(0, text.length()-1);
     }
 
     public void removeCharAt(int index) {
@@ -189,8 +199,8 @@ public class Text extends Child {
     public void removeLastWord() {
         removeLastChar();
         while (text.length() > 0) {
-            if (Character.isWhitespace(text.charAt(text.length() - 1))) break;
-            text = text.substring(0, text.length() - 1);
+            if (Character.isWhitespace(text.charAt(text.length()-1))) break;
+            text = text.substring(0, text.length()-1);
         }
     }
 

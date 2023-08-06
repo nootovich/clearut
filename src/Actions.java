@@ -11,7 +11,7 @@ public class Actions {
             if (lines.length > 1) switch (lines[1]) {
                 case "int" -> invokeWithInt(lines[0], Integer.parseInt(lines[2]));
                 case "String" -> invokeWithString(lines[0], lines[2]);
-                default -> throw new IllegalStateException("Unexpected value: " + lines[1]);
+                default -> throw new IllegalStateException("Unexpected value: "+lines[1]);
             }
             else this.getClass().getMethod(action).invoke(this);
         } catch (NoSuchMethodException e) {
@@ -29,6 +29,31 @@ public class Actions {
 
     private void invokeWithString(String method, String value) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
         this.getClass().getMethod(method, String.class).invoke(this, value);
+    }
+
+    public void toggleTask(String flags) {
+        // flags: ddMMyyiiii (iiii is a task id)
+        Sprite task = (Sprite) Main.window.getLayer("UI_CALENDAR").getChild("task"+flags);
+        if (task.extra == 1) {
+            task.extra = 3;
+            task.setColors(Colors.blue2(2), Colors.blue2(3), Colors.blue2(4));
+        } else if (task.extra == 3) {
+            task.extra = 1;
+            task.setColors(Colors.green(2), Colors.green(3), Colors.green(4));
+        } else if (task.extra == 0) {
+            task.extra = 2;
+            task.setColors(Colors.blue2(2), Colors.blue2(3), Colors.blue2(4));
+        } else if (task.extra == 2) {
+            task.extra = 0;
+            task.setColors(Colors.green(1), Colors.green(2), Colors.green(3));
+        }
+        int count = 0;
+        for (int i = 0; i < 6; i++) {
+            task = (Sprite) Main.window.getLayer("UI_CALENDAR").getChild("task"+flags.substring(0, 9)+i);
+            if (task.extra == 2 || task.extra == 3) count++;
+        }
+        Text total = (Text) Main.window.getLayer("UI_CALENDAR").getChild("total"+flags.substring(0, 6));
+        total.text = Integer.toString(count);
     }
 
     // public void dumpInfoToConsole() {

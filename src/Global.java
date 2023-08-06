@@ -7,9 +7,9 @@ public class Global {
 
     public static final int     SAVEDATA_VERSION = 1; //TODO: rename 'info' to 'data'
     public static final Actions ACTIONS          = new Actions();
-    public static final String  IMAGE_FOLDER     = "images" + File.separator;
-    public static final String  SAVEDATA_FOLDER  = "saves" + File.separator;
-    public static final String  NOTES_FOLDER     = "notes" + File.separator;
+    public static final String  IMAGE_FOLDER     = "images"+File.separator;
+    public static final String  SAVEDATA_FOLDER  = "saves"+File.separator;
+    public static final String  NOTES_FOLDER     = "notes"+File.separator;
 
     public static final Color SPACE_CADET = new Color(0x2B2D42);
     public static final Color DARK_GRAY   = new Color(0x424269);

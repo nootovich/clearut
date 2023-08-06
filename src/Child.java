@@ -1,20 +1,22 @@
 import java.awt.*;
+import java.util.Arrays;
+import java.util.Comparator;
 
 public class Child {
     // TODO: maybe rename to "member"?
-    public int     z               = 0;
-    public String  name            = "";
-    public Child   parent          = null;
-    public Child[] children        = new Child[0];
-    public boolean inheritPosition = false, inheritInteractions = false;
+    public int     z        = 0;
+    public String  name     = "";
+    public Child   parent   = null;
+    public Child[] children = new Child[0];
+//    public boolean inheritPosition = false, inheritInteractions = false;
 
     public void addChild(Child newChild) {
         newChild.parent = this;
         Child[] temp = children;
-        children                      = new Child[children.length + 1];
-        children[children.length - 1] = newChild;
+        children                    = new Child[children.length+1];
+        children[children.length-1] = newChild;
         System.arraycopy(temp, 0, children, 0, temp.length);
-        //Arrays.sort(children, new Child(Member)PriorityComparator());
+        Arrays.sort(children, new ChildPriorityComparator());
     }
 
     public Child getChild(String searchName) {
@@ -31,13 +33,13 @@ public class Child {
     }
 
     public void updateHigherChildren(IO.Mouse mouse) {
-        for (int i = children.length - 1; i >= 0 && children[i].z > this.z; i--) {
+        for (int i = children.length-1; i >= 0 && children[i].z > this.z; i--) {
             children[i].update(mouse);
         }
     }
 
     public void updateLowerChildren(IO.Mouse mouse) {
-        int i = children.length - 1;
+        int i = children.length-1;
         while (i >= 0 && children[i].z > this.z) i--;
         for (; i >= 0; i--) children[i].update(mouse);
     }
@@ -57,5 +59,12 @@ public class Child {
         for (int i = 0; i < children.length; i++) {
             if (children[i].z > this.z) children[i].draw(g2d);
         }
+    }
+}
+
+class ChildPriorityComparator implements Comparator<Child> {
+    @Override
+    public int compare(Child a, Child b) {
+        return Integer.compare(a.z, b.z);
     }
 }

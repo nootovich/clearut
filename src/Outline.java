@@ -39,12 +39,12 @@ public class Outline extends Child { // TODO: needs some rework
             return;
         }
         Sprite p = (Sprite) parent;
-        int    x = p.x + thickness / 4;
-        int    y = p.y + thickness / 4;
-        int    w = p.w - thickness / 2;
-        int    h = p.h - thickness / 2;
+        int    x = p.x+thickness/4;
+        int    y = p.y+thickness/4;
+        int    w = p.w-thickness/2;
+        int    h = p.h-thickness/2;
         if (DEBUG) System.out.printf("\t\tdraw outline of '%s': x:%d, y:%d, z:%d, w:%d, h:%d, t:%d %s%n",
-                                     p.name, x, y, p.z + 1, w, h, thickness, visible ? " visible" : "!visible"); // $DEBUG
+            p.name, x, y, p.z+1, w, h, thickness, visible ? " visible" : "!visible"); // $DEBUG
         if (!visible) return;
         g2d.setStroke(new BasicStroke(thickness));
         g2d.setColor(new Color(getColorBasedOnState()));
