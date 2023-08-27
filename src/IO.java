@@ -6,6 +6,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 public class IO {
 
@@ -51,6 +54,19 @@ public class IO {
         }
         return true;
     }
+
+    public static void saveTasks() {
+        LocalDate now = LocalDate.now();
+        String today = now.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+        saveFile("tasks\\list_"+today+".txt", Arrays.toString(Calendar.TASK_LIST));
+
+    }
+
+
+    public static void saveData() {
+        saveTasks();
+    }
+
 
     // public static void saveInfo() {
 

@@ -1,4 +1,6 @@
 import java.lang.reflect.InvocationTargetException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 public class Actions {
 
@@ -11,6 +13,7 @@ public class Actions {
             if (lines.length > 1) switch (lines[1]) {
                 case "int" -> invokeWithInt(lines[0], Integer.parseInt(lines[2]));
                 case "String" -> invokeWithString(lines[0], lines[2]);
+                case "LocalDate|int" -> invokeWithLocalDateAndInt(lines[0], lines[2], lines[3]);
                 default -> throw new IllegalStateException("Unexpected value: "+lines[1]);
             }
             else this.getClass().getMethod(action).invoke(this);
@@ -18,6 +21,7 @@ public class Actions {
             System.out.printf("There is no action named \"%s\"%n", action);
         } catch (InvocationTargetException e) {
             System.out.printf("An error occurred inside the method: \"%s\"%n", action);
+            System.out.printf("%s%n%s%n", e.getCause(), e.getTargetException());
         } catch (IllegalAccessException e) {
             System.out.printf("Illegal access \"%s\"%n", action);
         }
@@ -31,29 +35,60 @@ public class Actions {
         this.getClass().getMethod(method, String.class).invoke(this, value);
     }
 
-    public void toggleTask(String flags) {
-        // flags: ddMMyyiiii (iiii is a task id)
-        Sprite task = (Sprite) Main.window.getLayer("UI_CALENDAR").getChild("task"+flags);
-        if (task.extra == 1) {
-            task.extra = 3;
-            task.setColors(Colors.blue2(2), Colors.blue2(3), Colors.blue2(4));
-        } else if (task.extra == 3) {
-            task.extra = 1;
-            task.setColors(Colors.green(2), Colors.green(3), Colors.green(4));
-        } else if (task.extra == 0) {
-            task.extra = 2;
-            task.setColors(Colors.blue2(2), Colors.blue2(3), Colors.blue2(4));
-        } else if (task.extra == 2) {
-            task.extra = 0;
-            task.setColors(Colors.green(1), Colors.green(2), Colors.green(3));
+    private void invokeWithLocalDateAndInt(String method, String dayStr, String taskIdStr) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        this.getClass().getMethod(method, LocalDate.class, int.class).invoke(this, LocalDate.parse(dayStr, DateTimeFormatter.ofPattern("ddMMyy")), Integer.parseInt(taskIdStr));
+    }
+
+    public void toggleTask(LocalDate day, int taskId) {
+//        try {
+//            URL               url = new URL("http://example.com/");
+//            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+//            con.setRequestMethod("GET");
+//            con.setDoOutput(true);
+//            con.setRequestProperty("Content-Type", "application/json");
+//            int status = con.getResponseCode();
+//            BufferedReader in = new BufferedReader(
+//                new InputStreamReader(con.getInputStream()));
+//            String       inputLine;
+//            StringBuffer content = new StringBuffer();
+//            while ((inputLine = in.readLine()) != null) {
+//                content.append(inputLine);
+//            }
+//            in.close();
+//            con.disconnect();
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+
+        Layer parent = Main.window.getLayer("UI_CALENDAR");
+
+        // toggle clicked task
+        Sprite dayTask = Calendar.getDayTask(day, taskId, parent);
+        dayTask.extra = (dayTask.extra+2)%4;
+
+        // save day info
+        StringBuilder content = new StringBuilder();
+        Sprite[]      tasks   = Calendar.getDayTasks(day, parent);
+        for (int i = 0; i < Calendar.TASK_COUNT; i++) {
+            char active = (tasks[i].extra&2) == 2 ? '1' : '0';
+            content.append(Calendar.getTaskId(i)).append(':').append(active).append('\n');
         }
-        int count = 0;
-        for (int i = 0; i < 6; i++) {
-            task = (Sprite) Main.window.getLayer("UI_CALENDAR").getChild("task"+flags.substring(0, 9)+i);
-            if (task.extra == 2 || task.extra == 3) count++;
-        }
-        Text total = (Text) Main.window.getLayer("UI_CALENDAR").getChild("total"+flags.substring(0, 6));
-        total.text = Integer.toString(count);
+        IO.saveFile("tasks\\"+Calendar.getDayStr(day)+".txt", content.toString());
+
+        // updates :)
+        Calendar.updateDayTotal(day, parent);
+        Calendar.updateDayColor(day, parent);
+        Calendar.updateWeekTotal(day, parent);
+    }
+
+    public void calendarLeft() {
+        Calendar.weekOffset--;
+        Main.changeState(Main.State.CALENDAR);
+    }
+
+    public void calendarRight() {
+        Calendar.weekOffset++;
+        Main.changeState(Main.State.CALENDAR);
     }
 
     // public void dumpInfoToConsole() {

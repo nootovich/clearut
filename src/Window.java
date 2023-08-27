@@ -1,4 +1,6 @@
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class Window extends JFrame {
 
@@ -7,6 +9,13 @@ public class Window extends JFrame {
     public Window(int width, int height, IO.Mouse mouse) {
         DBC = new DoubleBufferedCanvas(width, height, mouse);
         add(DBC);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                System.out.println("CLOSED");
+                super.windowClosing(e);
+            }
+        });
         pack();
         setVisible(true);
         setLocationRelativeTo(null);
