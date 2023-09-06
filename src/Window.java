@@ -1,14 +1,26 @@
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.image.BufferedImage;
 
 public class Window extends JFrame {
 
+    public Dimension size, diff;
     public DoubleBufferedCanvas DBC;
 
-    public Window(int width, int height, IO.Mouse mouse) {
-        DBC = new DoubleBufferedCanvas(width, height, mouse);
+    public Window(int width, int height, int minWidth, int minHeight, IO.Mouse mouse) {
+        size = new Dimension(width, height);
+        DBC  = new DoubleBufferedCanvas(width, height, mouse);
         add(DBC);
+        pack();
+        setVisible(true);
+        setLocationRelativeTo(null);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        diff = new Dimension(getWidth()-size.width, getHeight()-size.height);
+        setMinimumSize(new Dimension(minWidth+diff.width, minHeight+diff.height));
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -16,10 +28,17 @@ public class Window extends JFrame {
                 super.windowClosing(e);
             }
         });
-        pack();
-        setVisible(true);
-        setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                Dimension newSize = e.getComponent().getSize();
+                size.width  = newSize.width-diff.width;
+                size.height = newSize.height-diff.height;
+                DBC.buffer  = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
+                Main.reinit();
+            }
+        });
     }
 
     public Layer addLayer(String name, int z) {
@@ -30,4 +49,7 @@ public class Window extends JFrame {
         return DBC.getLayer(name);
     }
 
+    public Dimension getUsableSpace() {
+        return size;
+    }
 }

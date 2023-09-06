@@ -1,11 +1,12 @@
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 public class Main {
+
     private static final boolean DEBUG = false;
 
-    private static final int WINDOW_WIDTH = 800, WINDOW_HEIGHT = 400, FPS = 60;
-    private static final int plannedFrameTime = (int) (1000.f/FPS);
+    private static final int FPS = 60, plannedFrameTime = (int) (1000.f/FPS);
 
     public static IO.Mouse mouse;
     public static Window   window;
@@ -14,7 +15,7 @@ public class Main {
 
     public static void main(String[] args) throws InterruptedException {
         mouse  = new IO.Mouse();
-        window = new Window(WINDOW_WIDTH, WINDOW_HEIGHT, mouse);
+        window = new Window(800, 400, 300, 200, mouse);
         changeState(State.MAIN);
         // spawnMenu   = initSpawnMenu();
         // editingMenu = initEditingMenu();
@@ -40,9 +41,12 @@ public class Main {
     }
 
     public static void changeState(State newState) {
-        state             = newState;
+        state = newState;
+        reinit();
+    }
+
+    public static void reinit() {
         window.DBC.layers = new Layer[0];
-        System.gc();
         switch (state) {
             case MAIN -> initMainLayout();
             case NOTES -> System.out.println("ERROR: \"NOTES\" state is not implemented");
@@ -52,19 +56,22 @@ public class Main {
     }
 
     private static void initBaseLayout(int[] priColors, int[] secColors) {
-        float offset      = WINDOW_HEIGHT/28.0f;
-        float button_size = WINDOW_HEIGHT/8.0f;
-        int   offs        = (int) offset;
-        int   bs          = (int) button_size;
-        int   bx          = (int) offset;
+        Dimension usable     = window.getUsableSpace();
+        int       width      = usable.width;
+        int       height     = usable.height;
+        float     offset     = height/28.0f; // TODO: remove hardcoded
+        float     buttonSize = height/8.0f;
+        int       offs       = (int) offset;
+        int       bs         = (int) buttonSize;
+        int       bx         = (int) offset;
 
         // bg
         Layer BG = window.addLayer("BG", 0);
-        BG.addChild(new Sprite(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, 0, priColors[1], "BG"));
+        BG.addChild(new Sprite(0, 0, width, height, 0, priColors[1], "BG"));
 
         // side panel
         Layer  UI_side = window.addLayer("UI_SIDE", 1);
-        Sprite sideBG  = new Sprite(0, 0, bs+offs*2, WINDOW_HEIGHT, 0, priColors[2], "SIDE_BG");
+        Sprite sideBG  = new Sprite(0, 0, bs+offs*2, height, 0, priColors[2], "SIDE_BG");
         UI_side.addChild(sideBG);
 
         // notes button
@@ -87,7 +94,7 @@ public class Main {
 
         // the other buttons (temporary)
         for (int i = 2; i < 6; i++) {
-            int    by     = (int) (offset+(button_size+offset)*i);
+            int    by     = (int) (offset+(buttonSize+offset)*i);
             Sprite button = new Sprite(bx, by, bs, bs, 1);
             button.name   = "BUTTON_"+i;
             button.action = "button"+i;
@@ -98,10 +105,13 @@ public class Main {
             window.getLayer("UI_SIDE").addChild(button);
         }
 
+        // profile panel
         Layer  UI_profile = window.addLayer("UI_PROFILE", 2);
-        Sprite profileBG  = new Sprite(bs+offs*2, 0, WINDOW_WIDTH, bs+offs*2, 0, priColors[3], "PROFILE_BG");
+        Sprite profileBG  = new Sprite(bs+offs*2, 0, width-sideBG.w, bs+offs*2, 0, priColors[3], "PROFILE_BG");
         UI_profile.addChild(profileBG);
-        Picture profilePic = new Picture(WINDOW_WIDTH-bs-offs, offs, bs, bs, 1, Global.IMAGE_FOLDER+"lizard.jpg", "PROFILE_PIC");
+
+        // profile pic
+        Picture profilePic = new Picture(width-bs-offs, offs, bs, bs, 1, Global.IMAGE_FOLDER+"lizard.jpg", "PROFILE_PIC");
         UI_profile.addChild(profilePic);
     }
 
@@ -115,11 +125,12 @@ public class Main {
         Sprite sideBG    = (Sprite) window.getLayer("UI_SIDE").getChild("SIDE_BG");
         Sprite profileBG = (Sprite) window.getLayer("UI_PROFILE").getChild("PROFILE_BG");
 
+        Dimension usable      = window.getUsableSpace();
         final int taskCount   = Calendar.TASK_COUNT;
         final int offsetX     = sideBG.w;
         final int offsetY     = profileBG.h;
-        final int tasksWidth  = (WINDOW_WIDTH-offsetX);
-        final int tasksHeight = (WINDOW_HEIGHT-offsetY);
+        final int tasksWidth  = (usable.width-offsetX);
+        final int tasksHeight = (usable.height-offsetY);
         final int tileWidth   = tasksWidth/7/2;
         final int tileHeight  = tasksHeight/(taskCount+2);
         final int lowerShelf  = offsetY+tileHeight*(taskCount+1)+tileHeight/2;
