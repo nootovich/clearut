@@ -112,6 +112,7 @@ public class Main {
 
         // profile pic
         Picture profilePic = new Picture(width-bs-offs, offs, bs, bs, 1, Global.IMAGE_FOLDER+"lizard.jpg", "PROFILE_PIC");
+        profilePic.type = Picture.PictureType.CIRCLE;
         UI_profile.addChild(profilePic);
     }
 
