@@ -6,7 +6,7 @@ public class Sprite extends Child {
 
     public int x, y, w, h, extra = 0;
     public int[]   colors  = new int[3];
-    public boolean visible = true, interactive = false, hovered = false, active = false;
+    public boolean visible = true, interactive = false, hovered = false, active = false, inherits = false;
     public String     action = "";
     public SpriteType type   = SpriteType.RECTANGLE;
 
@@ -42,9 +42,16 @@ public class Sprite extends Child {
     @Override
     public void update(IO.Mouse mouse) {
         updateHigherChildren(mouse);
-        if (active && mouse.isLMBFallingEdge()) Global.ACTIONS.invoke(action); // TODO: refactor
-        hovered = mouse.x > x && mouse.x < x+w && mouse.y > y && mouse.y < y+h;
-        active  = hovered && mouse.LMB;
+        if (inherits) {
+            // TODO: refactor by adding a "Interactive" interface
+            Sprite p = (Sprite) parent;
+            hovered = p.hovered;
+            active  = p.active;
+        } else {
+            if (active && mouse.isLMBFallingEdge()) Global.ACTIONS.invoke(action); // TODO: refactor
+            hovered = mouse.x > x && mouse.x < x+w && mouse.y > y && mouse.y < y+h;
+            active  = hovered && mouse.LMB;
+        }
         updateLowerChildren(mouse);
     }
 

@@ -195,13 +195,15 @@ public class Actions {
     //     }
     // }
 
-    // public void openNotes() {
-    //     Notes.openList();
-    // }
+    public void openNotes() {
+        Main.changeState(Main.State.NOTES);
+    }
 
-    // public void openNote(int index) {
-    //     Notes.openNote(index);
-    // }
+    public void openNote(int index) {
+        Main.changeState(Main.State.NOTE);
+        Note note = (Note) Main.window.getLayer("UI_note").getChild("NOTE");
+        note.text = Notes.noteExists(index) ? Notes.loadNote(index) : "";
+    }
 
     public static void openCalendar() {
         Main.changeState(Main.State.CALENDAR);

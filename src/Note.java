@@ -1,27 +1,23 @@
-// import java.awt.*;
+public class Note extends Text {
 
-// public class Note extends Text {
+    //    public int cursorPos = 0, cursorRow = 0, cursorCol = 0, cursorBol = 0, wrappedCol = 0, wrappedRow = 0, wrappedBol = 0;
+    public boolean scrollable = false;
 
-//     public int cursorPos = 0;
-//     public int cursorRow = 0;
-//     public int cursorCol = 0;
-//     public int cursorBol = 0;
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name) {
+        super(x, y, maxW, maxH, z, size, "", name);
+    }
 
-//     public int wrappedCol = 0;
-//     public int wrappedRow = 0;
-//     public int wrappedBol = 0;
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, int color) {
+        super(x, y, maxW, maxH, z, size, "", name, color);
+    }
 
-//     public Note(int x, int y, int maxW, int maxH, int size, int z) {
-//         super(x, y, maxW, maxH, size, z);
-//     }
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, String text) {
+        super(x, y, maxW, maxH, z, size, text, name);
+    }
 
-//     public Note(int x, int y, int maxW, int maxH, int size, int z, String text) {
-//         super(x, y, maxW, maxH, size, z, text);
-//     }
-
-//     public Note(int x, int y, int maxW, int maxH, int size, int z, String text, int color) {
-//         super(x, y, maxW, maxH, size, z, text, color);
-//     }
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, String text, int color) {
+        super(x, y, maxW, maxH, z, size, text, name, color);
+    }
 
 //     @Override
 //     public void draw(Graphics2D g2d) {
@@ -311,4 +307,4 @@
 //         }
 //     }
 
-// }
+}

@@ -49,7 +49,8 @@ public class Main {
         window.DBC.layers = new Layer[0];
         switch (state) {
             case MAIN -> initMainLayout();
-            case NOTES -> System.out.println("ERROR: \"NOTES\" state is not implemented");
+            case NOTES -> initNotesLayout();
+            case NOTE -> initNoteLayout();
             case CALENDAR -> initCalendarLayout();
             default -> System.out.println("ERROR: can't change state to "+state);
         }
@@ -102,7 +103,7 @@ public class Main {
             button.extra  = 8;
             button.setColors(priColors[4], priColors[5], priColors[6]);
             button.addChild(new Outline(4, 2, priColors[5], priColors[6], priColors[7]));
-            window.getLayer("UI_SIDE").addChild(button);
+            UI_side.addChild(button);
         }
 
         // profile panel
@@ -118,6 +119,88 @@ public class Main {
 
     private static void initMainLayout() {
         initBaseLayout(Colors.blue2(), Colors.yellow2());
+    }
+
+    private static void initNotesLayout() {
+        int[] yellow = Colors.yellow2();
+        initBaseLayout(Colors.blue2(), yellow);
+        Sprite sideBG    = (Sprite) window.getLayer("UI_SIDE").getChild("SIDE_BG");
+        Sprite profileBG = (Sprite) window.getLayer("UI_PROFILE").getChild("PROFILE_BG");
+        Layer  UI_notes  = window.addLayer("UI_NOTES", 3);
+
+        // TODO: remove hardcoded
+        int horizNotes = 5;
+        int vertNotes  = 2;
+        int x          = sideBG.w;
+        int y          = profileBG.h;
+        int freeW      = window.DBC.getWidth()-x;
+        int freeH      = window.DBC.getHeight()-y;
+        int spacing    = freeW>>5;
+        int nw         = (freeW-spacing*(horizNotes+1))/horizNotes;
+        int nh         = (freeH-spacing*(vertNotes+1))/vertNotes;
+
+        for (int i = 0; i < vertNotes; i++) {
+            for (int j = 0; j < horizNotes; j++) {
+
+                int index = (i*horizNotes+j);
+                int nx    = x+spacing*(j+1)+nw*j;
+                int ny    = y+spacing*(i+1)+nh*i;
+
+                Sprite note = new Sprite(nx, ny, nw, nh, 3, "note"+index, "openNote:int:"+index);
+                note.setColors(yellow[5], yellow[6], yellow[7]);
+                note.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
+                note.extra = 24;
+                UI_notes.addChild(note);
+
+                if (Notes.noteExists(index)) {
+                    int  pad      = 5;
+                    Text noteText = new Text(nx+pad, ny+pad, nw-pad*2, nh-pad*2, 4, 14, Notes.loadNote(index));
+                    noteText.alignment = Text.Alignment.LEFT;
+                    note.addChild(noteText);
+                    continue;
+                }
+
+                // TODO: remove hardcoded values
+                int    size      = 25;
+                int    thickness = 3;
+                int    ncx       = nx+nw/2;
+                int    ncy       = ny+nh/2;
+                Sprite s1        = new Sprite(ncx-thickness, ncy-size, thickness<<1, size<<1, 4);
+                Sprite s2        = new Sprite(ncx-size, ncy-thickness, size<<1, thickness<<1, 4);
+                s1.setColors(yellow[3], yellow[9], yellow[5]);
+                s2.setColors(yellow[3], yellow[9], yellow[5]);
+                s1.inherits = true;
+                s2.inherits = true;
+                note.addChild(s1);
+                note.addChild(s2);
+            }
+        }
+    }
+
+    private static void initNoteLayout() {
+        int[] yellow = Colors.yellow2();
+        initBaseLayout(Colors.blue2(), yellow);
+        Sprite sideBG    = (Sprite) window.getLayer("UI_SIDE").getChild("SIDE_BG");
+        Sprite profileBG = (Sprite) window.getLayer("UI_PROFILE").getChild("PROFILE_BG");
+        Layer  UI_note   = window.addLayer("UI_NOTE", 3);
+
+        int padding = 25;
+        int x       = sideBG.w+padding;
+        int y       = profileBG.h+padding;
+        int w       = window.DBC.getWidth()-sideBG.w-padding*2;
+        int h       = window.DBC.getHeight()-profileBG.h-padding*2;
+
+        Sprite noteBG = new Sprite(x, y, w, h, 4, yellow[5], "NOTE_BG");
+        noteBG.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        noteBG.extra = padding;
+        UI_note.addChild(noteBG);
+
+        // TODO: add a way to set the value of z based on what you want to do with it
+        Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, 20, "NOTE", 0);
+        note.alignment = Text.Alignment.LEFT;
+        note.scrollable = true;
+        note.name       = "NOTE";
+        UI_note.addChild(note);
     }
 
     private static void initCalendarLayout() {
@@ -273,7 +356,7 @@ public class Main {
     // }
 
     public enum State {
-        MAIN, NOTES, CALENDAR
+        MAIN, NOTES, NOTE, CALENDAR
     }
 
 }
