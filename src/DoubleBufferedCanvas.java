@@ -40,7 +40,7 @@ public class DoubleBufferedCanvas extends JPanel {
     }
 
     public void drawChildren(Graphics2D g2d) {
-        for (Layer l : layers) {
+        for (Layer l: layers) {
             l.draw(g2d);
         }
     }
@@ -50,12 +50,12 @@ public class DoubleBufferedCanvas extends JPanel {
         layers                  = new Layer[layers.length+1];
         layers[layers.length-1] = newLayer;
         System.arraycopy(temp, 0, layers, 0, temp.length);
-        Arrays.sort(layers, new LayerPriorityComparator());
+        if (layers.length > 1) Arrays.sort(layers, new LayerPriorityComparator());
         return newLayer;
     }
 
     public Layer getLayer(String searchName) {
-        for (Layer l : layers) {
+        for (Layer l: layers) {
             if (l.name.equals(searchName.toUpperCase())) return l;
         }
         return null;

@@ -16,7 +16,7 @@ public class Child {
         children                    = new Child[children.length+1];
         children[children.length-1] = newChild;
         System.arraycopy(temp, 0, children, 0, temp.length);
-        Arrays.sort(children, new ChildPriorityComparator());
+        if (children.length > 1) Arrays.sort(children, new ChildPriorityComparator());
     }
 
     public Child getChild(String searchName) {
