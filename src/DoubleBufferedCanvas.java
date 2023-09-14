@@ -15,7 +15,6 @@ public class DoubleBufferedCanvas extends JPanel {
         this.layers = new Layer[0];
         addMouseWheelListener(mouse);
         addMouseListener(mouse);
-        // addKeyListener(Global.KEYBOARD);
         buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         setPreferredSize(new Dimension(width, height));
         setBounds(0, 0, width, height);

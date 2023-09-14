@@ -56,8 +56,8 @@ public class IO {
     }
 
     public static void saveTasks() {
-        LocalDate now = LocalDate.now();
-        String today = now.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
+        LocalDate now   = LocalDate.now();
+        String    today = now.format(DateTimeFormatter.ofPattern("ddMMyyyy"));
         saveFile("tasks\\list_"+today+".txt", Arrays.toString(Calendar.TASK_LIST));
 
     }
@@ -125,7 +125,7 @@ public class IO {
 
         public void update(Window window) {
             Point mousePos = window.DBC.getMousePosition();
-            if (mousePos != null) { x = mousePos.x; y = mousePos.y; }
+            if (mousePos != null) {x = mousePos.x; y = mousePos.y;}
             if (DEBUG) System.out.printf("mousePos: %dx%d%n", x, y); // $DEBUG
             LMBPrev = LMB; RMBPrev = RMB; LMB = LMBTemp; RMB = RMBTemp;
         }
@@ -185,7 +185,7 @@ public class IO {
 
     public static class Keyboard extends KeyAdapter {
 
-        private static final boolean DEBUG = false;
+        private static final boolean DEBUG = true;
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -227,52 +227,50 @@ public class IO {
             if (code == KeyEvent.VK_ESCAPE) System.exit(69);
 
             // notes mode
-            // if (Global.MODE.equals("NOTES")) {
+            if (Main.state == Main.State.NOTE) {
 
-            //     for (int THE_FORBIDDEN_CODE : THE_LIST) {
-            //         if (code == THE_FORBIDDEN_CODE) {
-            //             System.out.println("forbidden char");
-            //             e.consume();
-            //             return;
-            //         }
-            //     }
+                for (int THE_FORBIDDEN_CODE: THE_LIST) {
+                    if (code == THE_FORBIDDEN_CODE) {
+                        System.out.println("forbidden char");
+                        e.consume();
+                        return;
+                    }
+                }
 
-            //     // TODO: temporary solution
-            //     //	in the future i would need to handle keys properly
-            //     if (key == '\0') {
-            //         System.out.println("unknown char");
-            //         e.consume();
-            //         return;
-            //     }
+                // TODO: temporary solution
+                //       in the future i would need to handle keys properly
+                if (key == '\0') {
+                    System.out.println("unknown char");
+                    e.consume();
+                    return;
+                }
 
-            //     //Note note = (Note) Global.findElement("openNote");
+                Note note = (Note) Main.window.getLayer("UI_NOTE").getChild("NOTE");
 
-            //     //Global.asrt(note != null, "Couldn't find openNote");
+                if (e.isControlDown()) {
+                    //switch (code) {
+                    //    case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
+                    //    case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
+                    //    case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
+                    //    case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
+                    //    case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+                    //    case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
+                    //}
+                } else {
+                    switch (code) {
+                        case KeyEvent.VK_BACK_SPACE -> note.deleteCharAtCursorLeft();
+                        case KeyEvent.VK_DELETE -> note.deleteCharAtCursorRight();
+                        case KeyEvent.VK_LEFT -> note.moveCursorCharLeft();
+                        case KeyEvent.VK_RIGHT -> note.moveCursorCharRight();
+                        case KeyEvent.VK_UP -> note.moveCursorUp();
+                        case KeyEvent.VK_DOWN -> note.moveCursorDown();
+                        default -> note.addCharAtCursor(key);
+                    }
+                }
 
-            //     // if (e.isControlDown()) {
-            //     //     switch (code) {
-            //     //         case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
-            //     //         case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
-            //     //         case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
-            //     //         case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
-            //     //         case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
-            //     //         case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
-            //     //     }
-            //     // } else {
-            //     //     switch (code) {
-            //     //         case KeyEvent.VK_BACK_SPACE -> note.deleteCharAtCursorLeft();
-            //     //         case KeyEvent.VK_DELETE -> note.deleteCharAtCursorRight();
-            //     //         case KeyEvent.VK_LEFT -> note.moveCursorCharLeft();
-            //     //         case KeyEvent.VK_RIGHT -> note.moveCursorCharRight();
-            //     //         case KeyEvent.VK_UP -> note.moveCursorUp();
-            //     //         case KeyEvent.VK_DOWN -> note.moveCursorDown();
-            //     //         default -> note.addCharAtCursor(key);
-            //     //     }
-            //     // }
-
-            //     e.consume();
-            //     return;
-            // }
+                e.consume();
+                return;
+            }
 
             // // everything else except notes mode
             // switch (key) {
@@ -281,7 +279,7 @@ public class IO {
         }
 
         @Override
-        public void keyReleased(KeyEvent e) { }
+        public void keyReleased(KeyEvent e) {}
 
     }
 

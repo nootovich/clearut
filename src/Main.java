@@ -8,14 +8,16 @@ public class Main {
 
     private static final int FPS = 60, plannedFrameTime = (int) (1000.f/FPS);
 
-    public static IO.Mouse mouse;
-    public static Window   window;
-    public static State    state;
+    public static IO.Mouse    mouse;
+    public static IO.Keyboard keyboard;
+    public static Window      window;
+    public static State       state;
 
 
     public static void main(String[] args) throws InterruptedException {
-        mouse  = new IO.Mouse();
-        window = new Window(800, 400, 300, 200, mouse);
+        mouse    = new IO.Mouse();
+        keyboard = new IO.Keyboard();
+        window   = new Window(800, 400, 300, 200, mouse, keyboard);
         changeState(State.MAIN);
         // spawnMenu   = initSpawnMenu();
         // editingMenu = initEditingMenu();
@@ -191,13 +193,13 @@ public class Main {
         int h       = window.DBC.getHeight()-profileBG.h-padding*2;
 
         Sprite noteBG = new Sprite(x, y, w, h, 4, yellow[5], "NOTE_BG");
-        noteBG.type = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        noteBG.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         noteBG.extra = padding;
         UI_note.addChild(noteBG);
 
         // TODO: add a way to set the value of z based on what you want to do with it
         Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, 20, "NOTE", 0);
-        note.alignment = Text.Alignment.LEFT;
+        note.alignment  = Text.Alignment.LEFT;
         note.scrollable = true;
         note.name       = "NOTE";
         UI_note.addChild(note);

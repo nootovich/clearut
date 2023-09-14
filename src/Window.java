@@ -11,7 +11,7 @@ public class Window extends JFrame {
     public Dimension size, diff;
     public DoubleBufferedCanvas DBC;
 
-    public Window(int width, int height, int minWidth, int minHeight, IO.Mouse mouse) {
+    public Window(int width, int height, int minWidth, int minHeight, IO.Mouse mouse, IO.Keyboard keyboard) {
         size = new Dimension(width, height);
         DBC  = new DoubleBufferedCanvas(width, height, mouse);
         add(DBC);
@@ -39,6 +39,7 @@ public class Window extends JFrame {
                 Main.reinit();
             }
         });
+        addKeyListener(keyboard);
     }
 
     public Layer addLayer(String name, int z) {
