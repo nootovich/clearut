@@ -24,18 +24,14 @@ public class Note extends Text {
     @Override
     public void draw(Graphics2D g2d) {
         super.draw(g2d);
-        //int cursorX = metrics.stringWidth(wrappedLines[wrappedRow].substring(0, wrappedCol));
-        //int cursorY = lineHeight*wrappedRow;
         String[]    lines      = getLines();
         FontMetrics metrics    = g2d.getFontMetrics();
         int         lineHeight = metrics.getHeight();
         int         cursorX    = metrics.stringWidth(lines[cursorRow].substring(0, cursorCol));
         int         cursorY    = lineHeight*cursorRow;
-        long        curTime    = System.currentTimeMillis()%400;
-        if (curTime > 200) {
-            g2d.setColor(Color.BLACK);
-            g2d.fillRect(x+offsetX+cursorX, y+offsetY+cursorY, 2, lineHeight);
-        }
+        long        curTime    = System.currentTimeMillis()%512;
+        g2d.setColor(curTime < 256 ? new Color(0, 0, 0, (int) (255-curTime)) : new Color(0, 0, 0, (int) curTime-256));
+        g2d.fillRect(x+offsetX+cursorX, y+offsetY+cursorY, 2, lineHeight);
     }
 
     //@Override
@@ -50,33 +46,34 @@ public class Note extends Text {
     //    int higherBound = 0;
     //    if (offsetY > higherBound) offsetY = higherBound;
     //}
-
     private void updateCursorPos() {
+        updateCursorPos(cursorPos);
+    }
+
+    private void updateCursorPos(int pos) {
+        cursorPos = pos;
+        // resetting
         if (cursorPos < 0) {
             cursorPos = 0;
             cursorCol = 0;
             cursorRow = 0;
             cursorBol = 0;
-            //wrappedCol = 0;
-            //wrappedRow = 0;
-            //wrappedBol = 0;
             return;
         }
 
-        if (cursorPos > text.length()) {
-            cursorPos = text.length();
-        }
+        // clamping
+        if (cursorPos > text.length()) cursorPos = text.length();
 
-        int      acc   = 0;
-        String[] lines = getLines();
+        int      accumulatedLength = 0;
+        String[] lines             = getLines();
         for (int i = 0; i < lines.length; i++) {
-            if (acc+lines[i].length() >= cursorPos) {
-                cursorBol = acc;
+            if (accumulatedLength+lines[i].length() >= cursorPos) {
+                cursorBol = accumulatedLength;
                 cursorCol = cursorPos-cursorBol;
                 cursorRow = i;
                 break;
             }
-            acc += lines[i].length()+1;
+            accumulatedLength += lines[i].length()+1;
         }
 
         //int  lineCount      = 0;
@@ -105,32 +102,25 @@ public class Note extends Text {
         //    }
         //}
 
-        //int maxH              = getHeight();
-        //int viewableLines     = maxH/cachedLineHeight;
-        //int offsetLinesTop    = 3;
-        //int offsetLinesBottom = viewableLines-offsetLinesTop;
-        //int cursorViewPos     = wrappedRow*cachedLineHeight+offsetY;
-        //int lowerViewBound    = cachedLineHeight*offsetLinesTop;
-        //int upperViewBound    = cachedLineHeight*offsetLinesBottom;
-        //
-        //if (cursorViewPos < lowerViewBound) {
-        //    int numOfLineFromTop = wrappedRow-offsetLinesTop;
-        //    offsetY = numOfLineFromTop*-cachedLineHeight;
-        //
-        //    if (offsetY > 0) offsetY = 0;
-        //
-        //} else if (cursorViewPos > upperViewBound) {
-        //    int numOfLineFromBottom = getWrappedLines().length-wrappedRow+offsetLinesBottom;
-        //    offsetY = -cachedTextHeight+numOfLineFromBottom*cachedLineHeight;
-        //
-        //    if (offsetY > cachedTextHeight-maxH) offsetY = cachedTextHeight-maxH;
-        //}
-
+        int viewableLines     = h/cachedLineHeight;
+        int offsetLinesTop    = 3;
+        int offsetLinesBottom = viewableLines-offsetLinesTop;
+        int cursorViewPos     = cursorRow*cachedLineHeight+offsetY;
+        int lowerViewBound    = cachedLineHeight*offsetLinesTop;
+        int upperViewBound    = cachedLineHeight*offsetLinesBottom;
+        if (cursorViewPos < lowerViewBound) {
+            int numOfLineFromTop = cursorRow-offsetLinesTop;
+            offsetY = numOfLineFromTop*-cachedLineHeight;
+            if (offsetY > 0) offsetY = 0;
+        } else if (cursorViewPos > upperViewBound) {
+            int numOfLineFromBottom = getLines().length-cursorRow+offsetLinesBottom;
+            offsetY = -cachedTextHeight+numOfLineFromBottom*cachedLineHeight;
+            if (offsetY > cachedTextHeight-h) offsetY = cachedTextHeight-h;
+        }
     }
 
     public void moveCursorCharLeft() {
-        cursorPos--;
-        updateCursorPos();
+        updateCursorPos(--cursorPos);
     }
 
     //public void moveCursorWordLeft() {
@@ -159,8 +149,7 @@ public class Note extends Text {
     //}
 
     public void moveCursorCharRight() {
-        cursorPos++;
-        updateCursorPos();
+        updateCursorPos(++cursorPos);
     }
 
     //public void moveCursorWordRight() {
@@ -189,34 +178,23 @@ public class Note extends Text {
     //}
 
     public void moveCursorUp() {
-        //if (wrappedRow <= 0) {
-        //    cursorPos = -1;
-        //    updateCursorPos();
-        //    return;
-        //}
-        //int prevWrappedLineLen = getWrappedLines()[wrappedRow - 1].length();
-        //if (wrappedCol < prevWrappedLineLen) cursorPos -= prevWrappedLineLen + 1;
-        //else cursorPos -= cursorCol + 1;
-        if (cursorRow == 0) return;
-        cursorPos -= getLines()[cursorRow-1].length()+1;
+        if (cursorRow <= 0) {
+            updateCursorPos(-1);
+            return;
+        }
+        int prevLineLen = getLines()[cursorRow-1].length();
+        cursorPos -= cursorCol < prevLineLen ? prevLineLen+1 : cursorCol+1;
         updateCursorPos();
     }
 
     public void moveCursorDown() {
-        //if (wrappedRow >= getWrappedLines().length - 1) {
-        //    cursorPos = getText().length();
-        //    updateCursorPos();
-        //    return;
-        //}
-        //int curLineLen  = getLines()[cursorRow].length();
-        //int nextLineLen = getLines()[cursorRow + 1].length();
-        //if (wrappedCol < nextLineLen) {
-        //    cursorPos += curLineLen + 1;
-        //} else {
-        //    cursorPos += curLineLen - cursorCol + nextLineLen + 1;
-        //}
-        if (cursorRow == getLines().length-1) return;
-        cursorPos += getLines()[cursorRow].length()+1;
+        if (cursorRow >= getLines().length-1) {
+            updateCursorPos(text.length());
+            return;
+        }
+        int curLineLen  = getLines()[cursorRow].length();
+        int nextLineLen = getLines()[cursorRow+1].length();
+        cursorPos += cursorCol < nextLineLen ? curLineLen+1 : curLineLen+nextLineLen+1-cursorCol;
         updateCursorPos();
     }
 

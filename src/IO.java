@@ -185,7 +185,7 @@ public class IO {
 
     public static class Keyboard extends KeyAdapter {
 
-        private static final boolean DEBUG = true;
+        private static final boolean DEBUG = false;
 
         @Override
         public void keyPressed(KeyEvent e) {

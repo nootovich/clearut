@@ -7,7 +7,7 @@ public class Text extends Child {
     public int x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0;
     public int cachedTextHeight = 0, cachedLineHeight = 0; // TODO: remove (should be in program, not in library)
     public boolean visible = true, hovered, active;
-    public String    text      = "";//, wrappedText = "";
+    public String    text      = "";
     public Alignment alignment = Alignment.CENTER;
 
     public Text(int x, int y, int w, int h, int z, int size) {
@@ -37,83 +37,70 @@ public class Text extends Child {
     @Override
     public void draw(Graphics2D g2d) {
         drawLowerChildren(g2d);
-        if (!visible) {
-            drawHigherChildren(g2d);
-            return;
+        if (visible) {
+            g2d.setFont(new Font("Rubik", Font.BOLD, size));
+            FontMetrics metrics = g2d.getFontMetrics();
+
+            if (DEBUG) {
+                g2d.setColor(Color.RED);
+                g2d.setStroke(new BasicStroke(1));
+                switch (alignment) {
+                    case LEFT -> g2d.drawRect(x, y, w, h);
+                    case CENTER -> g2d.drawRect(x-w/2, y-h/2, w, h);
+                }
+            } // $DEBUG
+
+            if (!visible) return;
+            g2d.setColor(new Color(color));
+            int      lineHeight = metrics.getHeight();
+            String[] lines      = getLines();
+            for (int i = 0; i < lines.length; i++) drawLine(g2d, metrics, lines[i], x, y+i*lineHeight);
+
+            cachedLineHeight = lineHeight;
+            cachedTextHeight = lineHeight*lines.length;
         }
-        g2d.setFont(new Font("Rubik", Font.BOLD, size));
-        FontMetrics metrics = g2d.getFontMetrics();
-        if (DEBUG) {
-            if (alignment == Alignment.CENTER) {
-                x -= w>>1;
-                y -= metrics.getAscent()>>1;
-            } else if (alignment != Alignment.LEFT) {
-                System.out.println("This text alignment is not implemented");
-                System.exit(69);
-            }
-            g2d.setColor(Color.RED);
-            g2d.setStroke(new BasicStroke(1));
-            g2d.drawRect(x, y, w, h);
-        } // $DEBUG
-        if (!visible) return;
-        g2d.setColor(new Color(color));
-        int      lineHeight = metrics.getHeight();
-        String[] lines      = getLines();//getWrappedLines();
-        for (int i = 0; i < lines.length; i++) {
-            drawLine(g2d, lines[i], x, y+i*lineHeight);
-        }
-        cachedLineHeight = lineHeight;
-        cachedTextHeight = lineHeight*lines.length;
         drawHigherChildren(g2d);
     }
 
-    private void drawLine(Graphics2D g2d, String line, int x, int y) {
-        FontMetrics metrics = g2d.getFontMetrics();
-        int         curX    = x+offsetX;
-        int         curY    = y+offsetY;
-        if (curY-y > h) return;
-        if (curY+metrics.getHeight() < y) return;
+    private void drawLine(Graphics2D g2d, FontMetrics metrics, String line, int x, int y) {
+        int curX = x+offsetX;
+        int curY = y+offsetY;
+
         // TODO: implement the rest of alignments
         switch (alignment) {
+            case LEFT -> {
+                if (curX < this.x-metrics.stringWidth("@") || curX > this.x+w || curY < this.y-metrics.getHeight() || curY > this.y+h) return;
+            }
             case CENTER -> {
+                // TODO: is this correct?
+                // TODO: also need to add inbounds check
                 curX -= metrics.stringWidth(line)>>1;
                 curY -= metrics.getAscent()>>1;
             }
-            case LEFT -> { }
             default -> {
                 System.out.println("This text alignment is not implemented");
                 System.exit(69);
             }
         }
+
         if (DEBUG) {
             int ma = metrics.getAscent();
-            int md = metrics.getDescent();
             int mw = metrics.stringWidth(line);
-            int mh = metrics.getHeight();
             g2d.setColor(new Color(0x55ff0000, true));
             g2d.fillRect(curX, curY, mw, ma);
             g2d.setColor(new Color(0x550000ff, true));
-            g2d.fillRect(curX, curY+ma, mw, md);
+            g2d.fillRect(curX, curY+ma, mw, metrics.getDescent());
             g2d.setColor(Color.GREEN);
-            g2d.drawRect(curX, curY, mw, mh);
+            g2d.drawRect(curX, curY, mw, metrics.getHeight());
         } // $DEBUG
+
         g2d.setColor(new Color(color));
         g2d.drawString(line, curX, curY+metrics.getAscent());
-//        cachedLastLineWidth = metrics.stringWidth(line);
     }
-
-    // public void setText(String text) {
-    //     this.text        = text;
-    //     this.wrappedText = wrapText();
-    // }
 
     public String[] getLines() {
         return text.split("\n", -1);
     }
-
-    // public String[] getWrappedLines() {
-    //     return getWrappedText().split("\n", -1);
-    // }
 
     // public String wrapText() {
     //     StringBuilder result = new StringBuilder();
@@ -184,23 +171,22 @@ public class Text extends Child {
     // }
 
     public void removeLastChar() {
-        if (text.length() == 0) return;
+        if (text.isEmpty()) return;
         text = text.substring(0, text.length()-1);
     }
 
     public void removeCharAt(int index) {
-        if (true) throw new AssertionError("Not implemented");
+        throw new AssertionError("Not implemented");
     }
 
     public void removeCharAt(int row, int col) {
-        if (true) throw new AssertionError("Not implemented");
+        throw new AssertionError("Not implemented");
     }
 
     public void removeLastWord() {
         removeLastChar();
-        while (text.length() > 0) {
-            if (Character.isWhitespace(text.charAt(text.length()-1))) break;
-            text = text.substring(0, text.length()-1);
+        while (!(text.isEmpty() || Character.isWhitespace(text.charAt(text.length()-1)))) {
+            removeLastChar();
         }
     }
 
