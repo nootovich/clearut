@@ -199,9 +199,9 @@ public class Actions {
         Main.changeState(Main.State.NOTES);
     }
 
-    public void openNote(int id) {
-        Main.changeState(Main.State.NOTE);
-        Note note = (Note) Main.window.getLayer("UI_note").getChild("NOTE");
+    public static void openNote(int id) {
+        if (Main.state != Main.State.NOTE) Main.changeState(Main.State.NOTE);
+        Note note = Notes.getOpenedNote();
         note.text = Notes.noteExists(id) ? Notes.loadNote(id) : "";
         note.id   = id;
     }

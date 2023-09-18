@@ -37,7 +37,7 @@ public class Window extends JFrame {
                 size.width  = newSize.width-diff.width;
                 size.height = newSize.height-diff.height;
                 DBC.buffer  = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
-                Main.reinit();
+                Main.resize();
             }
         });
         addKeyListener(keyboard);

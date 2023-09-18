@@ -61,6 +61,18 @@ public class Main {
         }
     }
 
+    public static void resize() {
+        if (state == State.NOTE) {
+            int savedNoteId = Notes.getOpenedNote().id;
+            if (savedNoteId != -1) {
+                reinit();
+                Actions.openNote(savedNoteId);
+                return;
+            }
+        }
+        reinit();
+    }
+
     private static void initBaseLayout(int[] priColors, int[] secColors) {
         Dimension usable     = window.getUsableSpace();
         int       width      = usable.width;
@@ -204,7 +216,6 @@ public class Main {
         Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, -1, 20, "NOTE", 0);
         note.alignment  = Text.Alignment.LEFT;
         note.scrollable = true;
-        note.name       = "NOTE";
         UI_note.addChild(note);
 
         Sprite cancelButton = new Sprite(window.size.width-padding*7, y+padding, padding*5, padding, 6, 0xff6969, "CANCEL", "cancelNote");
