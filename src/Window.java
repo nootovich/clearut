@@ -33,6 +33,7 @@ public class Window extends JFrame {
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
                 Dimension newSize = e.getComponent().getSize();
+                if (size.width == newSize.width-diff.width && size.height == newSize.height-diff.height) return;
                 size.width  = newSize.width-diff.width;
                 size.height = newSize.height-diff.height;
                 DBC.buffer  = new BufferedImage(size.width, size.height, BufferedImage.TYPE_INT_RGB);
