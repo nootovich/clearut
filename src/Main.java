@@ -43,6 +43,8 @@ public class Main {
     }
 
     public static void changeState(State newState) {
+        if (newState != State.CANCEL_NOTE) Notes.saveOpenedNote();
+        else newState = State.NOTES;
         state = newState;
         reinit();
     }
@@ -144,19 +146,19 @@ public class Main {
         for (int i = 0; i < vertNotes; i++) {
             for (int j = 0; j < horizNotes; j++) {
 
-                int index = (i*horizNotes+j);
-                int nx    = x+spacing*(j+1)+nw*j;
-                int ny    = y+spacing*(i+1)+nh*i;
+                int id = (i*horizNotes+j);
+                int nx = x+spacing*(j+1)+nw*j;
+                int ny = y+spacing*(i+1)+nh*i;
 
-                Sprite note = new Sprite(nx, ny, nw, nh, 3, "note"+index, "openNote:int:"+index);
+                Sprite note = new Sprite(nx, ny, nw, nh, 3, "note"+id, "openNote:int:"+id);
                 note.setColors(yellow[5], yellow[6], yellow[7]);
                 note.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
                 note.extra = 24;
                 UI_notes.addChild(note);
 
-                if (Notes.noteExists(index)) {
+                if (Notes.noteExists(id)) {
                     int  pad      = 5;
-                    Text noteText = new Text(nx+pad, ny+pad, nw-pad*2, nh-pad*2, 4, 14, Notes.loadNote(index));
+                    Text noteText = new Text(nx+pad, ny+pad, nw-pad*2, nh-pad*2, 4, 14, Notes.loadNote(id));
                     noteText.alignment = Text.Alignment.LEFT;
                     note.addChild(noteText);
                     continue;
@@ -198,11 +200,18 @@ public class Main {
         UI_note.addChild(noteBG);
 
         // TODO: add a way to set the value of z based on what you want to do with it
-        Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, 20, "NOTE", 0);
+        Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, -1, 20, "NOTE", 0);
         note.alignment  = Text.Alignment.LEFT;
         note.scrollable = true;
         note.name       = "NOTE";
         UI_note.addChild(note);
+
+        Sprite cancelButton = new Sprite(window.size.width-padding*7, y+padding, padding*5, padding, 6, 0xff6969, "CANCEL", "cancelNote");
+        cancelButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        cancelButton.extra = padding;
+        Text cancelText = new Text(cancelButton.getCenterX(), cancelButton.getCenterY(), cancelButton.w, cancelButton.h, 7, 20, "CANCEL", 0xffffff);
+        cancelButton.addChild(cancelText);
+        note.addChild(cancelButton);
     }
 
     private static void initCalendarLayout() {
@@ -358,7 +367,7 @@ public class Main {
     // }
 
     public enum State {
-        MAIN, NOTES, NOTE, CALENDAR
+        MAIN, NOTES, NOTE, CANCEL_NOTE, CALENDAR
     }
 
 }

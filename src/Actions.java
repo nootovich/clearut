@@ -199,10 +199,15 @@ public class Actions {
         Main.changeState(Main.State.NOTES);
     }
 
-    public void openNote(int index) {
+    public void openNote(int id) {
         Main.changeState(Main.State.NOTE);
         Note note = (Note) Main.window.getLayer("UI_note").getChild("NOTE");
-        note.text = Notes.noteExists(index) ? Notes.loadNote(index) : "";
+        note.text = Notes.noteExists(id) ? Notes.loadNote(id) : "";
+        note.id   = id;
+    }
+
+    public void cancelNote() {
+        Main.changeState(Main.State.CANCEL_NOTE);
     }
 
     public static void openCalendar() {

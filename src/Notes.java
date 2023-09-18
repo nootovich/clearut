@@ -1,25 +1,33 @@
 public class Notes {
 
 
-    private static String getNoteName(int index) {
-        return Global.NOTES_FOLDER+index+".txt";
+    private static String getNoteName(int id) {
+        return Global.NOTES_FOLDER+id+".txt";
     }
 
-    public static void saveNote(int index, String content) {
-        IO.saveFile(getNoteName(index), content);
+    public static void saveNote(int id, String content) {
+        IO.saveFile(getNoteName(id), content);
     }
 
-    public static String loadNote(int index) {
-        if (noteExists(index)) return IO.loadFile(getNoteName(index));
+    public static void saveOpenedNote() {
+        if (Main.state == Main.State.NOTE) {
+            Note note = (Note) Main.window.getLayer("UI_NOTE").getChild("NOTE");
+            if (note.text.isEmpty()) deleteNote(note.id);
+            else saveNote(note.id, note.text);
+        }
+    }
+
+    public static String loadNote(int id) {
+        if (noteExists(id)) return IO.loadFile(getNoteName(id));
         return "";
     }
 
-    public static boolean noteExists(int index) {
-        return IO.fileExists(getNoteName(index));
+    public static boolean noteExists(int id) {
+        return IO.fileExists(getNoteName(id));
     }
 
-    public static void deleteNote(int index) {
-        if (noteExists(index)) IO.deleteFile(getNoteName(index));
+    public static void deleteNote(int id) {
+        if (noteExists(id)) IO.deleteFile(getNoteName(id));
     }
 
 }

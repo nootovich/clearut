@@ -24,7 +24,7 @@ public class Window extends JFrame {
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
-                System.out.println("CLOSED");
+                Notes.saveOpenedNote();
                 super.windowClosing(e);
             }
         });

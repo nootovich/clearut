@@ -2,23 +2,27 @@ import java.awt.*;
 
 public class Note extends Text {
 
-    public int cursorPos = 0, cursorRow = 0, cursorCol = 0, cursorBol = 0;
+    public int id, cursorPos = 0, cursorRow = 0, cursorCol = 0, cursorBol = 0;
     public boolean scrollable = false;
 
-    public Note(int x, int y, int maxW, int maxH, int z, int size, String name) {
+    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name) {
         super(x, y, maxW, maxH, z, size, "", name);
+        this.id = id;
     }
 
-    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, int color) {
+    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name, int color) {
         super(x, y, maxW, maxH, z, size, "", name, color);
+        this.id = id;
     }
 
-    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, String text) {
+    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name, String text) {
         super(x, y, maxW, maxH, z, size, text, name);
+        this.id = id;
     }
 
-    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, String text, int color) {
+    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name, String text, int color) {
         super(x, y, maxW, maxH, z, size, text, name, color);
+        this.id = id;
     }
 
     @Override
@@ -39,13 +43,12 @@ public class Note extends Text {
     //    int scrollAmount = 5;
     //    if ((flags & Flags.MWHEELUP) > 0) offsetY += scrollAmount;
     //    else if ((flags & Flags.MWHEELDN) > 0) offsetY -= scrollAmount;
-
     //    int lowerBound = getHeight() - cachedTextHeight;
     //    if (offsetY < lowerBound) offsetY = lowerBound;
-
     //    int higherBound = 0;
     //    if (offsetY > higherBound) offsetY = higherBound;
     //}
+
     private void updateCursorPos() {
         updateCursorPos(cursorPos);
     }
