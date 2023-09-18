@@ -2,7 +2,7 @@ import java.awt.*;
 
 public class Text extends Child {
 
-    public static final boolean DEBUG = false;
+    public static boolean DEBUG = false;
 
     public int x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0;
     public int cachedTextHeight = 0, cachedLineHeight = 0; // TODO: remove (should be in program, not in library)

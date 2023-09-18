@@ -123,59 +123,41 @@ public class Note extends Text {
         updateCursorPos(--cursorPos);
     }
 
-    //public void moveCursorWordLeft() {
-    //    if (cursorPos == 0) return;
-
-    //    boolean skippingWhitespace = true;
-    //    String  begin              = getText();
-
-    //    for (int i = cursorPos - 1; i >= 0; i--) {
-    //        char ch = begin.charAt(i);
-
-    //        if (skippingWhitespace) {
-    //            if (ch != ' ') { // TODO: use isWhitespace()
-    //                skippingWhitespace = false;
-    //            } else continue;
-    //        }
-
-    //        if (i == 0) cursorPos = 0;
-
-    //        else if (ch == ' ') { // TODO: use isWhitespace()
-    //            cursorPos = i + 1;
-    //            break;
-    //        }
-    //    }
-    //    updateCursorPos();
-    //}
+    public void moveCursorWordLeft() {
+        boolean skippingWhitespace = true;
+        for (int i = cursorPos-1; i >= 0; i--) {
+            boolean whitespace = text.charAt(i) == ' '; // TODO: use isWhitespace()
+            if (skippingWhitespace) {
+                if (whitespace) continue;
+                skippingWhitespace = false;
+            }
+            if (i == 0) updateCursorPos(0);
+            else if (whitespace) {
+                updateCursorPos(i+1);
+                return;
+            }
+        }
+    }
 
     public void moveCursorCharRight() {
         updateCursorPos(++cursorPos);
     }
 
-    //public void moveCursorWordRight() {
-    //    if (cursorPos == getText().length()) return;
-
-    //    boolean skippingWhitespace = true;
-    //    String  begin              = getText();
-
-    //    for (int i = cursorPos; i < begin.length(); i++) {
-    //        char ch = begin.charAt(i);
-
-    //        if (skippingWhitespace) {
-    //            if (ch != ' ') { // TODO: use isWhitespace()
-    //                skippingWhitespace = false;
-    //            } else continue;
-    //        }
-
-    //        if (i == begin.length() - 1) cursorPos = begin.length();
-
-    //        else if (ch == ' ') { // TODO: use isWhitespace()
-    //            cursorPos = i;
-    //            break;
-    //        }
-    //    }
-    //    updateCursorPos();
-    //}
+    public void moveCursorWordRight() {
+        boolean skippingWhitespace = true;
+        for (int i = cursorPos; i < text.length(); i++) {
+            boolean whitespace = text.charAt(i) == ' '; // TODO: use isWhitespace()
+            if (skippingWhitespace) {
+                if (whitespace) continue;
+                skippingWhitespace = false;
+            }
+            if (i == text.length()-1) updateCursorPos(text.length());
+            else if (whitespace) {
+                updateCursorPos(i);
+                return;
+            }
+        }
+    }
 
     public void moveCursorUp() {
         if (cursorRow <= 0) {
@@ -217,61 +199,46 @@ public class Note extends Text {
         updateCursorPos();
     }
 
-    //public void deleteWordAtCursorLeft() {
-    //    boolean trimmingWhitespace = true;
-    //    String  begin              = getText();
-    //    String  end                = "";
+    public void deleteWordAtCursorLeft() {
+        boolean trimmingWhitespace = true;
+        for (int i = cursorPos-1; i >= 0; i--) {
+            if (i == 0) {
+                text = text.substring(cursorPos);
+                updateCursorPos(0);
+                return;
+            }
+            char    c          = text.charAt(i);
+            boolean whitespace = c == ' ' || c == '\n'; // TODO: use isWhitespace()
+            if (trimmingWhitespace) {
+                if (whitespace) continue;
+                trimmingWhitespace = false;
+            }
+            if (whitespace) {
+                text = (text.substring(0, i)+text.substring(cursorPos));
+                updateCursorPos(i);
+                return;
+            }
+        }
+    }
 
-    //    for (int i = cursorPos - 1; i >= 0; i--) {
-    //        char c = begin.charAt(i);
-
-    //        if (trimmingWhitespace) {
-    //            if (c != ' ' && c != '\n') { // TODO: use isWhitespace()
-    //                trimmingWhitespace = false;
-    //            } else continue;
-    //        }
-
-    //        if (i == 0) {
-    //            end = begin.substring(cursorPos);
-    //            setText(end);
-    //            cursorPos = 0;
-    //            updateCursorPos();
-    //            break;
-    //        } else if (c == ' ' || c == '\n') { // TODO: use isWhitespace()
-    //            setText(begin.substring(0, i) + begin.substring(cursorPos));
-    //            cursorPos = i;
-    //            updateCursorPos();
-    //            break;
-    //        }
-    //    }
-    //}
-
-    //public void deleteWordAtCursorRight() {
-    //    boolean trimmingWhitespace = true;
-    //    String  begin              = getText();
-    //    String  end                = "";
-
-    //    for (int i = cursorPos; i < begin.length(); i++) {
-    //        char c = begin.charAt(i);
-
-    //        if (trimmingWhitespace) {
-    //            if (c != ' ' && c != '\n') { // TODO: use isWhitespace()
-    //                trimmingWhitespace = false;
-    //            } else continue;
-    //        }
-
-    //        if (i == begin.length() - 1) {
-    //            end = begin.substring(0, cursorPos);
-    //            setText(end);
-    //            updateCursorPos();
-    //            break;
-    //        } else if (c == ' ' || c == '\n') { // TODO: use isWhitespace()
-    //            end = begin.substring(0, cursorPos) + begin.substring(i + 1);
-    //            setText(end);
-    //            updateCursorPos();
-    //            break;
-    //        }
-    //    }
-    //}
+    public void deleteWordAtCursorRight() {
+        boolean trimmingWhitespace = true;
+        for (int i = cursorPos; i < text.length(); i++) {
+            if (i == text.length()-1) {
+                text = text.substring(0, cursorPos);
+                return;
+            }
+            char    c          = text.charAt(i);
+            boolean whitespace = c == ' ' || c == '\n'; // TODO: use isWhitespace()
+            if (trimmingWhitespace) {
+                if (whitespace) continue;
+                trimmingWhitespace = false;
+            }
+            if (whitespace) {
+                text = text.substring(0, cursorPos)+text.substring(i+1);
+                return;
+            }
+        }
+    }
 
 }

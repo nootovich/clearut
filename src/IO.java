@@ -248,14 +248,14 @@ public class IO {
                 Note note = (Note) Main.window.getLayer("UI_NOTE").getChild("NOTE");
 
                 if (e.isControlDown()) {
-                    //switch (code) {
-                    //    case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
-                    //    case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
-                    //    case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
-                    //    case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
-                    //    case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
-                    //    case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
-                    //}
+                    switch (code) {
+                        case KeyEvent.VK_BACK_SPACE -> note.deleteWordAtCursorLeft();
+                        case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
+                        case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
+                        case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
+//                        case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+                        case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
+                    }
                 } else {
                     switch (code) {
                         case KeyEvent.VK_BACK_SPACE -> note.deleteCharAtCursorLeft();
