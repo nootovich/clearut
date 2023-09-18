@@ -163,7 +163,10 @@ public class IO {
         @Override
         public void mouseWheelMoved(MouseWheelEvent e) {
             if (DEBUG) System.out.println(e.paramString()); // $DEBUG
-            // Global.CANVAS.updateScrollAt(e.getX(), e.getY(), e.getWheelRotation());
+            if (Main.state == Main.State.NOTE) {
+                Note note = Notes.getOpenedNote();
+                note.scroll(e.getWheelRotation());
+            }
         }
 
         public boolean isLMBRisingEdge() {

@@ -43,8 +43,9 @@ public class Main {
     }
 
     public static void changeState(State newState) {
-        if (newState != State.CANCEL_NOTE) Notes.saveOpenedNote();
-        else newState = State.NOTES;
+        if (state == State.NOTE)
+            if (newState != State.CANCEL_NOTE) Notes.saveOpenedNote();
+            else newState = State.NOTES;
         state = newState;
         reinit();
     }
@@ -209,7 +210,7 @@ public class Main {
         Sprite cancelButton = new Sprite(window.size.width-padding*7, y+padding, padding*5, padding, 6, 0xff6969, "CANCEL", "cancelNote");
         cancelButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         cancelButton.extra = padding;
-        Text cancelText = new Text(cancelButton.getCenterX(), cancelButton.getCenterY(), cancelButton.w, cancelButton.h, 7, 20, "CANCEL", 0xffffff);
+        Text cancelText = new Text(cancelButton.getCenterX(), cancelButton.getCenterY()-3, cancelButton.w, cancelButton.h, 7, 20, "CANCEL", 0xffffff);
         cancelButton.addChild(cancelText);
         note.addChild(cancelButton);
     }

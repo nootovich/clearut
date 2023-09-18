@@ -38,16 +38,11 @@ public class Note extends Text {
         g2d.fillRect(x+offsetX+cursorX, y+offsetY+cursorY, 2, lineHeight);
     }
 
-    //@Override
-    //public void scroll(int flags) {
-    //    int scrollAmount = 5;
-    //    if ((flags & Flags.MWHEELUP) > 0) offsetY += scrollAmount;
-    //    else if ((flags & Flags.MWHEELDN) > 0) offsetY -= scrollAmount;
-    //    int lowerBound = getHeight() - cachedTextHeight;
-    //    if (offsetY < lowerBound) offsetY = lowerBound;
-    //    int higherBound = 0;
-    //    if (offsetY > higherBound) offsetY = higherBound;
-    //}
+    public void scroll(int wheelRotation) {
+        offsetY -= wheelRotation*42;
+        if (offsetY < h-cachedTextHeight) offsetY = h-cachedTextHeight;
+        if (offsetY > 0) offsetY = 0;
+    }
 
     private void updateCursorPos() {
         updateCursorPos(cursorPos);
