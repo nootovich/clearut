@@ -170,9 +170,13 @@ public class Main {
                 UI_notes.addChild(note);
 
                 if (Notes.noteExists(id)) {
-                    int  pad      = 5;
-                    Text noteText = new Text(nx+pad, ny+pad, nw-pad*2, nh-pad*2, 4, 14, Notes.loadNote(id));
-                    noteText.alignment = Text.Alignment.LEFT;
+                    int      pad          = 5;
+                    String[] noteContents = Notes.loadNote(id);
+                    Text     noteTitle    = new Text(nx+pad, ny+pad, nw-pad*2, pad*2, 4, 18, noteContents[0]);
+                    Text     noteText     = new Text(nx+pad, ny+pad*6, nw-pad*2, nh-pad*2, 4, 12, noteContents[1]);
+                    noteTitle.alignment = Text.Alignment.LEFT;
+                    noteText.alignment  = Text.Alignment.LEFT;
+                    note.addChild(noteTitle);
                     note.addChild(noteText);
                     continue;
                 }
@@ -201,7 +205,7 @@ public class Main {
         Sprite profileBG = (Sprite) window.getLayer("UI_PROFILE").getChild("PROFILE_BG");
         Layer  UI_note   = window.addLayer("UI_NOTE", 3);
 
-        int padding = 25;
+        int padding = 15;
         int x       = sideBG.w+padding;
         int y       = profileBG.h+padding;
         int w       = window.DBC.getWidth()-sideBG.w-padding*2;
@@ -210,15 +214,19 @@ public class Main {
         Sprite noteBG = new Sprite(x, y, w, h, 4, yellow[5], "NOTE_BG");
         noteBG.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         noteBG.extra = padding;
+        Sprite noteTitleSeparation = new Sprite(x+padding, y+Note.titleSize+(int) (padding*1.7f), w-padding*2, 2, 5, 0x424200);
+        noteTitleSeparation.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
+        noteTitleSeparation.extra = w/4;
+        noteBG.addChild(noteTitleSeparation);
         UI_note.addChild(noteBG);
 
         // TODO: add a way to set the value of z based on what you want to do with it
-        Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, -1, 20, "NOTE", 0);
+        Note note = new Note(x+padding, y+padding, w-padding*2, h-padding*2, 5, 20, "NOTE", 0);
         note.alignment  = Text.Alignment.LEFT;
         note.scrollable = true;
         UI_note.addChild(note);
 
-        Sprite cancelButton = new Sprite(window.size.width-padding*7, y+padding, padding*5, padding, 6, 0xff6969, "CANCEL", "cancelNote");
+        Sprite cancelButton = new Sprite(x+w-padding*8, y+padding, padding*7, padding*2, 6, 0xff6969, "CANCEL", "cancelNote");
         cancelButton.type  = Sprite.SpriteType.ROUNDED_RECTANGLE;
         cancelButton.extra = padding;
         Text cancelText = new Text(cancelButton.getCenterX(), cancelButton.getCenterY()-3, cancelButton.w, cancelButton.h, 7, 20, "CANCEL", 0xffffff);

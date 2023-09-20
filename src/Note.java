@@ -4,38 +4,64 @@ public class Note extends Text {
 
     public int id, cursorPos = 0, cursorRow = 0, cursorCol = 0, cursorBol = 0;
     public boolean scrollable = false;
+    public Text    title;
 
-    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name) {
+    public static final int titleSize = 32; // TODO: temporary. remove as soon as possible
+
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name) {
         super(x, y, maxW, maxH, z, size, "", name);
-        this.id = id;
     }
 
-    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name, int color) {
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, int color) {
         super(x, y, maxW, maxH, z, size, "", name, color);
-        this.id = id;
     }
 
-    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name, String text) {
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, String text) {
         super(x, y, maxW, maxH, z, size, text, name);
-        this.id = id;
     }
 
-    public Note(int x, int y, int maxW, int maxH, int z, int id, int size, String name, String text, int color) {
+    public Note(int x, int y, int maxW, int maxH, int z, int size, String name, String text, int color) {
         super(x, y, maxW, maxH, z, size, text, name, color);
-        this.id = id;
     }
 
     @Override
     public void draw(Graphics2D g2d) {
+        int savedY = y;
+        if (title != null) {
+            title.draw(g2d);
+            y += (int) (title.h*1.2f);
+        }
         super.draw(g2d);
-        String[]    lines      = getLines();
-        FontMetrics metrics    = g2d.getFontMetrics();
-        int         lineHeight = metrics.getHeight();
-        int         cursorX    = metrics.stringWidth(lines[cursorRow].substring(0, cursorCol));
-        int         cursorY    = lineHeight*cursorRow;
-        long        curTime    = System.currentTimeMillis()%512;
-        g2d.setColor(curTime < 256 ? new Color(0, 0, 0, (int) (255-curTime)) : new Color(0, 0, 0, (int) curTime-256));
-        g2d.fillRect(x+offsetX+cursorX, y+offsetY+cursorY, 2, lineHeight);
+        // cursor
+        if (visible) {
+            String[]    lines      = getLines();
+            FontMetrics metrics    = g2d.getFontMetrics();
+            int         lineHeight = metrics.getHeight();
+            int         cursorX    = metrics.stringWidth(lines[cursorRow].substring(0, cursorCol));
+            int         cursorY    = lineHeight*cursorRow;
+            long        curTime    = System.currentTimeMillis()%512;
+            g2d.setColor(curTime < 256 ? new Color(0, 0, 0, (int) (255-curTime)) : new Color(0, 0, 0, (int) curTime-256));
+            g2d.fillRect(x+offsetX+cursorX, y+offsetY+cursorY, 2, lineHeight);
+        }
+        if (title != null) y = savedY;
+    }
+
+    @Override
+    public void update(IO.Mouse mouse) {
+        updateHigherChildren(mouse);
+
+        if (title.active && mouse.isLMBFallingEdge()) {
+            System.out.println("title activated");
+        } else if (active && mouse.isLMBFallingEdge()) {
+            System.out.println("note activated");
+        }
+
+        title.hovered = mouse.x > title.x && mouse.x < title.x+title.w && mouse.y > title.y && mouse.y < title.y+title.h;
+        title.active  = title.hovered && mouse.LMB;
+        hovered       = mouse.x > x && mouse.x < x+w && mouse.y > y && mouse.y < y+h;
+        active        = hovered && mouse.LMB;
+
+        updateLowerChildren(mouse);
     }
 
     public void scroll(int wheelRotation) {

@@ -202,8 +202,15 @@ public class Actions {
     public static void openNote(int id) {
         if (Main.state != Main.State.NOTE) Main.changeState(Main.State.NOTE);
         Note note = Notes.getOpenedNote();
-        note.text = Notes.noteExists(id) ? Notes.loadNote(id) : "";
-        note.id   = id;
+        note.title           = new Text(note.x, note.y, note.w, 40, note.z+1, Note.titleSize, "", "NOTE_TITLE");
+        note.title.alignment = Text.Alignment.LEFT;
+        note.text            = "";
+        note.id              = id;
+        if (Notes.noteExists(id)) {
+            String[] contents = Notes.loadNote(id);
+            note.title.text = contents[0];
+            note.text       = contents[1];
+        }
     }
 
     public void cancelNote() {

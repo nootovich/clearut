@@ -50,7 +50,6 @@ public class Text extends Child {
                 }
             } // $DEBUG
 
-            if (!visible) return;
             g2d.setColor(new Color(color));
             int      lineHeight = metrics.getHeight();
             String[] lines      = getLines();
@@ -62,7 +61,7 @@ public class Text extends Child {
         drawHigherChildren(g2d);
     }
 
-    private void drawLine(Graphics2D g2d, FontMetrics metrics, String line, int x, int y) {
+    protected void drawLine(Graphics2D g2d, FontMetrics metrics, String line, int x, int y) {
         int curX = x+offsetX;
         int curY = y+offsetY;
 

@@ -16,19 +16,28 @@ public class Notes {
         return null;
     }
 
-    public static void saveNote(int id, String content) {
-        IO.saveFile(getNoteName(id), content);
+    public static void saveNote(int id, String title, String content) {
+        IO.saveFile(getNoteName(id), title+'\n'+content);
     }
 
     public static void saveOpenedNote() {
         Note note = getOpenedNote();
-        if (note.text.isEmpty()) deleteNote(note.id);
-        else saveNote(note.id, note.text);
+        if (note.text.isEmpty() && note.title.text.isEmpty()) deleteNote(note.id);
+        else saveNote(note.id, note.title.text, note.text);
     }
 
-    public static String loadNote(int id) {
-        if (noteExists(id)) return IO.loadFile(getNoteName(id));
-        return "";
+    public static String[] loadNote(int id) {
+        if (!noteExists(id)) return new String[]{"", ""};
+        String        file  = IO.loadFile(getNoteName(id));
+        StringBuilder title = new StringBuilder();
+        int           i     = 0;
+        for (i = 0; i < file.length(); i++) {
+            char c = file.charAt(i);
+            if (c == '\n') break;
+            title.append(c);
+        }
+        if (i == file.length()-1) return new String[]{title.toString(), ""};
+        return new String[]{title.toString(), file.substring(i+1)};
     }
 
     public static boolean noteExists(int id) {
