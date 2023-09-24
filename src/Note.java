@@ -126,6 +126,10 @@ public class Note extends Text {
         //    }
         //}
 
+        // some experimenting :)
+        // Font              font       = new Font("Rubik", Font.BOLD, size);
+        // FontRenderContext frc        = new FontRenderContext(null, true, false);
+        // int               lineHeight = (int) (font.getStringBounds("@", frc)).getHeight()+0.5d);
         int viewableLines     = h/cachedLineHeight;
         int offsetLinesTop    = 3;
         int offsetLinesBottom = viewableLines-offsetLinesTop;

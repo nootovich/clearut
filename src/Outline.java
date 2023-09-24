@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Outline extends Child { // TODO: needs some rework
+public class Outline extends Member { // TODO: needs some rework
 
     private static final boolean DEBUG = false;
 

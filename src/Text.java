@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Text extends Child {
+public class Text extends Member {
 
     public static boolean DEBUG = false;
 

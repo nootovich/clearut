@@ -1,7 +1,7 @@
 import java.awt.*;
 import java.util.Comparator;
 
-public class Layer extends Child {
+public class Layer extends Member {
 
     private boolean DEBUG = false;
 
@@ -18,7 +18,7 @@ public class Layer extends Child {
     @Override
     public void draw(Graphics2D g2d) {
         if (DEBUG) System.out.printf("draw layer %d : %s%n", z, name); // $DEBUG
-        for (Child c : children) c.draw(g2d);
+        for (Member c : children) c.draw(g2d);
     }
 }
 

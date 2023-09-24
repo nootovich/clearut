@@ -1,6 +1,6 @@
 import java.awt.*;
 
-public class Sprite extends Child {
+public class Sprite extends Member {
 
     private static final boolean DEBUG = false;
 

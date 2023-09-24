@@ -7,7 +7,7 @@ public class Calendar {
     public static final int      TASK_COUNT = TASK_LIST.length;
     public static       int      weekOffset = 0;
 
-    public static void updateDayTotal(LocalDate day, Child parent) {
+    public static void updateDayTotal(LocalDate day, Member parent) {
         Sprite[] tasks = getDayTasks(day, parent);
         Text     total = getDayTotal(day, parent);
         int      count = 0;
@@ -15,14 +15,14 @@ public class Calendar {
         total.text = ""+count;
     }
 
-    public static void updateWeekTotal(LocalDate day, Child parent) {
+    public static void updateWeekTotal(LocalDate day, Member parent) {
         int    count      = 0;
         Text[] totalArray = getWeekTotalArray(day, parent);
         for (Text total : totalArray) if (total != null) count += Integer.parseInt(total.text);
         getWeekTotal(parent).text = ""+count;
     }
 
-    public static void updateDayColor(LocalDate day, Child parent) {
+    public static void updateDayColor(LocalDate day, Member parent) {
         Sprite[] tasks    = getDayTasks(day, parent);
         Text     dayTotal = getDayTotal(day, parent);
         if (Integer.parseInt(dayTotal.text) == TASK_COUNT) {
@@ -51,26 +51,25 @@ public class Calendar {
         return day.format(DateTimeFormatter.ofPattern("ddMMyy"));
     }
 
-    public static Sprite getDayTask(LocalDate day, int taskId, Child parent) {
+    public static Sprite getDayTask(LocalDate day, int taskId, Member parent) {
         return (Sprite) parent.getChild("task"+getDayStr(day)+getTaskId(taskId));
     }
 
-    // TODO: i REALLY need to change the name "Child" to "Member", this is just silly...
-    public static Sprite[] getDayTasks(LocalDate day, Child parent) {
+    public static Sprite[] getDayTasks(LocalDate day, Member parent) {
         Sprite[] result = new Sprite[TASK_COUNT];
         for (int i = 0; i < TASK_COUNT; i++) result[i] = (Sprite) parent.getChild("task"+getDayStr(day)+getTaskId(i));
         return result;
     }
 
-    public static Text getDayTotal(LocalDate day, Child parent) {
+    public static Text getDayTotal(LocalDate day, Member parent) {
         return (Text) parent.getChild("total"+getDayStr(day));
     }
 
-    public static Text getWeekTotal(Child parent) {
+    public static Text getWeekTotal(Member parent) {
         return (Text) parent.getChild("weekTotal");
     }
 
-    public static Text[] getWeekTotalArray(LocalDate day, Child parent) {
+    public static Text[] getWeekTotalArray(LocalDate day, Member parent) {
         Text[] result = new Text[7];
         int    dow    = day.getDayOfWeek().getValue()-1;
         for (int i = 0; i < 7; i++) result[i] = getDayTotal(day.plusDays(i-dow), parent);

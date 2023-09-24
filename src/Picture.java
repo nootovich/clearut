@@ -3,7 +3,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
-public class Picture extends Child {
+public class Picture extends Member {
 
     public int x, y, w, h;
     public boolean visible = true, hovered, active;

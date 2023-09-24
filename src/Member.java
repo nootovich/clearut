@@ -2,26 +2,26 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class Child {
-    // TODO: maybe rename to "member"?
-    public int     z        = 0;
-    public String  name     = "";
-    public Child   parent   = null;
-    public Child[] children = new Child[0];
-//    public boolean inheritPosition = false, inheritInteractions = false;
+public class Member {
 
-    public void addChild(Child newChild) {
-        newChild.parent = this;
-        Child[] temp = children;
-        children                    = new Child[children.length+1];
-        children[children.length-1] = newChild;
+    public int      z        = 0;
+    public String   name     = "";
+    public Member   parent   = null;
+    public Member[] children = new Member[0];
+    //    public boolean inheritPosition = false, inheritInteractions = false;
+
+    public void addChild(Member child) {
+        child.parent = this;
+        Member[] temp = children;
+        children                    = new Member[children.length+1];
+        children[children.length-1] = child;
         System.arraycopy(temp, 0, children, 0, temp.length);
         if (children.length > 1) Arrays.sort(children, new ChildPriorityComparator());
     }
 
-    public Child getChild(String searchName) {
+    public Member getChild(String searchName) {
         searchName = searchName.toUpperCase();
-        for (Child c : children) {
+        for (Member c: children) {
             if (c.name.equals(searchName)) return c;
         }
         return null;
@@ -62,9 +62,10 @@ public class Child {
     }
 }
 
-class ChildPriorityComparator implements Comparator<Child> {
+class ChildPriorityComparator implements Comparator<Member> {
+
     @Override
-    public int compare(Child a, Child b) {
+    public int compare(Member a, Member b) {
         return Integer.compare(a.z, b.z);
     }
 }
