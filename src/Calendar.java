@@ -3,7 +3,7 @@ import java.time.format.DateTimeFormatter;
 
 public class Calendar {
 
-    public static final String[] TASK_LIST  = new String[]{"Подъём в 07:00", "Зарядка", "Правильное питание", "Тренировка", "Иностранный язык", "Отбой в 00:00"};
+    public static final String[] TASK_LIST  = IO.loadFile("./tasks/list.txt").split("\n");
     public static final int      TASK_COUNT = TASK_LIST.length;
     public static       int      weekOffset = 0;
 

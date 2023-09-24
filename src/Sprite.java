@@ -70,6 +70,10 @@ public class Sprite extends Member {
         drawHigherChildren(g2d);
     }
 
+    public void setColor(int color) {
+        setColors(color, color, color);
+    }
+
     public void setColors(int idleC, int hoveredC, int activeC) {
         colors[0] = idleC; colors[1] = hoveredC; colors[2] = activeC;
     }
