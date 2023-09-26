@@ -4,7 +4,7 @@ public class Text extends Member {
 
     public static boolean DEBUG = false;
 
-    public int x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0; // TODO: convert to floats
+    public int x, y, w, h, size, color = 0, offsetX = 0, offsetY = 0; // TODO: convert to floats
     public int cachedTextHeight = 0, cachedLineHeight = 0; // TODO: remove (should be in program, not in library)
     public boolean visible = true, hovered, active;
     public String    text      = "";
@@ -101,52 +101,45 @@ public class Text extends Member {
         return text.split("\n", -1);
     }
 
+    // TODO: reimplement wrapping
     // public String wrapText() {
     //     StringBuilder result = new StringBuilder();
     //     Graphics2D g2d = (Graphics2D) Global.IMAGE.getGraphics();
     //     g2d.setFont(new Font("Rubik", Font.BOLD, textSize));
     //     FontMetrics metrics = g2d.getFontMetrics();
-
     //     int textX     = getX();
     //     int textY     = getY();
     //     int maxWidth  = getWidth();
     //     int maxHeight = getHeight();
     //     int lineCount = 0;
-
     //     String[] lines = getLines();
     //     for (int i = 0; i < lines.length; i++) {
-
     //         int lineWidth = metrics.stringWidth(lines[i]);
     //         if (lineWidth <= w) {
     //             result.append(lines[i]).append("\n");
     //             lineCount++;
     //             continue;
     //         }
-
     //         StringBuilder line  = new StringBuilder();
     //         String[]      words = lines[i].split(" ");
     //         for (int j = 0; j < words.length; j++) {
-
     //             lineWidth = metrics.stringWidth(line + words[j]);
     //             if (lineWidth < w) {
     //                 if (line.length() > 0) line.append(" ");
     //                 line.append(words[j]);
     //                 continue;
     //             }
-
     //             if (j != 0) {
     //                 result.append(line.toString()).append("\r\n");
     //                 line = new StringBuilder();
     //                 lineCount++;
     //             }
-
     //             int wordWidth = metrics.stringWidth(words[j]);
     //             if (wordWidth < w) {
     //                 if (line.length() > 0) line.append(" ");
     //                 line.append(words[j]);
     //                 continue;
     //             }
-
     //             int    wordBegin = 0;
     //             String word      = words[j];
     //             for (int k = 1; k < word.length(); k++) {
@@ -157,7 +150,6 @@ public class Text extends Member {
     //                 wordBegin = k;
     //                 lineCount++;
     //             }
-
     //             line.append(word.substring(wordBegin));
     //         }
     //         if (line.length() > 0) {
@@ -165,29 +157,8 @@ public class Text extends Member {
     //             lineCount++;
     //         }
     //     }
-
     //     return result.deleteCharAt(result.length() - 1).toString();
     // }
-
-    public void removeLastChar() {
-        if (text.isEmpty()) return;
-        text = text.substring(0, text.length()-1);
-    }
-
-    public void removeCharAt(int index) {
-        throw new AssertionError("Not implemented");
-    }
-
-    public void removeCharAt(int row, int col) {
-        throw new AssertionError("Not implemented");
-    }
-
-    public void removeLastWord() {
-        removeLastChar();
-        while (!(text.isEmpty() || Character.isWhitespace(text.charAt(text.length()-1)))) {
-            removeLastChar();
-        }
-    }
 
     public enum Alignment {
         CENTER, LEFT, RIGHT, TOP, BOTTOM;

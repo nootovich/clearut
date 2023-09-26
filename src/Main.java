@@ -19,8 +19,6 @@ public class Main {
         keyboard = new IO.Keyboard();
         window   = new Window(800, 400, 300, 200, mouse, keyboard);
         changeState(State.MAIN);
-        // spawnMenu   = initSpawnMenu();
-        // editingMenu = initEditingMenu();
         long prevFrameTime = 0, curFrameTime = 0, spentFrameTime = 0;
         while (true) {
             curFrameTime   = System.currentTimeMillis();
@@ -30,11 +28,6 @@ public class Main {
             if (DEBUG) System.out.printf("frametime: %dms%n", spentFrameTime); // $DEBUG
             mouse.update(window);
             window.repaint();
-            // if (Global.MOUSE.isRMBFallingEdge() && spawnMenu.isMinimized()) {
-            //     spawnMenu.open(Global.MOUSE.getX(), Global.MOUSE.getY());
-            // } else if (Global.MOUSE.isRMBRisingEdge() && !spawnMenu.isMinimized()) {
-            //     spawnMenu.close();
-            // }
             int sleepTime = (int) (plannedFrameTime*2-spentFrameTime);
             if (sleepTime < 0) sleepTime = 0;
             if (sleepTime > plannedFrameTime) sleepTime = plannedFrameTime;
@@ -122,7 +115,7 @@ public class Main {
             button.setColors(priColors[4], priColors[5], priColors[6]);
             button.setName("BUTTON_"+i);
             button.action = "button"+i;
-            //            button.addChild(new Outline(4, 2, priColors[5], priColors[6], priColors[7]));
+            // button.addChild(new Outline(4, 2, priColors[5], priColors[6], priColors[7]));
             UI_side.addChild(button);
         }
 
@@ -361,15 +354,10 @@ public class Main {
     // private static Menu initSpawnMenu() {
     //     int[] y        = Colors.yellow2();
     //     Menu  testMenu = new Menu(150, 200, 2, "SPAWN_MENU", y[3], y[5], y[8]);
-
     //     String[][] menuLayout = new String[][]{
     //             {"Dump info to console", "dumpInfoToConsole"},
     //             {"Edit element", "editElement"}};
-
-    //     for (int i = 0; i < menuLayout.length; i++) {
-    //         testMenu.addButton(menuLayout[i][0], "button" + menuLayout[i][1], menuLayout[i][1]);
-    //     }
-
+    //     for (int i = 0; i < menuLayout.length; i++) testMenu.addButton(menuLayout[i][0], "button" + menuLayout[i][1], menuLayout[i][1]);
     //     testMenu.close();
     //     window.layer("UI").addChild(testMenu);
     //     return testMenu;
@@ -377,26 +365,20 @@ public class Main {
 
     // private static Group initEditingMenu() {
     //     int[] yellow = Colors.yellow2();
-
     //     Group editingMenu = new Group("EDITING_MENU");
     //     editingMenu.setVisibility(false).setInteractive(false);
-
     //     Sprite bg = editingMenu.addSprite(0, 0, 200, 200, 3, yellow[4], "EDITING_MENU:BG");
     //     bg.addOutline(2, yellow[9]);
-
     //     int bgw = bg.getWidth();
     //     int xo  = bgw / 10;
     //     int yo  = bgw / 10;
-
     //     Text title = editingMenu.addText(0, yo, bgw, yo, 12, bg.getZ() + 1, "Editing: null", 0);
     //     title.setOffsetX(xo).setAlignment(Text.Alignment.LEFT).setName("EDITING_MENU:TITLE");
     //     Text type = editingMenu.addText(0, yo * 2, bgw, yo, 12, bg.getZ() + 1, "Type: null", 0);
     //     type.setOffsetX(xo).setAlignment(Text.Alignment.LEFT).setName("EDITING_MENU:TYPE");
-
     //     editingMenu.addSlider(xo, yo * 3, bgw - xo * 2, yo, "EDITING_MENU:COL_R", 0x00, 0xff, 0x00, 0xff0000);
     //     editingMenu.addSlider(xo, yo * 4, bgw - xo * 2, yo, "EDITING_MENU:COL_G", 0x00, 0xff, 0x7f, 0x00ff00);
     //     editingMenu.addSlider(xo, yo * 5, bgw - xo * 2, yo, "EDITING_MENU:COL_B", 0x00, 0xff, 0xff, 0x0000ff);
-
     //     window.layer("UI").addChild(editingMenu);
     //     return editingMenu;
     // }

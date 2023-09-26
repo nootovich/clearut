@@ -50,7 +50,7 @@ public class DoubleBufferedCanvas extends JPanel {
         layers                  = new Layer[layers.length+1];
         layers[layers.length-1] = newLayer;
         System.arraycopy(temp, 0, layers, 0, temp.length);
-        if (layers.length > 1) Arrays.sort(layers, new LayerPriorityComparator());
+        if (layers.length > 1) Arrays.sort(layers, new LayerComparator());
         return newLayer;
     }
 
@@ -60,13 +60,5 @@ public class DoubleBufferedCanvas extends JPanel {
         }
         return null;
     }
-
-    // public void updateScrollAt(int x, int y, int wheelRotation) {
-    //     int flags = wheelRotation < 0 ? Element.Flags.MWHEELUP : Element.Flags.MWHEELDN;
-    //     UILayer[] layers = Main.window.getLayers();
-    //     for (int i = layers.length - 1; i >= 0; i--) {
-    //         if (layers[i].update(flags)) return;
-    //     }
-    // }
 
 }

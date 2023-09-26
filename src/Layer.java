@@ -23,7 +23,7 @@ public class Layer extends Member {
     }
 }
 
-class LayerPriorityComparator implements Comparator<Layer> {
+class LayerComparator implements Comparator<Layer> {
     @Override
     public int compare(Layer a, Layer b) {
         return Integer.compare(a.z, b.z);

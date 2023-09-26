@@ -135,13 +135,6 @@ public class IO {
             if (DEBUG) System.out.println(e); // $DEBUG
             LMBTemp |= e.getButton() == MouseEvent.BUTTON1;
             RMBTemp |= e.getButton() == MouseEvent.BUTTON3;
-            // if (getRMBTemp()) {
-            //     Element menu = Global.findElement("SPAWN_MENU");
-            //     if (menu == null) return;
-            //     menu.setX(getX());
-            //     menu.setY(getY());
-            //     System.out.printf("%dx%d%n", menu.getX(), menu.getY());
-            // }
         }
 
         @Override
@@ -256,7 +249,7 @@ public class IO {
                         case KeyEvent.VK_DELETE -> note.deleteWordAtCursorRight();
                         case KeyEvent.VK_LEFT -> note.moveCursorWordLeft();
                         case KeyEvent.VK_RIGHT -> note.moveCursorWordRight();
-//                        case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
+                        // case KeyEvent.VK_L -> Global.ACTIONS.dumpInfoToConsole();
                         case KeyEvent.VK_N -> Text.DEBUG = !Text.DEBUG;
                     }
                 } else {
@@ -272,7 +265,7 @@ public class IO {
                 }
 
                 e.consume();
-                return;
+                // return;
             }
 
             // // everything else except notes mode
@@ -286,13 +279,4 @@ public class IO {
 
     }
 
-    // TODO: make window resizeable
-    //
-    //    ComponentAdapter componentAdapter = new ComponentAdapter() {
-    //        @Override
-    //        public void componentResized(ComponentEvent e) {
-    //            super.componentResized(e);
-    //            changeSize(e.getComponent().getSize());
-    //        }
-    //    };
 }

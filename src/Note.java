@@ -131,13 +131,12 @@ public class Note extends Text {
             accumulatedLength += lines[i].length()+1;
         }
 
+        // TODO: reimplement wrapping
         //int  lineCount      = 0;
         //int  accLineLen     = 0;
         //char returnCarriage = (char) 13;
-        //
         //String[] wrappedLines = getWrappedLines();
         //for (int i = 0; i < wrappedLines.length; i++) {
-        //
         //    String  wrappedLine  = wrappedLines[i];
         //    int     curLineLen   = wrappedLine.length();
         //    boolean emptyLine    = curLineLen == 0;
@@ -148,7 +147,6 @@ public class Note extends Text {
         //        wrappedRow = i;
         //        break;
         //    }
-        //
         //    if (!lastIsReturn || emptyLine) {
         //        lineCount++;
         //        accLineLen = 0;

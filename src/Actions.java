@@ -6,8 +6,6 @@ public class Actions {
 
     public void invoke(String action) {
         if (action.equals("")) return;
-        // Menu menu = (Menu) Global.findElement("SPAWN_MENU");
-        // if (menu != null) menu.close();
         try {
             String[] lines = action.split(":");
             if (lines.length > 1) switch (lines[1]) {
@@ -40,26 +38,6 @@ public class Actions {
     }
 
     public void toggleTask(LocalDate day, int taskId) {
-//        try {
-//            URL               url = new URL("http://example.com/");
-//            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-//            con.setRequestMethod("GET");
-//            con.setDoOutput(true);
-//            con.setRequestProperty("Content-Type", "application/json");
-//            int status = con.getResponseCode();
-//            BufferedReader in = new BufferedReader(
-//                new InputStreamReader(con.getInputStream()));
-//            String       inputLine;
-//            StringBuffer content = new StringBuffer();
-//            while ((inputLine = in.readLine()) != null) {
-//                content.append(inputLine);
-//            }
-//            in.close();
-//            con.disconnect();
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-
         Layer parent = Main.window.getLayer("UI_CALENDAR");
 
         // TODO: rework
@@ -226,10 +204,6 @@ public class Actions {
     public void button1() {
         System.out.println("Hello world!");
     }
-
-    // public void button2() {
-    //     Global.layer("UIMAIN").removeChild("notesGroup");
-    // }
 
     public void button3() {
         System.out.println("abobus");
