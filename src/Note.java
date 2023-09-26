@@ -3,8 +3,8 @@ import java.awt.*;
 public class Note extends Text {
 
     public int id, cursorPos = 0, cursorRow = 0, cursorCol = 0, cursorBol = 0;
-    public boolean scrollable = false;
-    public Text    title;
+    public boolean scrollable = false, cursorAtTitle = true;
+    public Text title;
 
     public static final int titleSize = 32; // TODO: temporary. remove as soon as possible
 
@@ -26,14 +26,23 @@ public class Note extends Text {
 
     @Override
     public void draw(Graphics2D g2d) {
+        if (!visible) return;
+
+        // title
         int savedY = y;
+        int savedH = h;
         if (title != null) {
             title.draw(g2d);
             y += (int) (title.h*1.2f);
+            h -= (int) (title.h*1.2f);
         }
+
+        // text
+        g2d.setClip(x, y, w, h);
         super.draw(g2d);
+
         // cursor
-        if (visible) {
+        if (!cursorAtTitle) {
             String[]    lines      = getLines();
             FontMetrics metrics    = g2d.getFontMetrics();
             int         lineHeight = metrics.getHeight();
@@ -43,17 +52,31 @@ public class Note extends Text {
             g2d.setColor(curTime < 256 ? new Color(0, 0, 0, (int) (255-curTime)) : new Color(0, 0, 0, (int) curTime-256));
             g2d.fillRect(x+offsetX+cursorX, y+offsetY+cursorY, 2, lineHeight);
         }
-        if (title != null) y = savedY;
+
+        // reset
+        g2d.setClip(null);
+        if (title != null) {
+            y = savedY;
+            h = savedH;
+        }
+
+        // title cursor
+        if (cursorAtTitle) {
+            FontMetrics metrics = g2d.getFontMetrics(new Font("Rubik", Font.BOLD, title.size));
+            int         cursorX = metrics.stringWidth(title.text.substring(0, cursorCol));
+            long        curTime = System.currentTimeMillis()%512;
+            g2d.setColor(curTime < 256 ? new Color(0, 0, 0, (int) (255-curTime)) : new Color(0, 0, 0, (int) curTime-256));
+            g2d.fillRect(x+offsetX+cursorX, y, 2, metrics.getHeight());
+        }
     }
 
     @Override
     public void update(IO.Mouse mouse) {
         updateHigherChildren(mouse);
 
-        if (title.active && mouse.isLMBFallingEdge()) {
-            System.out.println("title activated");
-        } else if (active && mouse.isLMBFallingEdge()) {
-            System.out.println("note activated");
+        if ((title.active && mouse.isLMBFallingEdge()) || (active && mouse.isLMBFallingEdge())) {
+            cursorAtTitle = title.active;
+            updateCursorPos(0);
         }
 
         title.hovered = mouse.x > title.x && mouse.x < title.x+title.w && mouse.y > title.y && mouse.y < title.y+title.h;
@@ -70,14 +93,14 @@ public class Note extends Text {
         if (offsetY > 0) offsetY = 0;
     }
 
-    private void updateCursorPos() {
+    public void updateCursorPos() {
         updateCursorPos(cursorPos);
     }
 
-    private void updateCursorPos(int pos) {
+    public void updateCursorPos(int pos) {
         cursorPos = pos;
         // resetting
-        if (cursorPos < 0) {
+        if (cursorPos <= 0) {
             cursorPos = 0;
             cursorCol = 0;
             cursorRow = 0;
@@ -85,9 +108,17 @@ public class Note extends Text {
             return;
         }
 
+        // title
+        if (cursorAtTitle) {
+            if (cursorPos > title.text.length()) cursorPos = title.text.length();
+            cursorCol = cursorPos;
+            return;
+        }
+
         // clamping
         if (cursorPos > text.length()) cursorPos = text.length();
 
+        // calculating cursor col and row
         int      accumulatedLength = 0;
         String[] lines             = getLines();
         for (int i = 0; i < lines.length; i++) {
@@ -130,6 +161,7 @@ public class Note extends Text {
         // Font              font       = new Font("Rubik", Font.BOLD, size);
         // FontRenderContext frc        = new FontRenderContext(null, true, false);
         // int               lineHeight = (int) (font.getStringBounds("@", frc)).getHeight()+0.5d);
+        if (cachedLineHeight == 0) return;
         int viewableLines     = h/cachedLineHeight;
         int offsetLinesTop    = 3;
         int offsetLinesBottom = viewableLines-offsetLinesTop;
@@ -153,8 +185,9 @@ public class Note extends Text {
 
     public void moveCursorWordLeft() {
         boolean skippingWhitespace = true;
+        String  txt                = cursorAtTitle ? title.text : text;
         for (int i = cursorPos-1; i >= 0; i--) {
-            boolean whitespace = text.charAt(i) == ' '; // TODO: use isWhitespace()
+            boolean whitespace = txt.charAt(i) == ' '; // TODO: use Character.isWhitespace()
             if (skippingWhitespace) {
                 if (whitespace) continue;
                 skippingWhitespace = false;
@@ -173,13 +206,14 @@ public class Note extends Text {
 
     public void moveCursorWordRight() {
         boolean skippingWhitespace = true;
-        for (int i = cursorPos; i < text.length(); i++) {
-            boolean whitespace = text.charAt(i) == ' '; // TODO: use isWhitespace()
+        String  txt                = cursorAtTitle ? title.text : text;
+        for (int i = cursorPos; i < txt.length(); i++) {
+            boolean whitespace = txt.charAt(i) == ' '; // TODO: use Character.isWhitespace()
             if (skippingWhitespace) {
                 if (whitespace) continue;
                 skippingWhitespace = false;
             }
-            if (i == text.length()-1) updateCursorPos(text.length());
+            if (i == txt.length()-1) updateCursorPos(txt.length());
             else if (whitespace) {
                 updateCursorPos(i);
                 return;
@@ -188,7 +222,7 @@ public class Note extends Text {
     }
 
     public void moveCursorUp() {
-        if (cursorRow <= 0) {
+        if (cursorAtTitle || cursorRow <= 0) {
             updateCursorPos(-1);
             return;
         }
@@ -198,7 +232,7 @@ public class Note extends Text {
     }
 
     public void moveCursorDown() {
-        if (cursorRow >= getLines().length-1) {
+        if (cursorAtTitle || cursorRow >= getLines().length-1) {
             updateCursorPos(text.length());
             return;
         }
@@ -209,40 +243,46 @@ public class Note extends Text {
     }
 
     public void addCharAtCursor(char c) {
-        text = text.substring(0, cursorPos)+c+text.substring(cursorPos);
+        if (cursorAtTitle) title.text = title.text.substring(0, cursorPos)+c+title.text.substring(cursorPos);
+        else text = text.substring(0, cursorPos)+c+text.substring(cursorPos);
         cursorPos++;
         updateCursorPos();
     }
 
     public void deleteCharAtCursorLeft() {
         if (cursorPos == 0) return;
-        text = text.substring(0, cursorPos-1)+text.substring(cursorPos);
+        if (cursorAtTitle) title.text = title.text.substring(0, cursorPos-1)+title.text.substring(cursorPos);
+        else text = text.substring(0, cursorPos-1)+text.substring(cursorPos);
         cursorPos--;
         updateCursorPos();
     }
 
     public void deleteCharAtCursorRight() {
-        if (cursorPos == text.length()) return;
-        text = text.substring(0, cursorPos)+text.substring(cursorPos+1);
+        if ((cursorAtTitle && cursorPos == title.text.length()) || (!cursorAtTitle && cursorPos == text.length())) return;
+        if (cursorAtTitle) title.text = title.text.substring(0, cursorPos)+title.text.substring(cursorPos+1);
+        else text = text.substring(0, cursorPos)+text.substring(cursorPos+1);
         updateCursorPos();
     }
 
     public void deleteWordAtCursorLeft() {
         boolean trimmingWhitespace = true;
+        String  txt                = cursorAtTitle ? title.text : text;
         for (int i = cursorPos-1; i >= 0; i--) {
             if (i == 0) {
-                text = text.substring(cursorPos);
+                if (cursorAtTitle) title.text = title.text.substring(cursorPos);
+                else text = text.substring(cursorPos);
                 updateCursorPos(0);
                 return;
             }
-            char    c          = text.charAt(i);
-            boolean whitespace = c == ' ' || c == '\n'; // TODO: use isWhitespace()
+            char    c          = txt.charAt(i);
+            boolean whitespace = c == ' ' || c == '\n'; // TODO: use Character.isWhitespace()
             if (trimmingWhitespace) {
                 if (whitespace) continue;
                 trimmingWhitespace = false;
             }
             if (whitespace) {
-                text = (text.substring(0, i)+text.substring(cursorPos));
+                if (cursorAtTitle) title.text = title.text.substring(0, i)+title.text.substring(cursorPos);
+                else text = (text.substring(0, i)+text.substring(cursorPos));
                 updateCursorPos(i);
                 return;
             }
@@ -251,19 +291,24 @@ public class Note extends Text {
 
     public void deleteWordAtCursorRight() {
         boolean trimmingWhitespace = true;
-        for (int i = cursorPos; i < text.length(); i++) {
-            if (i == text.length()-1) {
+        String  txt                = cursorAtTitle ? title.text : text;
+        for (int i = cursorPos; i < txt.length(); i++) {
+            if (cursorAtTitle && i == title.text.length()-1) {
+                title.text = title.text.substring(0, cursorPos);
+                return;
+            } else if (!cursorAtTitle && i == text.length()-1) {
                 text = text.substring(0, cursorPos);
                 return;
             }
-            char    c          = text.charAt(i);
-            boolean whitespace = c == ' ' || c == '\n'; // TODO: use isWhitespace()
+            char    c          = txt.charAt(i);
+            boolean whitespace = c == ' ' || c == '\n'; // TODO: use Character.isWhitespace()
             if (trimmingWhitespace) {
                 if (whitespace) continue;
                 trimmingWhitespace = false;
             }
             if (whitespace) {
-                text = text.substring(0, cursorPos)+text.substring(i+1);
+                if (cursorAtTitle) title.text = title.text.substring(0, cursorPos)+title.text.substring(i+1);
+                else text = text.substring(0, cursorPos)+text.substring(i+1);
                 return;
             }
         }

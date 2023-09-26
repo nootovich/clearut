@@ -209,8 +209,9 @@ public class Actions {
         note.id              = id;
         if (Notes.noteExists(id)) {
             String[] contents = Notes.loadNote(id);
-            note.title.text = contents[0];
-            note.text       = contents[1];
+            note.title.text    = contents[0];
+            note.text          = contents[1];
+            note.cursorAtTitle = false;
         }
     }
 
