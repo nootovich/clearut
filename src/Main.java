@@ -115,7 +115,7 @@ public class Main {
             button.setColors(priColors[4], priColors[5], priColors[6]);
             button.setName("BUTTON_"+i);
             button.action = "button"+i;
-            // button.addChild(new Outline(4, 2, priColors[5], priColors[6], priColors[7]));
+            button.addChild(new Outline(4, priColors[5], priColors[6], priColors[7]));
             UI_side.addChild(button);
         }
 

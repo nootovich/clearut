@@ -4,7 +4,7 @@ public class Rect extends Member {
 
     private static final boolean DEBUG = false;
 
-    public boolean visible = true, interactive = false;
+    public boolean visible = true;
     public boolean hovered, active;
     public float x, y, w, h;
     public int[]  colors = new int[3];

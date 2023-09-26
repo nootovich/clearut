@@ -1,66 +1,60 @@
-//import java.awt.*;
+import java.awt.*;
 
-//public class Outline extends Member { // TODO: needs some rework
+public class Outline extends Member {
 
-//    private static final boolean DEBUG = false;
+    private static final boolean DEBUG = false;
 
-//    public int     thickness = 1;
-//    public int[]   colors    = new int[3];
-//    public boolean visible   = true, hovered = false, active = false;
+    public boolean visible = true;
+    public boolean hovered, active;
+    public int   thickness = 1;
+    public int[] colors;
 
 
-//    Outline(int thickness, int z) {
-//        this.thickness = thickness; this.z = z;
-//    }
+    Outline(int thickness, int color) {
+        this.colors    = new int[]{color, color, color};
+        this.thickness = thickness;
+    }
 
-//    Outline(int thickness, int z, int color) {
-//        this.thickness = thickness; this.z = z;
-//        setColors(color, color, color);
-//    }
+    Outline(int thickness, int idleColor, int hoveredColor, int activeColor) {
+        this.colors    = new int[]{idleColor, hoveredColor, activeColor};
+        this.thickness = thickness;
+    }
 
-//    Outline(int thickness, int z, int idle_color, int hovered_color, int active_color) {
-//        this.thickness = thickness; this.z = z;
-//        setColors(idle_color, hovered_color, active_color);
-//    }
+    @Override
+    public void update(Mouse mouse) {
+        Object parentClass = parent.getClass();
+        if (!parentClass.equals(Rect.class) && !parentClass.equals(RoundRect.class)) {
+            System.out.println("Not implemented parent class for Outline");
+            System.exit(1);
+        }
+        Rect p = (Rect) parent;
+        hovered = p.hovered;
+        active  = p.active;
+        z       = p.z+1;
+    }
 
-//    @Override
-//    public void update(IO.Mouse mouse) {
-//        if (parent.getClass() == Sprite.class) {
-//            hovered = ((Sprite) parent).hovered;
-//            active  = ((Sprite) parent).active;
-//        }
-//        // TODO: implement "Interactive" class
-//    }
+    @Override
+    public void draw(Graphics2D g2d) {
+        Object parentClass = parent.getClass();
+        if (!parentClass.equals(Rect.class) && !parentClass.equals(RoundRect.class)) {
+            System.out.println("Not implemented parent class for Outline");
+            System.exit(1);
+        }
+        Rect p = (Rect) parent;
+        int  x = (int) (p.x+thickness/4.f);
+        int  y = (int) (p.y+thickness/4.f);
+        int  w = (int) (p.w-thickness/2.f);
+        int  h = (int) (p.h-thickness/2.f);
+        if (DEBUG) System.out.printf("\t\tdraw outline of '%s': x:%d, y:%d, z:%d, w:%d, h:%d, t:%d %s%n",
+                                     p.getName(), x, y, p.z+1, w, h, thickness, visible ? " visible" : "!visible"); // $DEBUG
+        if (!visible) return;
+        g2d.setStroke(new BasicStroke(thickness));
+        g2d.setColor(new Color(colors[active ? 2 : hovered ? 1 : 0]));
+        if (p.getClass().equals(Rect.class)) g2d.drawRect(x, y, w, h);
+        else if (p.getClass().equals(RoundRect.class)) {
+            RoundRect o = (RoundRect) parent;
+            g2d.drawRoundRect(x, y, w, h, o.rounding, o.rounding);
+        }
+    }
 
-//    @Override
-//    public void draw(Graphics2D g2d) {
-//        if (parent.getClass() != Sprite.class) {
-//            //g2d.drawRect(x + (thickness / 2), y + (thickness / 2), w - thickness, h - thickness);
-//            return;
-//        }
-//        Sprite p = (Sprite) parent;
-//        int    x = p.x+thickness/4;
-//        int    y = p.y+thickness/4;
-//        int    w = p.w-thickness/2;
-//        int    h = p.h-thickness/2;
-//        if (DEBUG) System.out.printf("\t\tdraw outline of '%s': x:%d, y:%d, z:%d, w:%d, h:%d, t:%d %s%n",
-//            p.name, x, y, p.z+1, w, h, thickness, visible ? " visible" : "!visible"); // $DEBUG
-//        if (!visible) return;
-//        g2d.setStroke(new BasicStroke(thickness));
-//        g2d.setColor(new Color(getColorBasedOnState()));
-//        switch (p.type) {
-//            case RECTANGLE -> g2d.drawRect(x, y, w, h);
-//            case ROUNDED_RECTANGLE -> g2d.drawRoundRect(x, y, w, h, p.extra, p.extra);
-//        }
-//    }
-
-//    public void setColors(int idleColor, int hoveredColor, int activeColor) {
-//        colors = new int[]{idleColor, hoveredColor, activeColor};
-//    }
-
-//    private int getColorBasedOnState() {
-//        if (active) return colors[2];
-//        if (hovered) return colors[1];
-//        return colors[0];
-//    }
-//}
+}
