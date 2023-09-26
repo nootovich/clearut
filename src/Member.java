@@ -4,11 +4,11 @@ import java.util.Comparator;
 
 public class Member {
 
-    public int      z        = 0;
-    public String   name     = "";
-    public Member   parent   = null;
-    public Member[] children = new Member[0];
-    //    public boolean inheritPosition = false, inheritInteractions = false;
+    public        int              z;
+    private       String           name     = "";
+    public        Member           parent;
+    public        Member[]         children = new Member[0];
+    private final MemberComparator MBC      = new MemberComparator();
 
     public void addChild(Member child) {
         child.parent = this;
@@ -16,7 +16,7 @@ public class Member {
         children                    = new Member[children.length+1];
         children[children.length-1] = child;
         System.arraycopy(temp, 0, children, 0, temp.length);
-        if (children.length > 1) Arrays.sort(children, new ChildPriorityComparator());
+        if (children.length > 1) Arrays.sort(children, MBC);
     }
 
     public Member getChild(String searchName) {
@@ -25,6 +25,14 @@ public class Member {
             if (c.name.equals(searchName)) return c;
         }
         return null;
+    }
+
+    public void setName(String newName) {
+        name = newName.toUpperCase();
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void update(IO.Mouse mouse) {
@@ -62,7 +70,7 @@ public class Member {
     }
 }
 
-class ChildPriorityComparator implements Comparator<Member> {
+class MemberComparator implements Comparator<Member> {
 
     @Override
     public int compare(Member a, Member b) {

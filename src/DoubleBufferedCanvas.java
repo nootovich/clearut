@@ -56,7 +56,7 @@ public class DoubleBufferedCanvas extends JPanel {
 
     public Layer getLayer(String searchName) {
         for (Layer l: layers) {
-            if (l.name.equals(searchName.toUpperCase())) return l;
+            if (l.getName().equals(searchName.toUpperCase())) return l;
         }
         return null;
     }

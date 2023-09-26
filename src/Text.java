@@ -4,7 +4,7 @@ public class Text extends Member {
 
     public static boolean DEBUG = false;
 
-    public int x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0;
+    public int x, y, w, h, size = 10, color = 0, offsetX = 0, offsetY = 0; // TODO: convert to floats
     public int cachedTextHeight = 0, cachedLineHeight = 0; // TODO: remove (should be in program, not in library)
     public boolean visible = true, hovered, active;
     public String    text      = "";
@@ -26,7 +26,7 @@ public class Text extends Member {
 
     public Text(int x, int y, int w, int h, int z, int size, String text, String name) {
         this(x, y, w, h, z, size, text);
-        this.name = name.toUpperCase();
+        setName(name);
     }
 
     public Text(int x, int y, int w, int h, int z, int size, String text, String name, int color) {

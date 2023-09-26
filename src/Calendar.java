@@ -8,10 +8,10 @@ public class Calendar {
     public static       int      weekOffset = 0;
 
     public static void updateDayTotal(LocalDate day, Member parent) {
-        Sprite[] tasks = getDayTasks(day, parent);
+        RoundRect[] tasks = getDayTasks(day, parent);
         Text     total = getDayTotal(day, parent);
         int      count = 0;
-        for (Sprite task : tasks) if ((task.extra&2) == 2) count++;
+        for (RoundRect task : tasks) if ((task.rounding&2) == 2) count++;
         total.text = ""+count;
     }
 
@@ -23,19 +23,19 @@ public class Calendar {
     }
 
     public static void updateDayColor(LocalDate day, Member parent) {
-        Sprite[] tasks    = getDayTasks(day, parent);
+        RoundRect[] tasks    = getDayTasks(day, parent);
         Text     dayTotal = getDayTotal(day, parent);
         if (Integer.parseInt(dayTotal.text) == TASK_COUNT) {
-            for (Sprite task : tasks) task.setColors(Colors.green(2), Colors.green(3), Colors.green(4));
+            for (RoundRect task : tasks) task.setColors(Colors.green(2), Colors.green(3), Colors.green(4));
             return;
         }
-        for (Sprite task : tasks) {
-            switch (task.extra) {
+        for (RoundRect task : tasks) {
+            switch (task.rounding) {
                 case 0 -> task.setColors(Colors.blue2(1), Colors.blue2(2), Colors.blue2(3));
                 case 1 -> task.setColors(Colors.blue2(2), Colors.blue2(3), Colors.blue2(4));
                 case 2 -> task.setColors(Colors.blue2(5), Colors.blue2(6), Colors.blue2(7));
                 case 3 -> task.setColors(Colors.blue2(6), Colors.blue2(7), Colors.blue2(8));
-                default -> throw new IllegalStateException("Unexpected value: "+task.extra);
+                default -> throw new IllegalStateException("Unexpected value: "+task.rounding);
             }
         }
     }
@@ -51,13 +51,13 @@ public class Calendar {
         return day.format(DateTimeFormatter.ofPattern("ddMMyy"));
     }
 
-    public static Sprite getDayTask(LocalDate day, int taskId, Member parent) {
-        return (Sprite) parent.getChild("task"+getDayStr(day)+getTaskId(taskId));
+    public static RoundRect getDayTask(LocalDate day, int taskId, Member parent) {
+        return (RoundRect) parent.getChild("task"+getDayStr(day)+getTaskId(taskId));
     }
 
-    public static Sprite[] getDayTasks(LocalDate day, Member parent) {
-        Sprite[] result = new Sprite[TASK_COUNT];
-        for (int i = 0; i < TASK_COUNT; i++) result[i] = (Sprite) parent.getChild("task"+getDayStr(day)+getTaskId(i));
+    public static RoundRect[] getDayTasks(LocalDate day, Member parent) {
+        RoundRect[] result = new RoundRect[TASK_COUNT];
+        for (int i = 0; i < TASK_COUNT; i++) result[i] = (RoundRect) parent.getChild("task"+getDayStr(day)+getTaskId(i));
         return result;
     }
 

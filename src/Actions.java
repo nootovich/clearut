@@ -62,15 +62,16 @@ public class Actions {
 
         Layer parent = Main.window.getLayer("UI_CALENDAR");
 
+        // TODO: rework
         // toggle clicked task
-        Sprite dayTask = Calendar.getDayTask(day, taskId, parent);
-        dayTask.extra = (dayTask.extra+2)%4;
+        RoundRect dayTask = Calendar.getDayTask(day, taskId, parent);
+        dayTask.rounding = (dayTask.rounding+2)%4;
 
         // save day info
         StringBuilder content = new StringBuilder();
-        Sprite[]      tasks   = Calendar.getDayTasks(day, parent);
+        RoundRect[]   tasks   = Calendar.getDayTasks(day, parent);
         for (int i = 0; i < Calendar.TASK_COUNT; i++) {
-            char active = (tasks[i].extra&2) == 2 ? '1' : '0';
+            char active = (tasks[i].rounding&2) == 2 ? '1' : '0';
             content.append(Calendar.getTaskId(i)).append(':').append(active).append('\n');
         }
         IO.saveFile("tasks\\"+Calendar.getDayStr(day)+".txt", content.toString());

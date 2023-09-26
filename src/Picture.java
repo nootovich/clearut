@@ -19,7 +19,7 @@ public class Picture extends Member {
 
     public Picture(int x, int y, int w, int h, int z, String filepath, String name) {
         this(x, y, w, h, z, filepath);
-        this.name = name.toUpperCase();
+        setName(name);
     }
 
     @Override
@@ -86,7 +86,7 @@ public class Picture extends Member {
         }
     }
 
-    public enum PictureType {
+    public enum PictureType { // TODO: refactor like with Sprite (now Rect and RoundRect)
         RECTANGLE, CIRCLE
     }
 }

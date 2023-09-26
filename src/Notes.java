@@ -36,7 +36,7 @@ public class Notes {
             if (c == '\n') break;
             title.append(c);
         }
-        if (i == file.length()-1) return new String[]{title.toString(), ""};
+        if (i >= file.length()-1) return new String[]{title.toString(), ""};
         return new String[]{title.toString(), file.substring(i+1)};
     }
 
