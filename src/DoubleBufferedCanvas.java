@@ -6,11 +6,11 @@ import java.util.Arrays;
 public class DoubleBufferedCanvas extends JPanel {
 
     // TODO: move MOUSE and KEYBOARD classes from IO inside DBC as adapters (like in GOL)
-    public IO.Mouse      mouse;
+    public Mouse         mouse;
     public BufferedImage buffer;
     public Layer[]       layers;
 
-    public DoubleBufferedCanvas(int width, int height, IO.Mouse mouse) {
+    public DoubleBufferedCanvas(int width, int height, Mouse mouse) {
         this.mouse  = mouse;
         this.layers = new Layer[0];
         addMouseWheelListener(mouse);
@@ -33,7 +33,7 @@ public class DoubleBufferedCanvas extends JPanel {
         g.drawImage(buffer, 0, 0, this);
     }
 
-    public void updateChildren(IO.Mouse mouse) {
+    public void updateChildren(Mouse mouse) {
         for (int i = layers.length-1; i >= 0; i--) {
             layers[i].update(mouse);
         }

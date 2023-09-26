@@ -71,7 +71,7 @@ public class Note extends Text {
     }
 
     @Override
-    public void update(IO.Mouse mouse) {
+    public void update(Mouse mouse) {
         updateHigherChildren(mouse);
 
         if ((title.active && mouse.isLMBFallingEdge()) || (active && mouse.isLMBFallingEdge())) {

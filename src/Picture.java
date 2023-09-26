@@ -23,7 +23,7 @@ public class Picture extends Member {
     }
 
     @Override
-    public void update(IO.Mouse mouse) {
+    public void update(Mouse mouse) {
         updateHigherChildren(mouse);
         // if (active && mouse.isLMBFallingEdge()) Global.ACTIONS.invoke(action); // TODO: refactor
         hovered = mouse.x > x && mouse.x < x+w && mouse.y > y && mouse.y < y+h;

@@ -8,15 +8,15 @@ public class Main {
 
     private static final int FPS = 60, plannedFrameTime = (int) (1000.f/FPS);
 
-    public static IO.Mouse    mouse;
-    public static IO.Keyboard keyboard;
-    public static Window      window;
-    public static State       state;
+    public static Mouse    mouse;
+    public static Keyboard keyboard;
+    public static Window   window;
+    public static State    state;
 
 
     public static void main(String[] args) throws InterruptedException {
-        mouse    = new IO.Mouse();
-        keyboard = new IO.Keyboard();
+        mouse    = new Mouse();
+        keyboard = new Keyboard();
         window   = new Window(800, 400, 300, 200, mouse, keyboard);
         changeState(State.MAIN);
         long prevFrameTime = 0, curFrameTime = 0, spentFrameTime = 0;
@@ -302,8 +302,8 @@ public class Main {
             }
 
             // load day info from file
-            if (IO.fileExists("tasks\\"+date+".txt")) {
-                String[] lines = IO.loadFile("tasks\\"+date+".txt").split("\n");
+            if (FileSystem.fileExists("tasks\\"+date+".txt")) {
+                String[] lines = FileSystem.loadFile("tasks\\"+date+".txt").split("\n");
                 assert lines.length == taskCount;
                 for (int j = 0; j < taskCount; j++) {
                     int taskId  = Integer.parseInt(lines[j].substring(0, 4));

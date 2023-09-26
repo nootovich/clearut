@@ -17,7 +17,7 @@ public class Notes {
     }
 
     public static void saveNote(int id, String title, String content) {
-        IO.saveFile(getNoteName(id), title+'\n'+content);
+        FileSystem.saveFile(getNoteName(id), title+'\n'+content);
     }
 
     public static void saveOpenedNote() {
@@ -28,7 +28,7 @@ public class Notes {
 
     public static String[] loadNote(int id) {
         if (!noteExists(id)) return new String[]{"", ""};
-        String        file  = IO.loadFile(getNoteName(id));
+        String        file  = FileSystem.loadFile(getNoteName(id));
         StringBuilder title = new StringBuilder();
         int           i     = 0;
         for (i = 0; i < file.length(); i++) {
@@ -41,11 +41,11 @@ public class Notes {
     }
 
     public static boolean noteExists(int id) {
-        return IO.fileExists(getNoteName(id));
+        return FileSystem.fileExists(getNoteName(id));
     }
 
     public static void deleteNote(int id) {
-        if (noteExists(id)) IO.deleteFile(getNoteName(id));
+        if (noteExists(id)) FileSystem.deleteFile(getNoteName(id));
     }
 
 }

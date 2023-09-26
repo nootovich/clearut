@@ -52,7 +52,7 @@ public class Actions {
             char active = (tasks[i].rounding&2) == 2 ? '1' : '0';
             content.append(Calendar.getTaskId(i)).append(':').append(active).append('\n');
         }
-        IO.saveFile("tasks\\"+Calendar.getDayStr(day)+".txt", content.toString());
+        FileSystem.saveFile("tasks\\"+Calendar.getDayStr(day)+".txt", content.toString());
 
         // updates :)
         Calendar.updateDayTotal(day, parent);

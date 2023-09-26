@@ -15,7 +15,7 @@ public class Rect extends Member {
     }
 
     @Override
-    public void update(IO.Mouse mouse) {
+    public void update(Mouse mouse) {
         updateHigherChildren(mouse);
         // TODO: refactor by adding a "Interactive" interface?
         // if (inherits) {

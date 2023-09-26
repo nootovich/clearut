@@ -3,33 +3,33 @@ import java.time.format.DateTimeFormatter;
 
 public class Calendar {
 
-    public static final String[] TASK_LIST  = IO.loadFile("./tasks/list.txt").split("\n");
+    public static final String[] TASK_LIST  = FileSystem.loadFile("./tasks/list.txt").split("\n");
     public static final int      TASK_COUNT = TASK_LIST.length;
     public static       int      weekOffset = 0;
 
     public static void updateDayTotal(LocalDate day, Member parent) {
         RoundRect[] tasks = getDayTasks(day, parent);
-        Text     total = getDayTotal(day, parent);
-        int      count = 0;
-        for (RoundRect task : tasks) if ((task.rounding&2) == 2) count++;
+        Text        total = getDayTotal(day, parent);
+        int         count = 0;
+        for (RoundRect task: tasks) if ((task.rounding&2) == 2) count++;
         total.text = ""+count;
     }
 
     public static void updateWeekTotal(LocalDate day, Member parent) {
         int    count      = 0;
         Text[] totalArray = getWeekTotalArray(day, parent);
-        for (Text total : totalArray) if (total != null) count += Integer.parseInt(total.text);
+        for (Text total: totalArray) if (total != null) count += Integer.parseInt(total.text);
         getWeekTotal(parent).text = ""+count;
     }
 
     public static void updateDayColor(LocalDate day, Member parent) {
         RoundRect[] tasks    = getDayTasks(day, parent);
-        Text     dayTotal = getDayTotal(day, parent);
+        Text        dayTotal = getDayTotal(day, parent);
         if (Integer.parseInt(dayTotal.text) == TASK_COUNT) {
-            for (RoundRect task : tasks) task.setColors(Colors.green(2), Colors.green(3), Colors.green(4));
+            for (RoundRect task: tasks) task.setColors(Colors.green(2), Colors.green(3), Colors.green(4));
             return;
         }
-        for (RoundRect task : tasks) {
+        for (RoundRect task: tasks) {
             switch (task.rounding) {
                 case 0 -> task.setColors(Colors.blue2(1), Colors.blue2(2), Colors.blue2(3));
                 case 1 -> task.setColors(Colors.blue2(2), Colors.blue2(3), Colors.blue2(4));

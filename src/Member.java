@@ -35,18 +35,18 @@ public class Member {
         return name;
     }
 
-    public void update(IO.Mouse mouse) {
+    public void update(Mouse mouse) {
         updateHigherChildren(mouse);
         updateLowerChildren(mouse);
     }
 
-    public void updateHigherChildren(IO.Mouse mouse) {
+    public void updateHigherChildren(Mouse mouse) {
         for (int i = children.length-1; i >= 0 && children[i].z > this.z; i--) {
             children[i].update(mouse);
         }
     }
 
-    public void updateLowerChildren(IO.Mouse mouse) {
+    public void updateLowerChildren(Mouse mouse) {
         int i = children.length-1;
         while (i >= 0 && children[i].z > this.z) i--;
         for (; i >= 0; i--) children[i].update(mouse);
