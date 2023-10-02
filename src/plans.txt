@@ -1,0 +1,4 @@
+Add "Renderable" and "Interactive" interfaces for any Members that need to be rendered and interacted with respectively
+Actually make a plan of what I want to make and what I would need to do in order to achieve this
+???
+PROFIT!!!11!
