@@ -185,7 +185,7 @@ public class Note extends Text {
         boolean skippingWhitespace = true;
         String  txt                = cursorAtTitle ? title.text : text;
         for (int i = cursorPos-1; i >= 0; i--) {
-            boolean whitespace = txt.charAt(i) == ' '; // TODO: use Character.isWhitespace()
+            boolean whitespace = txt.charAt(i) == ' ';
             if (skippingWhitespace) {
                 if (whitespace) continue;
                 skippingWhitespace = false;
@@ -206,7 +206,7 @@ public class Note extends Text {
         boolean skippingWhitespace = true;
         String  txt                = cursorAtTitle ? title.text : text;
         for (int i = cursorPos; i < txt.length(); i++) {
-            boolean whitespace = txt.charAt(i) == ' '; // TODO: use Character.isWhitespace()
+            boolean whitespace = txt.charAt(i) == ' ';
             if (skippingWhitespace) {
                 if (whitespace) continue;
                 skippingWhitespace = false;
@@ -273,7 +273,7 @@ public class Note extends Text {
                 return;
             }
             char    c          = txt.charAt(i);
-            boolean whitespace = c == ' ' || c == '\n'; // TODO: use Character.isWhitespace()
+            boolean whitespace = Character.isSpaceChar(c);
             if (trimmingWhitespace) {
                 if (whitespace) continue;
                 trimmingWhitespace = false;
@@ -299,7 +299,7 @@ public class Note extends Text {
                 return;
             }
             char    c          = txt.charAt(i);
-            boolean whitespace = c == ' ' || c == '\n'; // TODO: use Character.isWhitespace()
+            boolean whitespace = Character.isSpaceChar(c);
             if (trimmingWhitespace) {
                 if (whitespace) continue;
                 trimmingWhitespace = false;

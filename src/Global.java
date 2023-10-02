@@ -3,7 +3,7 @@ import java.io.File;
 
 public class Global {
 
-    public static final int     SAVEDATA_VERSION = 1; //TODO: rename 'info' to 'data'
+    public static final int     SAVEDATA_VERSION = 1;
     public static final Actions ACTIONS          = new Actions();
     public static final String  IMAGE_FOLDER     = "images"+File.separator;
     public static final String  SAVEDATA_FOLDER  = "saves"+File.separator;
